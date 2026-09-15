@@ -119,12 +119,18 @@ The form validates, then delivers by email:
 
 ## Security headers
 
-`index.html`, `projects.html` and `project.html` carry a
+`index.html`, `projects.html`, `project.html` and `admin.html` carry a
 `<meta http-equiv="Content-Security-Policy">`. The policy allows exactly the
 origins in use: self, the GSAP timeline on jsDelivr, Supabase
 (`https://*.supabase.co`), Google Fonts, `data:` images (the CSS film grain) and
 the Formspree endpoint for the contact form. There is **no inline script** on
-those pages, which is why `script-src` needs no `'unsafe-inline'`.
+any of those pages — the head bootstrap lives in `js/boot.js` and the admin
+boot block in `js/admin-boot.js` — which is why `script-src` needs no
+`'unsafe-inline'`.
+
+The admin policy is deliberately the strictest of the four:
+`script-src 'self'` only (Supabase is vendored locally, no CDN), and `img-src`
+adds `blob:` because the upload previews go through `URL.createObjectURL`.
 
 Two things a `<meta>` policy cannot do, and the host must send as real headers:
 
@@ -135,8 +141,7 @@ X-Content-Type-Options: nosniff
 
 `serve.js` sends `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff` and
 `Cache-Control: no-cache` for local development so those protections are
-exercised while working. `admin.html` does **not** yet carry a CSP — it still has
-one inline script, which would need extracting first.
+exercised while working.
 
 ## Caching
 

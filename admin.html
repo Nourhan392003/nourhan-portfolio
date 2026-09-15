@@ -4,6 +4,27 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="robots" content="noindex, nofollow" />
+
+  <!-- Content Security Policy — the XSS backstop for the CMS. Origins are
+       the minimum this page actually needs:
+         · script  — self only (Supabase is vendored locally; no CDN)
+         · style   — self plus Google Fonts ('unsafe-inline' is required for
+                     the inline style attributes in the markup and the
+                     generated editor rows)
+         · font    — self plus the Google Fonts file host
+         · img     — self, data: (previews), blob: (upload previews via
+                     URL.createObjectURL) and https: (Supabase Storage)
+         · connect — self plus Supabase REST/auth/storage
+       There is no inline script anywhere on this page: the boot block lives
+       in js/admin-boot.js, mirroring js/boot.js on the public pages.
+       NOTE: frame-ancestors is ignored when a policy arrives via <meta>;
+       clickjacking protection for the admin must be sent as a real HTTP
+       header by the host (serve.js sends X-Frame-Options: DENY locally). -->
+  <meta
+    http-equiv="Content-Security-Policy"
+    content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https://*.supabase.co; base-uri 'self'; object-src 'none'"
+  />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
   <title>Admin · Nourhan Ashraf</title>
   <link rel="icon" type="image/svg+xml" href="images/favicon.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -382,12 +403,6 @@
   <script src="js/admin.js"></script>
   <script src="js/icon-library.js"></script>
   <script src="js/admin-content.js?v=4"></script>
-  <script>
-    (function () {
-      if (window.NPContentAdmin && typeof window.NPContentAdmin.init === 'function') {
-        try { window.NPContentAdmin.init(); } catch (e) { console.error('Admin content init failed:', e); }
-      }
-    })();
-  </script>
+  <script src="js/admin-boot.js?v=1"></script>
 </body>
 </html>

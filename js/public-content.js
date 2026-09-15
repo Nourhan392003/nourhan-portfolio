@@ -8,6 +8,11 @@
  *   · services        → public.services   where is_visible
  *   · skills          → public.skills     where is_visible
  *
+ * Network:
+ *   · every portfolio_content section the page needs is fetched in ONE
+ *     batched request — a single .in('section_key', …) query — instead of
+ *     one request per section, so hydration waits on a single round trip
+ *
  * Repeatable lists are only replaced when Supabase actually returns
  * visible rows; the static markup stays as the fallback otherwise.
  * Every icon comes from the fixed allowlist in js/icon-library.js —
@@ -616,22 +621,6 @@
   }
 
   /* ============================================================ */
-  /*  replay reveal for freshly injected content                 */
-  /* ============================================================ */
-
-  function replayReveal(container) {
-    if (!container) return;
-    try {
-      if (typeof window.NPReveal === 'object' && typeof window.NPReveal.observeAll === 'function') {
-        window.NPReveal.observeAll(container);
-      } else if (typeof window.NPReveal === 'object' && typeof window.NPReveal.observe === 'function') {
-        var nodes = container.querySelectorAll('[data-reveal], .reveal-line, .service, .xp__item, .contact__row, .case:not(.case--skeleton), [data-scroll-item]');
-        for (var i = 0; i < nodes.length; i++) window.NPReveal.observe(nodes[i]);
-      }
-    } catch (_) { /* never let the reveal hook crash the page */ }
-  }
-
-  /* ============================================================ */
   /*  About — single row, updated in place                      */
   /* ============================================================ */
 
@@ -776,21 +765,37 @@
   /*  Supabase read (read-only, public RLS applies)              */
   /* ============================================================ */
 
-  function readSection(sectionKey) {
+  /* One round trip for every portfolio_content section the page needs.
+     PostgREST expands .in() into a single SELECT … WHERE section_key IN (…),
+     replacing what used to be one request per section. Returns a map of
+     section_key → content; sections with no row (or empty content) are
+     simply absent from the map. */
+  function readSections(sectionKeys) {
     var NP = window.NP;
     if (!NP || typeof NP.isConfigured !== 'function' || !NP.isConfigured() || !NP.sb) {
-      return Promise.resolve(null);
+      return Promise.resolve({});
     }
     return NP.sb
       .from('portfolio_content')
       .select('section_key, content')
-      .eq('section_key', sectionKey)
-      .maybeSingle()
+      .in('section_key', sectionKeys)
       .then(function (res) {
         if (res.error) throw res.error;
-        if (!res.data || !res.data.content) return null;
-        return res.data.content;
+        var map = {};
+        var rows = res.data || [];
+        for (var i = 0; i < rows.length; i++) {
+          var row = rows[i];
+          if (row && row.section_key && row.content) map[row.section_key] = row.content;
+        }
+        return map;
       });
+  }
+
+  /* Single-section read kept for direct callers; a thin wrapper now. */
+  function readSection(sectionKey) {
+    return readSections([sectionKey]).then(function (map) {
+      return map[sectionKey] || null;
+    });
   }
 
   var SERVICES_COLS = 'title, description, tags, sort_order, is_visible';
@@ -838,13 +843,32 @@
       return loading;
     }
 
+    /* ONE batched read for all portfolio_content sections on this page;
+       the three repeatable tables stay as their own (already parallel)
+       requests. A failed batch degrades to an empty map, so every hydrator
+       still runs and simply leaves the static markup untouched — same
+       per-section isolation as before. */
+    var sectionKeys = [];
+    if (heroRegion) sectionKeys.push('hero');
+    if (contactRegion) sectionKeys.push('contact');
+    if (aboutRegion) sectionKeys.push('about');
+    if (footerRegion) sectionKeys.push('footer');
+
+    var sectionsPromise = sectionKeys.length
+      ? readSections(sectionKeys).catch(function () { return {}; })
+      : Promise.resolve({});
+
+    function section(key) {
+      return sectionsPromise.then(function (map) { return map[key]; });
+    }
+
     loading = Promise.all([
       heroRegion
-        ? readSection('hero').then(function (row) { return hydrateHero(row); })
+        ? section('hero').then(function (row) { return hydrateHero(row); })
             .catch(function () { return false; })
         : Promise.resolve(false),
       contactRegion
-        ? readSection('contact').then(function (row) { return hydrateContact(row); })
+        ? section('contact').then(function (row) { return hydrateContact(row); })
             .catch(function () { return false; })
         : Promise.resolve(false),
       servicesRegion
@@ -856,11 +880,11 @@
             .catch(function () { return false; })
         : Promise.resolve(false),
       aboutRegion
-        ? readSection('about').then(function (row) { return hydrateAbout(row); })
+        ? section('about').then(function (row) { return hydrateAbout(row); })
             .catch(function () { return false; })
         : Promise.resolve(false),
       footerRegion
-        ? readSection('footer').then(function (row) { return hydrateFooter(row); })
+        ? section('footer').then(function (row) { return hydrateFooter(row); })
             .catch(function () { return false; })
         : Promise.resolve(false),
       experienceRegion

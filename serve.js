@@ -16,10 +16,17 @@
        this one can no longer be reached
      · responses carry no-cache plus the two headers that cannot be expressed
        with a <meta> tag (nosniff, frame-ancestors/clickjacking)
+     · text assets (.html .css .js .svg .json .txt) are compressed with gzip
+       or deflate when the client asks for it — the ~102 KB stylesheet ships
+       as roughly 20 KB on the wire
+     · every file response carries a weak ETag derived from the file bytes;
+       If-None-Match is answered with 304 Not Modified and no body
 */
 const http = require('http');
+const zlib = require('zlib');
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 
 const ROOT = __dirname;
 const PORT = 4173;
@@ -36,6 +43,21 @@ const TYPES = {
   '.json': 'application/json',
   '.txt': 'text/plain; charset=utf-8',
 };
+
+/* Compressible types get gzip/deflate negotiation; images do not (they are
+   already compressed, re-compressing them wastes CPU for no gain). */
+const COMPRESSIBLE = {
+  '.html': true,
+  '.css': true,
+  '.js': true,
+  '.svg': true,
+  '.json': true,
+  '.txt': true,
+};
+
+/* Skip compression for tiny bodies — the per-message header/frame overhead
+   can exceed the savings at a few hundred bytes. 304s bypass the question. */
+const MIN_COMPRESS_LENGTH = 860;
 
 /* Headers on every response.
    `Cache-Control: no-cache` means "revalidate before use" rather than "never
@@ -55,6 +77,68 @@ const BASE_HEADERS = {
 function send(res, status, body, extra) {
   res.writeHead(status, Object.assign({ 'Content-Type': 'text/plain; charset=utf-8' }, BASE_HEADERS, extra || {}));
   res.end(body);
+}
+
+/* Weak ETag from the exact response body. A size-based etag is wrong across
+   edits, and hashing costs ~1 ms per 100 KB — cheap enough to be correct.
+   The W/ prefix marks it as not byte-identical across servers, which is the
+   honest claim for a dev server that has no persisted state. */
+function etagFor(body) {
+  return 'W/"' + crypto.createHash('sha1').update(body).digest('hex').slice(0, 20) + '"';
+}
+
+/* True when If-None-Match (a comma list, or *) matches the etag.
+   Weak comparison is the right check here: the client is revalidating a full
+   representation it received from this same server, not doing range work. */
+function etagMatches(ifNoneMatch, etag) {
+  const list = String(ifNoneMatch || '').split(',');
+  for (var i = 0; i < list.length; i++) {
+    const candidate = list[i].trim();
+    if (candidate === '*' || candidate === etag) return true;
+    /* tolerate clients that echo a strong etag for our weak one */
+    if (candidate === etag.replace(/^W\//, '')) return true;
+  }
+  return false;
+}
+
+/* Accept-Encoding → 'gzip' | 'deflate' | null.
+   Honours q-values and treats * as "any encoding you support". */
+function pickEncoding(acceptHeader, bodyLength, isCompressible) {
+  if (!isCompressible) return null;
+  if (!acceptHeader || bodyLength < MIN_COMPRESS_LENGTH) return null;
+
+  const parts = String(acceptHeader).split(',');
+  let gzipQ = 0;
+  let deflateQ = 0;
+  let starQ = 0;
+
+  for (var i = 0; i < parts.length; i++) {
+    const pair = parts[i].split(';q=');
+    const token = pair[0].trim().toLowerCase();
+    let q = 1;
+    if (pair[1] !== undefined) {
+      q = parseFloat(pair[1]);
+      if (isNaN(q)) q = 0;
+    }
+    if (q <= 0) continue;
+    if (token === 'gzip' || token === 'x-gzip') gzipQ = Math.max(gzipQ, q);
+    else if (token === 'deflate') deflateQ = Math.max(deflateQ, q);
+    else if (token === '*') starQ = Math.max(starQ, q);
+  }
+
+  /* nothing explicitly named but * is present → map * onto what we support */
+  if (gzipQ === 0 && deflateQ === 0 && starQ > 0) gzipQ = starQ;
+
+  if (gzipQ > 0) return 'gzip';
+  if (deflateQ > 0) return 'deflate';
+  return null;
+}
+
+/* Compress once per request; the dev server has no cache worth a LRU here. */
+function compress(encoding, body) {
+  if (encoding === 'gzip') return zlib.gzipSync(body);
+  if (encoding === 'deflate') return zlib.deflateSync(body);
+  return body;
 }
 
 http
@@ -88,8 +172,34 @@ http
 
     fs.readFile(file, (err, data) => {
       if (err) return send(res, 404, 'Not found');
-      send(res, 200, data, {
-        'Content-Type': TYPES[path.extname(file).toLowerCase()] || 'application/octet-stream',
+
+      const ext = path.extname(file).toLowerCase();
+      const type = TYPES[ext] || 'application/octet-stream';
+      const etag = etagFor(data);
+
+      /* Revalidation first — a 304 carries no body and no encoding question.
+         Vary is still sent so shared caches key on Accept-Encoding. */
+      if (req.headers['if-none-match'] && etagMatches(req.headers['if-none-match'], etag)) {
+        return send(res, 304, null, { ETag: etag, Vary: 'Accept-Encoding' });
+      }
+
+      const encoding = pickEncoding(req.headers['accept-encoding'], data.length, COMPRESSIBLE[ext]);
+      if (!encoding) {
+        return send(res, 200, data, {
+          'Content-Type': type,
+          'Content-Length': String(data.length),
+          ETag: etag,
+          Vary: 'Accept-Encoding',
+        });
+      }
+
+      const compressed = compress(encoding, data);
+      send(res, 200, compressed, {
+        'Content-Type': type,
+        'Content-Encoding': encoding,
+        'Content-Length': String(compressed.length),
+        ETag: etag,
+        Vary: 'Accept-Encoding',
       });
     });
   })
