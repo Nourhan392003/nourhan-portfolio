@@ -67,6 +67,13 @@
   --radius: 12px;
   --max-width: 1140px;
   --nav-h: 64px;
+
+  /* display stack for the largest headings and the CTA watermark
+     (same family as the body — Inter is the only display face loaded) */
+  --font-display: 'Inter', system-ui, -apple-system, sans-serif;
+
+  /* film-grain texture, shared by the hero grid and the CTA footer */
+  --grain: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='160' height='160' filter='url(%23n)' opacity='0.7'/></svg>");
 }
 
 /* Light theme — soft lavender, cool white, pale blue. Colours only. */
@@ -2217,6 +2224,246 @@ a.contact-row:hover::before {
   text-align: center;
   color: var(--text-dim);
   font-size: 0.9rem;
+}
+
+/* ============================================================ */
+/* ============ Grand CTA footer ================================ */
+/* ============================================================ */
+/* The closing section on all public pages: a massive NOURHAN watermark,
+   a one-line manifesto headline, the CV pill and the bottom info bar.
+   Everything runs off the existing theme tokens — light mode needs no
+   overrides beyond two colour swaps (see the light block below).
+   The watermark is aria-hidden and pointer-events: none; the headline is
+   the h2; all real navigation lives in the info bar. */
+.cta-footer {
+  position: relative;
+  overflow: hidden;
+  border-top: 1px solid var(--border);
+  background:
+    radial-gradient(1200px 480px at 50% 0%, rgba(var(--accent-rgb), 0.10), transparent 62%),
+    linear-gradient(180deg, rgba(var(--bg-rgb), 0) 0%, rgba(var(--bg-deep-rgb), 0.55) 100%);
+  padding: clamp(88px, 12vw, 160px) 0 0;
+}
+
+/* subtle film grain, same source as the hero texture */
+.cta-footer::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: var(--grain);
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+/* 1 · Massive watermark — aria-hidden in the markup, non-interactive here */
+.cta-footer__watermark {
+  position: absolute;
+  left: 50%;
+  bottom: -0.16em;
+  transform: translateX(-50%);
+  font-family: var(--font-display);
+  font-size: clamp(96px, 22vw, 340px);
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  line-height: 0.8;
+  white-space: nowrap;
+  color: rgba(var(--text-rgb), 0.05);
+  user-select: none;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* 2 · Headline + CV pill */
+.cta-footer__hero {
+  position: relative;
+  z-index: 1;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 24px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 36px;
+}
+
+.cta-footer__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(40px, 6.4vw, 92px);
+  font-weight: 800;
+  line-height: 1.04;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  max-width: 16ch;
+}
+
+/* the last word (MEMORABLE.) carries the active accent glow in both themes */
+.cta-footer__title .accent-glow {
+  color: var(--accent);
+  text-shadow:
+    0 0 18px rgba(var(--accent-rgb), 0.45),
+    0 0 56px rgba(var(--accent-rgb), 0.22);
+}
+
+/* 3 · Download CV pill */
+.cta-footer__cta-row {
+  display: flex;
+  justify-content: center;
+}
+
+.cta-cv {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 34px;
+  border-radius: 999px;
+  border: 1px solid rgba(var(--accent-rgb), 0.4);
+  background: linear-gradient(135deg, rgba(var(--accent-rgb), 0.14), rgba(var(--accent-rgb), 0.05));
+  color: var(--text);
+  font-weight: 600;
+  font-size: 1rem;
+  text-decoration: none;
+  transition: transform 0.25s var(--ease-out-expo), border-color 0.25s, box-shadow 0.25s, background 0.25s;
+}
+
+.cta-cv:hover,
+.cta-cv:focus-visible {
+  transform: translateY(-2px);
+  border-color: rgba(var(--accent-rgb), 0.85);
+  box-shadow: 0 14px 40px rgba(var(--accent-rgb), 0.25);
+  background: linear-gradient(135deg, rgba(var(--accent-rgb), 0.22), rgba(var(--accent-rgb), 0.08));
+}
+
+.cta-cv:active {
+  transform: translateY(0);
+}
+
+.cta-cv svg {
+  width: 18px;
+  height: 18px;
+  flex: none;
+  transition: transform 0.25s var(--ease-out-expo);
+}
+
+.cta-cv:hover svg {
+  transform: translateY(2px);
+}
+
+/* 4 · Bottom info bar */
+.cta-footer__bar {
+  position: relative;
+  z-index: 1;
+  max-width: var(--max-width);
+  margin: 96px auto 0;
+  padding: 22px 24px;
+  border-top: 1px solid var(--border);
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 16px;
+  font-size: 0.88rem;
+  color: var(--text-dim);
+}
+
+.cta-footer__bar > * {
+  min-width: 0;
+  margin: 0;
+}
+
+.cta-footer__bar .cta-footer__copy {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cta-footer__bar .cta-footer__tagline {
+  white-space: nowrap;
+  letter-spacing: 0.18em;
+  font-size: 0.78rem;
+  font-weight: 500;
+}
+
+.cta-footer__bar .cta-footer__links {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.cta-footer__bar a {
+  color: var(--text-dim);
+  text-decoration: none;
+}
+
+.cta-footer__bar a:hover,
+.cta-footer__bar a:focus-visible {
+  color: var(--accent);
+}
+
+.cta-footer__bar .cta-footer__social {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  transition: color 0.2s, background 0.2s;
+}
+
+.cta-footer__bar .cta-footer__social:hover,
+.cta-footer__bar .cta-footer__social:focus-visible {
+  color: var(--accent);
+  background: rgba(var(--accent-rgb), 0.10);
+}
+
+.cta-footer__bar .cta-footer__social svg {
+  width: 17px;
+  height: 17px;
+}
+
+.cta-footer__bar .cta-footer__mail {
+  margin-left: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.86rem;
+}
+
+.cta-footer__bar .cta-footer__mail svg {
+  width: 16px;
+  height: 16px;
+  flex: none;
+  opacity: 0.85;
+}
+
+/* three columns → stacked rows on mobile, tagline drops first */
+@media (max-width: 760px) {
+  .cta-footer__bar {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    gap: 14px;
+    text-align: center;
+  }
+
+  .cta-footer__bar .cta-footer__copy {
+    white-space: normal;
+  }
+
+  .cta-footer__bar .cta-footer__tagline {
+    order: -1;
+  }
+}
+
+/* light theme: soften the watermark and the pill wash — two colour swaps,
+   everything else already resolves through the tokens */
+html[data-theme='light'] .cta-footer__watermark {
+  color: rgba(var(--text-rgb), 0.045);
+}
+
+html[data-theme='light'] .cta-cv {
+  background: linear-gradient(135deg, rgba(var(--accent-rgb), 0.10), rgba(var(--accent-rgb), 0.04));
 }
 
 /* ============================================================ */

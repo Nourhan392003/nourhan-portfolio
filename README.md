@@ -157,6 +157,8 @@ DevTools reports one expected 404 for the not-yet-created `config.js`.
 
 ## Content rules
 
+- The Grand CTA footer's **Download CV** pill points at `cv/nourhan-ashraf-cv.pdf` —
+  drop the real PDF at that path (or update the `href` on the three pages).
 - Real projects only: **TCG Vault / Hatartcg**, **Social Culture**.
 - No invented metrics, years, clients, testimonials, screenshots or links.
 - Real screenshots / profile photo: drop into `images/` or upload via the admin.
