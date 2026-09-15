@@ -1,0 +1,1161 @@
+/* ============================================================
+   nourhan-portfolio · admin dashboard styles (/admin.html)
+   Depends on design tokens defined in styles.css :root.
+   Public site styles are not affected by this file.
+   ============================================================ */
+
+/* ---------- Shell ---------- */
+
+.admin-body {
+  min-height: 100vh;
+  background:
+    radial-gradient(60% 40% at 85% -10%, rgba(167, 139, 250, 0.14), transparent 60%),
+    radial-gradient(50% 35% at 0% 110%, rgba(125, 211, 252, 0.08), transparent 60%),
+    var(--bg);
+  color: var(--text);
+}
+
+.a-side {
+  position: fixed;
+  inset: 0 auto 0 0;
+  width: 250px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 20px 16px;
+  background: var(--surface-2);
+  border-right: 1px solid var(--border);
+  z-index: 50;
+}
+
+.a-side__brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 8px 16px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 10px;
+}
+
+.a-side__logo {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  font-weight: 800;
+  font-size: 14px;
+  letter-spacing: 0.04em;
+  color: #F4F1FF;
+  background: linear-gradient(135deg, var(--accent-strong), var(--violet));
+  flex: none;
+}
+
+.a-side__brandtext { display: flex; flex-direction: column; line-height: 1.3; min-width: 0; }
+.a-side__name { font-weight: 700; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.a-side__tag { font-size: 11px; color: var(--text-dim); letter-spacing: 0.08em; text-transform: uppercase; }
+
+.a-side__nav { display: flex; flex-direction: column; gap: 4px; }
+
+.a-side__link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  color: var(--text-dim);
+  font-size: 14px;
+  font-weight: 500;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.a-side__link svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex: none;
+}
+
+.a-side__link:hover { background: rgba(255, 255, 255, 0.04); color: var(--text); }
+.a-side__link.is-active { background: rgba(167, 139, 250, 0.16); color: var(--accent); }
+
+.a-side__foot {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+
+.a-side__lang,
+.a-side__signout {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-dim);
+  padding: 8px 10px;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.a-side__lang:hover { border-color: var(--cyan); color: var(--cyan); }
+.a-side__signout:hover { border-color: var(--red); color: var(--red); }
+
+.a-side__user { display: flex; align-items: center; gap: 10px; min-width: 0; }
+
+.a-side__avatar {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: rgba(167, 139, 250, 0.2);
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 700;
+  flex: none;
+}
+
+.a-side__email {
+  font-size: 12px;
+  color: var(--text-dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.a-main {
+  margin-left: 250px;
+  padding: 28px 32px 80px;
+  max-width: 1200px;
+  min-width: 0;
+  box-sizing: border-box;
+  overflow-x: clip;
+}
+
+.a-center { display: flex; justify-content: center; padding-top: 12vh; }
+
+/* ---------- Overview header ---------- */
+
+.a-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 22px;
+}
+
+.a-header__eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--cyan);
+  margin-bottom: 2px;
+}
+
+.a-header__title { font-size: 26px; line-height: 1.2; margin: 0; }
+.a-header__sub { color: var(--text-dim); font-size: 14px; margin: 4px 0 0; }
+
+/* ---------- Stat cards ---------- */
+
+.a-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 22px;
+}
+
+.a-stat {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+}
+
+.a-stat__icon {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  flex: none;
+}
+
+.a-stat__icon svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.a-stat__num { display: block; font-size: 24px; font-weight: 800; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.a-stat__label { display: block; font-size: 12px; color: var(--text-dim); margin-top: 2px; }
+
+.a-stat--total .a-stat__icon { background: rgba(167, 139, 250, 0.15); color: var(--violet); }
+.a-stat--published .a-stat__icon { background: rgba(94, 234, 212, 0.14); color: var(--green); }
+.a-stat--draft .a-stat__icon { background: rgba(196, 181, 253, 0.14); color: var(--yellow); }
+.a-stat--featured .a-stat__icon { background: rgba(196, 181, 253, 0.14); color: var(--accent); }
+
+/* ---------- Panels ---------- */
+
+.a-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 22px;
+  margin-bottom: 22px;
+}
+
+.a-panel__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.a-panel__title { font-size: 18px; margin: 0; }
+.a-panel__sub { color: var(--text-dim); font-size: 13px; margin: 2px 0 0; }
+
+.a-toolbar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+.a-input,
+.a-select {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  padding: 9px 12px;
+  font: inherit;
+  font-size: 14px;
+}
+
+.a-input:focus,
+.a-select:focus { outline: 2px solid var(--accent-strong); outline-offset: 1px; }
+
+.a-search { min-width: 220px; }
+.a-count { color: var(--text-dim); font-size: 13px; margin: -6px 0 12px; }
+
+/* ---------- Table ---------- */
+
+.a-table-wrap { overflow-x: auto; }
+
+.a-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+
+.a-table th,
+.a-table td {
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+
+[dir="rtl"] .a-table th,
+[dir="rtl"] .a-table td { text-align: right; }
+
+.a-table th {
+  color: var(--text-dim);
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+
+.a-table tbody tr:last-child td { border-bottom: none; }
+.a-table tbody tr:hover td { background: rgba(255, 255, 255, 0.02); }
+
+.a-thumb {
+  width: 46px;
+  height: 46px;
+  border-radius: 8px;
+  object-fit: cover;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  display: block;
+}
+
+.a-thumb--empty {
+  display: grid;
+  place-items: center;
+  color: var(--text-dim);
+  font-size: 16px;
+}
+
+.a-titlecell { display: flex; flex-direction: column; gap: 2px; min-width: 160px; }
+.a-titlecell strong { font-weight: 600; }
+.a-titlecell span { font-size: 12px; color: var(--text-dim); }
+
+.a-orderbtns { display: inline-flex; gap: 4px; }
+
+/* ---------- Badges ---------- */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 999px;
+  padding: 3px 10px;
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+
+.badge--published { color: var(--green); border-color: rgba(94, 234, 212, 0.55); background: rgba(94, 234, 212, 0.1); }
+.badge--draft { color: var(--yellow); border-color: rgba(196, 181, 253, 0.5); background: rgba(196, 181, 253, 0.08); }
+.badge--featured { color: var(--accent); border-color: rgba(196, 181, 253, 0.5); background: rgba(196, 181, 253, 0.1); }
+.badge--muted { color: var(--text-dim); }
+
+.badge.is-clickable { cursor: pointer; transition: filter 0.15s ease; }
+.badge.is-clickable:hover { filter: brightness(1.25); }
+
+/* ---------- Icon buttons ---------- */
+
+.admin-iconbtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  cursor: pointer;
+  padding: 5px 9px;
+  font: inherit;
+  font-size: 13px;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.admin-iconbtn svg {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.admin-iconbtn:hover { border-color: var(--accent); color: var(--accent); }
+.admin-iconbtn--danger:hover { border-color: var(--red); color: var(--red); }
+.admin-iconbtn:disabled { opacity: 0.4; cursor: default; }
+
+/* ---------- Legacy card / form primitives (login, setup, editor fields) ---------- */
+
+.admin-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px;
+  width: min(440px, calc(100vw - 40px));
+}
+
+.admin-title { margin: 0 0 6px; font-size: 22px; }
+.admin-sub { margin: 0 0 20px; color: var(--text-dim); font-size: 14px; }
+
+.admin-field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+.admin-field label { font-size: 13px; font-weight: 600; color: var(--text-dim); }
+
+.admin-field input,
+.admin-field textarea,
+.admin-field select {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  padding: 10px 12px;
+  font: inherit;
+  font-size: 14px;
+}
+
+.admin-field input:focus,
+.admin-field textarea:focus,
+.admin-field select:focus { outline: 2px solid var(--accent-strong); outline-offset: 1px; }
+
+.admin-actions { display: flex; gap: 12px; margin-top: 8px; flex-wrap: wrap; }
+
+.admin-error {
+  background: rgba(251, 113, 133, 0.12);
+  border: 1px solid var(--red);
+  color: var(--red);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 14px;
+  margin-bottom: 14px;
+}
+
+.admin-upload { margin-top: 8px; display: inline-flex; }
+
+/* ---------- Grouped editor sections ---------- */
+
+.a-fieldset {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 18px 18px 6px;
+  margin: 0 0 18px;
+}
+
+.a-fieldset legend {
+  padding: 2px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--cyan);
+}
+
+.a-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0 16px; }
+.a-grid--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.a-grid__full { grid-column: 1 / -1; }
+
+/* grid children default to min-width:auto, so one long unbreakable value
+   (a URL, a filename) can force the track wider than the column and clip
+   the form. min-width:0 lets tracks shrink and the input wrap instead. */
+.a-grid > *,
+.a-grid--2 > *,
+.a-grid--3 > * {
+  min-width: 0;
+}
+
+.admin-field,
+.admin-field label {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.admin-field input,
+.admin-field textarea,
+.admin-field select {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.admin-status.is-busy {
+  color: var(--accent);
+  background: rgba(167, 139, 250, 0.08);
+  border-color: rgba(167, 139, 250, 0.35);
+}
+
+/* ---------- Image upload control ---------- */
+
+.admin-media {
+  display: grid;
+  grid-template-columns: 148px minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.admin-media__preview {
+  position: relative;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 3 / 4;
+  border: 1px dashed var(--border);
+  border-radius: 12px;
+  background: var(--surface-2);
+  overflow: hidden;
+}
+
+.admin-media__preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.admin-media__empty {
+  padding: 10px;
+  text-align: center;
+  color: var(--text-dim);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.admin-media__meta {
+  min-width: 0;
+}
+
+.admin-media__name {
+  margin: 0 0 6px;
+  color: var(--text);
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+.admin-media__hint {
+  margin: 0 0 12px;
+  color: var(--text-dim);
+  font-size: 12px;
+}
+
+.admin-media__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* the real <input type="file"> stays in the DOM (focusable + accessible)
+   but is visually replaced by the styled label next to it */
+.admin-file-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.admin-filebtn {
+  cursor: pointer;
+}
+
+.admin-file-input:focus-visible + .admin-filebtn {
+  outline: 2px solid var(--accent-strong);
+  outline-offset: 2px;
+}
+
+/* ---------- Tech chips ---------- */
+
+.a-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+
+.a-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(167, 139, 250, 0.12);
+  border: 1px solid rgba(196, 181, 253, 0.35);
+  color: var(--accent);
+  border-radius: 999px;
+  padding: 2px 10px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* ---------- Media previews ---------- */
+
+.a-media-preview {
+  margin-top: 10px;
+  max-width: 300px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--surface-2);
+}
+
+.a-media-preview img { width: 100%; height: 150px; object-fit: cover; display: block; }
+
+.a-media-preview__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 10px;
+  border-top: 1px solid var(--border);
+}
+
+.a-media-preview__name {
+  font-size: 12px;
+  color: var(--text-dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.a-media-preview__btns { display: inline-flex; gap: 6px; flex: none; }
+
+.a-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.a-gallery__item {
+  position: relative;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  aspect-ratio: 4 / 3;
+  background: var(--surface-2);
+}
+
+.a-gallery__item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+.a-gallery__remove {
+  position: absolute;
+  top: 4px;
+  inset-inline-end: 4px;
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: 50%;
+  background: rgba(8, 11, 27, 0.75);
+  color: #F4F1FF;
+  font-size: 12px;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.a-gallery__remove:hover { background: var(--red); }
+
+.a-gallery__tag {
+  position: absolute;
+  bottom: 4px;
+  inset-inline-start: 4px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: rgba(8, 11, 27, 0.75);
+  color: var(--text-dim);
+  border-radius: 4px;
+  padding: 1px 5px;
+}
+
+/* ---------- Modal ---------- */
+
+.admin-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 11, 27, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 16px;
+}
+
+.admin-modal {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  max-width: 420px;
+  width: 100%;
+}
+
+.admin-modal h3 { margin: 0 0 8px; }
+.admin-modal p { color: var(--text-dim); margin: 0 0 18px; font-size: 14px; }
+
+.btn--danger { background: var(--red); color: #F4F1FF; }
+.btn--danger:hover { filter: brightness(1.1); }
+
+/* ---------- List editors (Services, Skills) ---------- */
+
+.admin-count {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  color: var(--text-dim);
+  margin-inline-start: 6px;
+  vertical-align: middle;
+}
+
+.admin-list {
+  list-style: none;
+  margin: 0 0 18px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.admin-list__row {
+  display: grid;
+  grid-template-columns: 62px 40px minmax(0, 1fr) 74px 86px auto;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface-2);
+}
+
+/* a hidden row stays visible here so it can always be switched back on */
+.admin-list__row.is-hidden-row {
+  border-style: dashed;
+  opacity: 0.72;
+}
+
+.admin-list__order {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.admin-list__order .admin-iconbtn {
+  width: 24px;
+  height: 24px;
+  font-size: 12px;
+  line-height: 1;
+}
+
+.admin-list__order .admin-iconbtn[disabled] {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.admin-list__pos {
+  min-width: 16px;
+  text-align: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--text-dim);
+}
+
+.admin-list__icon {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  color: var(--accent);
+  border: 1px solid rgba(167, 139, 250, 0.28);
+  border-radius: 9px;
+  background: rgba(167, 139, 250, 0.06);
+}
+
+.admin-list__icon-svg,
+.admin-list__icon svg {
+  width: 18px;
+  height: 18px;
+  display: block;
+}
+
+.admin-list__main {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.admin-list__title {
+  font-weight: 600;
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+.admin-list__meta {
+  font-size: 12px;
+  color: var(--text-dim);
+  overflow-wrap: anywhere;
+}
+
+.admin-list__state {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+
+.admin-list__row.is-hidden-row .admin-list__state { color: var(--yellow); }
+
+.admin-list__toggle { white-space: nowrap; }
+
+.admin-list__toggle-text { font-size: 12px; color: var(--text-dim); }
+
+.admin-list__actions {
+  display: inline-flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.admin-list__actions .btn {
+  padding: 7px 12px;
+  font-size: 12px;
+}
+
+@media (max-width: 900px) {
+  .admin-list__row {
+    grid-template-columns: 56px minmax(0, 1fr);
+    grid-template-areas:
+      'order main'
+      'icon  actions';
+    row-gap: 10px;
+  }
+  .admin-list__order { grid-area: order; }
+  .admin-list__icon { grid-area: icon; }
+  .admin-list__main { grid-area: main; }
+  .admin-list__actions { grid-area: actions; justify-content: flex-start; flex-wrap: wrap; }
+  .admin-list__state,
+  .admin-list__toggle { justify-self: start; }
+}
+
+.admin-form-card {
+  background: var(--surface-2);
+  padding: 18px 18px 0;
+}
+
+.admin-form-title {
+  margin: 0 0 16px;
+  font-size: 0.95rem;
+  color: var(--accent);
+  letter-spacing: 0.02em;
+}
+
+.admin-icon-preview {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: rgba(8, 11, 27, 0.4);
+  color: var(--accent);
+}
+
+.admin-icon-preview .stack-item__icon svg {
+  width: 20px;
+  height: 20px;
+  display: block;
+}
+
+.a-field-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-dim);
+}
+
+/* ---------- Content panels ---------- */
+
+/* the panels are a child of .a-main, so the sidebar offset and the
+   min-width:0 / box-sizing rules above already apply to them */
+#content-panels {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.a-panel--content {
+  min-height: 200px;
+}
+
+/* nothing inside a panel may force its track wider than the column */
+.a-panel,
+.a-panel--content,
+.a-fieldset,
+.admin-media,
+.admin-media__meta,
+.admin-form-actions,
+#content-panels {
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.a-panel--content .a-panel__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.a-panel--content .a-panel__title {
+  margin: 4px 0 0;
+  font-size: 1.1rem;
+}
+
+.a-panel--content .a-panel__sub {
+  margin: 4px 0 0;
+  color: var(--text-dim);
+  font-size: 0.92rem;
+}
+
+#content-ready {
+  margin: 16px 0;
+  color: var(--text-dim);
+  font-size: 0.95rem;
+}
+
+.admin-status {
+  margin: 8px 0 14px;
+  padding: 10px 14px;
+  color: var(--green);
+  background: rgba(94, 234, 212, 0.08);
+  border: 1px solid rgba(94, 234, 212, 0.3);
+  border-radius: 8px;
+  font-size: 0.95rem;
+}
+
+.admin-status[hidden],
+.admin-error[hidden] {
+  display: none;
+}
+
+.a-grid--2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.a-grid--3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+/* ---------- Content editor action bar ---------- */
+
+/* Stays reachable while scrolling a long editor. It lives inside .a-main,
+   which already starts after the 250px sidebar, so it can never be covered
+   by it — no negative offsets or absolute positioning involved. */
+.admin-form-actions {
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 18px 0 24px;
+  margin-top: 24px;
+  border-top: 1px solid rgba(167, 139, 250, 0.22);
+  background: linear-gradient(
+    to bottom,
+    rgba(8, 11, 27, 0),
+    rgba(8, 11, 27, 0.98) 28%
+  );
+}
+
+.admin-form-actions .btn {
+  min-width: 140px;
+  min-height: 46px;
+  justify-content: center;
+}
+
+/* form controls inherit the panel's type scale */
+.admin-panel input,
+.admin-panel textarea,
+.admin-panel select,
+.admin-panel button {
+  font: inherit;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.admin-hint {
+  margin: 0 0 10px;
+  color: var(--text-dim);
+  font-size: 0.9rem;
+}
+
+.admin-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.admin-checkbox input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--accent);
+}
+
+.a-panel__tools {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* the sidebar links are display:flex, which would otherwise beat the
+   default [hidden] { display:none } and leave a hidden tab visible */
+.a-side__link[hidden],
+.a-panel[hidden],
+.admin-field[hidden],
+.btn[hidden],
+.admin-media__actions [hidden] {
+  display: none !important;
+}
+
+/* unsaved-changes indicator on the content editors */
+.admin-dirty {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--yellow);
+  border: 1px solid rgba(196, 181, 253, 0.45);
+  border-radius: 999px;
+  padding: 4px 10px;
+  white-space: nowrap;
+}
+
+.admin-dirty[hidden] {
+  display: none;
+}
+
+/* ---------- Toasts ---------- */
+
+#toast-root {
+  position: fixed;
+  bottom: 20px;
+  inset-inline-end: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 110;
+}
+
+.admin-toast {
+  background: var(--surface);
+  border: 1px solid var(--green);
+  color: var(--text);
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 14px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+  animation: a-toast-in 0.25s var(--ease-out-expo);
+}
+
+.admin-toast--error { border-color: var(--red); }
+
+@keyframes a-toast-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ---------- Mobile FAB ---------- */
+
+.a-fab {
+  display: none;
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  border: none;
+  background: var(--accent-strong);
+  color: #F4F1FF;
+  font-size: 26px;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 10px 26px rgba(167, 139, 250, 0.4);
+  z-index: 60;
+}
+
+.a-fab:hover { filter: brightness(1.1); }
+
+.a-fab[hidden] { display: none; }
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 1080px) {
+  .a-stats { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* stack the editor fields before they get narrow enough to clip */
+@media (max-width: 900px) {
+  .a-grid,
+  .a-grid--2,
+  .a-grid--3 {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .a-grid__full { grid-column: auto; }
+}
+
+@media (max-width: 560px) {
+  .admin-media {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .admin-media__preview {
+    aspect-ratio: 4 / 3;
+  }
+}
+
+@media (max-width: 960px) {
+  .a-side {
+    inset: 0 0 auto 0;
+    width: auto;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px 10px;
+    padding: 10px 14px;
+  }
+
+  .a-side__brand { border-bottom: none; margin-bottom: 0; padding: 0; }
+  .a-side__logo { width: 34px; height: 34px; font-size: 12px; }
+  .a-side__tag { display: none; }    .a-side__nav {
+      flex-direction: row;
+      flex-wrap: wrap;
+      margin-inline-start: 6px;
+      min-width: 0;
+    }
+    .a-side__link { padding: 8px 10px; font-size: 13px; }
+
+  .a-side__foot { margin-top: 0; margin-inline-start: auto; flex-direction: row; align-items: center; border-top: none; padding-top: 0; }
+  .a-side__user { display: none; }
+  .a-side__lang, .a-side__signout { padding: 6px 10px; }
+
+  .a-main { margin-left: 0; padding: 84px 16px 90px; }
+  .a-fab { display: grid; place-items: center; }
+}
+
+@media (max-width: 640px) {
+  .a-side__brandtext { display: none; }
+  .a-side__foot { gap: 6px; }
+
+  .a-stats { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .a-stat { padding: 12px 14px; }
+  .a-stat__num { font-size: 20px; }
+
+  .a-grid, .a-grid--3 { grid-template-columns: 1fr; }
+
+  .a-panel { padding: 16px; }
+  .a-search { min-width: 0; flex: 1; }
+  .a-toolbar { width: 100%; }
+
+  .a-header { align-items: flex-start; flex-direction: column; }
+  .a-header .btn { display: none; } /* FAB replaces it */
+
+  /* compact table: hide order column, keep essentials */
+  .a-table th:nth-child(1),
+  .a-table td:nth-child(1) { display: none; }
+}
+
+/* ---------- RTL ---------- */
+
+[dir="rtl"] .a-side { inset: 0 0 0 auto; border-right: none; border-left: 1px solid var(--border); }
+[dir="rtl"] .a-main { margin-left: 0; margin-right: 250px; }
+
+@media (max-width: 960px) {
+  [dir="rtl"] .a-main { margin-right: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-toast { animation: none; }
+}

@@ -1,0 +1,17 @@
+# Local runtime config (this project's Supabase URL + anon key).
+# config.example.js is committed as the template.
+config.js
+
+# Agent / editor scratch space: timestamped copies of files taken before edits.
+.freebuff/
+
+# Local logs (dev server output, preview logs).
+*.log
+server.log
+
+# Dependencies (this project has none, but never commit a stray install).
+node_modules/
+
+# OS noise
+Thumbs.db
+.DS_Store

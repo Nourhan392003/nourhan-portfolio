@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Content Security Policy — the XSS backstop for everything below.
+       Origins are the minimum this page actually needs:
+         · script  — self, the GSAP timeline on jsDelivr, Supabase
+         · style   — self plus Google Fonts ('unsafe-inline' is required for
+                     the inline style attributes the markup uses)
+         · font    — self plus the Google Fonts file host
+         · img     — self, data: (the CSS film grain), and https: (Supabase
+                     Storage covers, which live on a per-project host)
+         · connect — self plus Supabase REST and the contact form endpoint
+       There is no inline script anywhere on this page by design: the
+       head bootstrap lives in js/boot.js, so 'unsafe-inline' is NOT needed
+       for scripts and is deliberately absent.
+       NOTE: frame-ancestors is ignored when a policy arrives via <meta>;
+       clickjacking protection must be sent as a real HTTP header by the
+       host (see README → Security headers). -->
+  <meta
+    http-equiv="Content-Security-Policy"
+    content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net https://*.supabase.co; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co https://formspree.io; base-uri 'self'; object-src 'none'"
+  />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+
+  <meta name="description" content="Nourhan Ashraf — frontend developer building clear, responsive digital experiences: e-commerce storefronts and modern brand websites." />
+  <title>Nourhan Ashraf — Frontend Developer &amp; E-Commerce Specialist</title>
+  <link rel="icon" type="image/svg+xml" href="images/favicon.svg" />
+
+  <!-- Social share cards -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Nourhan Ashraf — Frontend Developer &amp; E-Commerce Specialist" />
+  <meta property="og:description" content="Frontend developer building clear, responsive digital experiences: e-commerce storefronts and modern brand websites." />
+  <meta property="og:locale" content="en_US" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Nourhan Ashraf — Frontend Developer &amp; E-Commerce Specialist" />
+  <meta name="twitter:description" content="Frontend developer building clear, responsive digital experiences: e-commerce storefronts and modern brand websites." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <!-- bump the ?v= when styles or the behaviour script change, so browsers
+       (and the local preview) pick the new files up instead of a cached copy -->
+  <link rel="stylesheet" href="styles.css?v=25" />
+  <!-- Before paint: js class, saved theme, ?motion override. Extracted from
+       the head into js/boot.js so the CSP above can keep script-src free of
+       'unsafe-inline'. Same parser-blocking position, same timing. -->
+  <script src="js/boot.js?v=1"></script>
+</head>
+  <body>
+    <!-- Navigation -->
+    <header class="nav" id="nav">
+      <div class="container nav__inner">
+        <a href="#home" class="nav__logo">Nourhan.dev</a>
+        <nav class="nav__links" aria-label="Primary">
+          <a href="#services">Services</a>
+          <a href="#experience">Experience</a>
+          <a href="#projects">Projects</a>
+          <a href="#about">About</a>
+          <a href="#contact">Contact</a>
+          <button type="button" class="theme-toggle" data-theme-toggle
+                  aria-label="Switch to light mode" title="Switch to light mode">
+            <span class="theme-toggle__icon" aria-hidden="true">&#9790;</span>
+          </button>
+        </nav>
+        <button class="nav__toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </header>
+
+    <main>
+      <!-- ===================== Hero ===================== -->
+      <section class="hero" id="home">
+        <!-- Background layers -->
+        <div class="hero__bg" aria-hidden="true">
+          <div class="hero__bg-grid"></div>
+          <div class="hero__bg-glow hero__bg-glow--violet" aria-hidden="true"></div>
+          <div class="hero__bg-glow hero__bg-glow--cyan" aria-hidden="true"></div>
+          <div class="hero__bg-glow hero__bg-glow--amber" aria-hidden="true"></div>
+        </div>
+
+        <!-- 5 decorative butterflies — deterministic positions (see .butterfly--1..5)
+             Layer model, each on its own element so transforms never fight:
+               .butterfly        → CSS flight drift (driftA…driftE)
+               .butterfly-flight → pointer reaction, written by script.js
+               .butterfly-wings  → wing flap around the body axis (60, 48)
+             Each butterfly carries its own gradient + glow filter ids. They sit
+             above the background, below the text, and never take pointer events. -->
+        <div class="butterflies" aria-hidden="true">
+          <svg class="butterfly butterfly--1" viewBox="0 0 120 90" aria-hidden="true" focusable="false">
+            <defs>
+              <linearGradient id="wingGradient1" x1="0" x2="1">
+                <stop offset="0%" stop-color="#e4daff" />
+                <stop offset="55%" stop-color="#a78bfa" />
+                <stop offset="100%" stop-color="#453a9e" />
+              </linearGradient>
+              <filter id="butterflyGlow1" x="-40%" y="-40%" width="180%" height="180%">
+                <feGaussianBlur stdDeviation="1.8" result="blur" />
+                <feMerge>
+                  <feMergeNode in="blur" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+            </defs>
+            <g class="butterfly-flight">
+              <g class="butterfly-wings" filter="url(#butterflyGlow1)">
+                <path class="wing-left" d="M59 43 C35 5 4 9 10 38 C13 56 35 62 57 48 Z" fill="url(#wingGradient1)" />
+                <path class="wing-right" d="M61 43 C85 5 116 9 110 38 C107 56 85 62 63 48 Z" fill="url(#wingGradient1)" />
+                <path class="wing-left-lower" d="M57 49 C35 53 24 73 38 77 C50 80 58 62 59 51 Z" fill="#6d4edb" />
+                <path class="wing-right-lower" d="M63 49 C85 53 96 73 82 77 C70 80 62 62 61 51 Z" fill="#6d4edb" />
+              </g>
+              <ellipse class="butterfly-body" cx="60" cy="48" rx="4" ry="20" fill="#241a45" />
+              <circle cx="57" cy="27" r="3" fill="#241a45" />
+              <circle cx="63" cy="27" r="3" fill="#241a45" />
+              <path d="M58 29 C48 17 43 17 39 18" fill="none" stroke="#241a45" stroke-width="1.5" />
+              <path d="M62 29 C72 17 77 17 81 18" fill="none" stroke="#241a45" stroke-width="1.5" />
+            </g>
+          </svg>
+          <svg class="butterfly butterfly--2" viewBox="0 0 120 90" aria-hidden="true" focusable="false">
+            <defs>
+              <linearGradient id="wingGradient2" x1="0" x2="1">
+                <stop offset="0%" stop-color="#e6f3ff" />
+                <stop offset="55%" stop-color="#7dd3fc" />
+                <stop offset="100%" stop-color="#2f68a8" />
+              </linearGradient>
+              <filter id="butterflyGlow2" x="-40%" y="-40%" width="180%" height="180%">
+                <feGaussianBlur stdDeviation="1.8" result="blur" />
+                <feMerge>
+                  <feMergeNode in="blur" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+            </defs>
+            <g class="butterfly-flight">
+              <g class="butterfly-wings" filter="url(#butterflyGlow2)">
+                <path class="wing-left" d="M59 43 C35 5 4 9 10 38 C13 56 35 62 57 48 Z" fill="url(#wingGradient2)" />
+                <path class="wing-right" d="M61 43 C85 5 116 9 110 38 C107 56 85 62 63 48 Z" fill="url(#wingGradient2)" />
+                <path class="wing-left-lower" d="M57 49 C35 53 24 73 38 77 C50 80 58 62 59 51 Z" fill="#357ac8" />
+                <path class="wing-right-lower" d="M63 49 C85 53 96 73 82 77 C70 80 62 62 61 51 Z" fill="#357ac8" />
+              </g>
+              <ellipse class="butterfly-body" cx="60" cy="48" rx="4" ry="20" fill="#241a45" />
+              <circle cx="57" cy="27" r="3" fill="#241a45" />
+              <circle cx="63" cy="27" r="3" fill="#241a45" />
+              <path d="M58 29 C48 17 43 17 39 18" fill="none" stroke="#241a45" stroke-width="1.5" />
+              <path d="M62 29 C72 17 77 17 81 18" fill="none" stroke="#241a45" stroke-width="1.5" />
+            </g>
+          </svg>
+          <svg class="butterfly butterfly--3" viewBox="0 0 120 90" aria-hidden="true" focusable="false">
+            <defs>
+              <linearGradient id="wingGradient3" x1="0" x2="1">
+                <stop offset="0%" stop-color="#dcd1ff" />
+                <stop offset="55%" stop-color="#8b6ff0" />
+                <stop offset="100%" stop-color="#3b2f8c" />
+              </linearGradient>
+              <filter id="butterflyGlow3" x="-40%" y="-40%" width="180%" height="180%">
+                <feGaussianBlur stdDeviation="1.8" result="blur" />
+                <feMerge>
+                  <feMergeNode in="blur" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+            </defs>
+            <g class="butterfly-flight">
+              <g class="butterfly-wings" filter="url(#butterflyGlow3)">
+                <path class="wing-left" d="M59 43 C35 5 4 9 10 38 C13 56 35 62 57 48 Z" fill="url(#wingGradient3)" />
+                <path class="wing-right" d="M61 43 C85 5 116 9 110 38 C107 56 85 62 63 48 Z" fill="url(#wingGradient3)" />
+                <path class="wing-left-lower" d="M57 49 C35 53 24 73 38 77 C50 80 58 62 59 51 Z" fill="#5b46c4" />
+                <path class="wing-right-lower" d="M63 49 C85 53 96 73 82 77 C70 80 62 62 61 51 Z" fill="#5b46c4" />
+              </g>
+              <ellipse class="butterfly-body" cx="60" cy="48" rx="4" ry="20" fill="#241a45" />
+              <circle cx="57" cy="27" r="3" fill="#241a45" />
+              <circle cx="63" cy="27" r="3" fill="#241a45" />
+              <path d="M58 29 C48 17 43 17 39 18" fill="none" stroke="#241a45" stroke-width="1.5" />
+              <path d="M62 29 C72 17 77 17 81 18" fill="none" stroke="#241a45" stroke-width="1.5" />
+            </g>
+          </svg>
+          <svg class="butterfly butterfly--4" viewBox="0 0 120 90" aria-hidden="true" focusable="false">
+            <defs>
+              <linearGradient id="wingGradient4" x1="0" x2="1">
+                <stop offset="0%" stop-color="#edf5ff" />
+                <stop offset="55%" stop-color="#8fd0f8" />
+                <stop offset="100%" stop-color="#35619e" />
+              </linearGradient>
+              <filter id="butterflyGlow4" x="-40%" y="-40%" width="180%" height="180%">
+                <feGaussianBlur stdDeviation="1.8" result="blur" />
+                <feMerge>
+                  <feMergeNode in="blur" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+            </defs>
+            <g class="butterfly-flight">
+              <g class="butterfly-wings" filter="url(#butterflyGlow4)">
+                <path class="wing-left" d="M59 43 C35 5 4 9 10 38 C13 56 35 62 57 48 Z" fill="url(#wingGradient4)" />
+                <path class="wing-right" d="M61 43 C85 5 116 9 110 38 C107 56 85 62 63 48 Z" fill="url(#wingGradient4)" />
+                <path class="wing-left-lower" d="M57 49 C35 53 24 73 38 77 C50 80 58 62 59 51 Z" fill="#4a86c9" />
+                <path class="wing-right-lower" d="M63 49 C85 53 96 73 82 77 C70 80 62 62 61 51 Z" fill="#4a86c9" />
+              </g>
+              <ellipse class="butterfly-body" cx="60" cy="48" rx="4" ry="20" fill="#241a45" />
+              <circle cx="57" cy="27" r="3" fill="#241a45" />
+              <circle cx="63" cy="27" r="3" fill="#241a45" />
+              <path d="M58 29 C48 17 43 17 39 18" fill="none" stroke="#241a45" stroke-width="1.5" />
+              <path d="M62 29 C72 17 77 17 81 18" fill="none" stroke="#241a45" stroke-width="1.5" />
+            </g>
+          </svg>
+          <svg class="butterfly butterfly--5" viewBox="0 0 120 90" aria-hidden="true" focusable="false">
+            <defs>
+              <linearGradient id="wingGradient5" x1="0" x2="1">
+                <stop offset="0%" stop-color="#d6c9ff" />
+                <stop offset="55%" stop-color="#7b5ce8" />
+                <stop offset="100%" stop-color="#2e2478" />
+              </linearGradient>
+              <filter id="butterflyGlow5" x="-40%" y="-40%" width="180%" height="180%">
+                <feGaussianBlur stdDeviation="1.8" result="blur" />
+                <feMerge>
+                  <feMergeNode in="blur" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+            </defs>
+            <g class="butterfly-flight">
+              <g class="butterfly-wings" filter="url(#butterflyGlow5)">
+                <path class="wing-left" d="M59 43 C35 5 4 9 10 38 C13 56 35 62 57 48 Z" fill="url(#wingGradient5)" />
+                <path class="wing-right" d="M61 43 C85 5 116 9 110 38 C107 56 85 62 63 48 Z" fill="url(#wingGradient5)" />
+                <path class="wing-left-lower" d="M57 49 C35 53 24 73 38 77 C50 80 58 62 59 51 Z" fill="#4b39a8" />
+                <path class="wing-right-lower" d="M63 49 C85 53 96 73 82 77 C70 80 62 62 61 51 Z" fill="#4b39a8" />
+              </g>
+              <ellipse class="butterfly-body" cx="60" cy="48" rx="4" ry="20" fill="#241a45" />
+              <circle cx="57" cy="27" r="3" fill="#241a45" />
+              <circle cx="63" cy="27" r="3" fill="#241a45" />
+              <path d="M58 29 C48 17 43 17 39 18" fill="none" stroke="#241a45" stroke-width="1.5" />
+              <path d="M62 29 C72 17 77 17 81 18" fill="none" stroke="#241a45" stroke-width="1.5" />
+            </g>
+          </svg>
+        </div>
+
+        <div class="container hero__inner">
+          <div class="hero__grid" data-hero-content>
+            <!-- Left · copy -->
+            <div class="hero__copy">
+              <p class="hero__eyebrow hero-eyebrow">
+                <span class="hero__eyebrow-star" aria-hidden="true">✦</span>
+                <span class="hero__eyebrow-text">Frontend Developer &amp; E-Commerce Specialist</span>
+              </p>
+
+              <!-- each line is wrapped in an overflow-hidden mask so the line
+                   can rise from below the mask on page load -->
+              <h1 class="hero__name hero__name--split">
+                <span class="hero__name-mask">
+                  <span class="hero__name-line hero-name-line">Nourhan</span>
+                </span>
+                <span class="hero__name-mask">
+                  <span class="hero__name-line hero__name-line--accent hero-name-line">Ashraf</span>
+                </span>
+              </h1>
+
+              <p class="hero__desc hero-desc">
+                <span class="hero__desc-line">
+                  I build clear, responsive web experiences — from e-commerce
+                  storefronts to modern brand websites.
+                </span>
+                <span class="hero__desc-line">
+                  Focused on storefront UI, content hierarchy, and purposeful
+                  interaction.
+                </span>
+              </p>
+
+              <!-- Rotating specialization typewriter line -->
+              <div class="hero__specialization hero-specialization">
+                <span class="hero__specialization-label" aria-hidden="true">specializing</span>
+                <span class="hero__specialization-text" role="text"></span>
+                <span class="hero__specialization-cursor" aria-hidden="true"></span>
+              </div>
+
+              <div class="hero__actions hero-actions">
+                <a href="#projects" class="btn btn--primary hero__cta">View Selected Work</a>
+                <a href="#contact" class="btn btn--ghost hero__cta">Let&rsquo;s Talk</a>
+              </div>
+
+              <p class="hero__availability hero-availability">
+                <span class="hero__availability-dot" aria-hidden="true"></span>
+                <span class="hero__availability-text">Open for freelance &amp; new projects</span>
+              </p>
+            </div>
+
+            <!-- Right · portrait -->
+            <div class="hero__visual">
+              <div class="hero__visual-glow" aria-hidden="true"></div>
+              <div class="hero__visual-frame">
+                <figure class="hero__frame" data-hero-image>
+                  <!-- Swap the portrait by replacing images/profile.jpg.
+                       script.js falls back to images/profile.jpeg and only then
+                       to the editorial placeholder below, so a missing file
+                       never leaves an empty frame. -->
+                  <img
+                    class="hero__photo hero-photo"
+                    id="hero-photo"
+                    src="images/profile.jpg"
+                    alt="Nourhan Ashraf — portrait"
+                    width="1086"
+                    height="1448"
+                    fetchpriority="high"
+                    decoding="async"
+                  />
+                  <div class="hero__placeholder" aria-hidden="true">
+                    <span class="hero__placeholder-grid"></span>
+                    <span class="hero__placeholder-mono">NA</span>
+                    <span class="hero__placeholder-caption">
+                      <span class="hero__placeholder-dot"></span>
+                      Portrait &middot; awaiting photo
+                    </span>
+                    <span class="hero__placeholder-tick hero__placeholder-tick--tl"></span>
+                    <span class="hero__placeholder-tick hero__placeholder-tick--br"></span>
+                  </div>
+                  <span class="hero__frame-edge" aria-hidden="true"></span>
+                </figure>
+              </div>
+            </div>
+          </div>
+
+          <p class="hero__scrollcue" aria-hidden="true">
+            <span class="hero__scrollcue-line"></span>
+            Scroll
+          </p>
+        </div>
+      </section>
+
+    <!-- ===================== 01 · Services ===================== -->
+    <section class="section" id="services">
+      <div class="container">
+        <header class="section__head">
+          <div class="section__label reveal-line">
+            <span class="section__num">( 01 )</span>
+            <span class="section__kicker">What I do /</span>
+            <span class="section__rule" aria-hidden="true"></span>
+            <span class="section__bracket">( Services )</span>
+          </div>
+          <h2 class="section__title reveal-line">Services</h2>
+          <p class="section__lead reveal-line">
+            Three focus areas, one standard: clear structure, responsive
+            layouts, and purposeful detail.
+          </p>
+        </header>
+
+        <!-- Hydrated from Supabase (public.services, visible rows only).
+             The articles below are the static fallback: they are used
+             whenever the read fails or returns nothing. -->
+        <div class="services" data-services-content>
+          <article class="service" data-reveal>
+            <span class="service__num" aria-hidden="true">( 01 )</span>
+            <div class="service__body">
+              <h3 class="service__title">E-Commerce Frontend</h3>
+              <p class="service__desc">
+                Storefront interfaces where products, collections, and checkout
+                paths stay clear on any screen size.
+              </p>
+            </div>
+            <ul class="service__caps">
+              <li>Product &amp; collection browsing</li>
+              <li>Storefront UI</li>
+              <li>Responsive shopping flows</li>
+            </ul>
+          </article>
+
+          <article class="service" data-reveal>
+            <span class="service__num" aria-hidden="true">( 02 )</span>
+            <div class="service__body">
+              <h3 class="service__title">Brand &amp; Agency Websites</h3>
+              <p class="service__desc">
+                Service-led websites that put the story and the structure before
+                the decoration — pages people can scan and trust.
+              </p>
+            </div>
+            <ul class="service__caps">
+              <li>Service-focused pages</li>
+              <li>Brand storytelling</li>
+              <li>Content hierarchy</li>
+            </ul>
+          </article>
+
+          <article class="service" data-reveal>
+            <span class="service__num" aria-hidden="true">( 03 )</span>
+            <div class="service__body">
+              <h3 class="service__title">Responsive UI &amp; Motion</h3>
+              <p class="service__desc">
+                Mobile-first layouts with purposeful interaction — motion that
+                guides attention instead of competing for it.
+              </p>
+            </div>
+            <ul class="service__caps">
+              <li>Mobile-first layouts</li>
+              <li>Modern interfaces</li>
+              <li>Purposeful animation</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== 02 · Experience ===================== -->
+    <section class="section section--alt" id="experience">
+      <div class="container">
+        <header class="section__head">
+          <div class="section__label reveal-line">
+            <span class="section__num">( 02 )</span>
+            <span class="section__kicker">Career &amp; experience /</span>
+            <span class="section__rule" aria-hidden="true"></span>
+            <span class="section__bracket">( Experience )</span>
+          </div>
+          <h2 class="section__title reveal-line">Experience</h2>
+          <p class="section__lead reveal-line">
+            Selected work and ongoing practice. Verified roles, dates, and
+            details will be added here.
+          </p>
+        </header>
+
+        <!-- data-reveal-rail draws the timeline rule progressively on scroll -->
+        <div class="xp" data-reveal-rail data-experience-content>
+          <!-- Honest, date-free entry describing current practice. -->
+          <article class="xp__item xp__item--practice" data-reveal>
+            <span class="xp__badge xp__badge--live"><span class="xp__badge-dot" aria-hidden="true"></span>Ongoing</span>
+            <h3 class="xp__role">Independent Frontend Practice</h3>
+            <p class="xp__meta">Self-directed &middot; Present</p>
+            <p class="xp__desc">
+              Selected web work and ongoing product-focused development —
+              building e-commerce storefronts and brand websites from structure
+              and interface to responsive implementation.
+            </p>
+          </article>
+
+          <!-- EDIT: replace this placeholder with a verified role.
+               Keep the structure: role, company · dates, short description. -->
+          <article class="xp__item xp__item--placeholder" data-reveal>
+            <span class="xp__badge">Placeholder</span>
+            <h3 class="xp__role">Role — to be added</h3>
+            <p class="xp__meta">Company or context &middot; Dates</p>
+            <p class="xp__desc">
+              A verified position will be listed here with real dates and a
+              short description of the work.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== 03 · Selected Projects ===================== -->
+    <section class="section" id="projects">
+      <div class="container">
+        <header class="section__head">
+          <div class="section__label reveal-line">
+            <span class="section__num">( 03 )</span>
+            <span class="section__kicker">Selected work /</span>
+            <span class="section__rule" aria-hidden="true"></span>
+            <span class="section__bracket">( Projects )</span>
+          </div>
+          <h2 class="section__title reveal-line">
+            Selected Projects
+            <span class="section__count" id="projects-count" hidden></span>
+          </h2>
+          <p class="section__lead reveal-line">
+            Published work, presented as focused case studies — managed from
+            the dashboard and shown here only once live.
+          </p>
+        </header>
+
+        <!-- Projects are rendered by js/projects.js from Supabase
+             (published only · featured first · then sort_order).
+             When nothing is published (or the backend is not configured),
+             an honest empty state is shown — there are no static
+             placeholder cards. -->
+        <div class="projects" id="projects-grid"></div>
+
+        <!-- Every published project, presented as its own case study -->
+        <div class="projects__more" data-reveal>
+          <a href="projects.html" class="projects-banner">
+            <span class="projects-banner__text">
+              <span class="projects-banner__title">View All Projects</span>
+              <span class="projects-banner__subtitle">Discover everything else I&rsquo;ve built</span>
+            </span>
+            <span class="projects-banner__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
+                   stroke-linecap="round" stroke-linejoin="round" focusable="false">
+                <path d="M7 17 17 7" />
+                <path d="M8.6 7H17v8.4" />
+              </svg>
+            </span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== 04 · About ===================== -->
+    <section class="section section--alt" id="about" data-about-content>
+      <div class="container">
+        <header class="section__head">
+          <div class="section__label reveal-line">
+            <span class="section__num">( 04 )</span>
+            <span class="section__kicker" data-about-label>Who I am /</span>
+            <span class="section__rule" aria-hidden="true"></span>
+            <span class="section__bracket">( About )</span>
+          </div>
+          <h2 class="section__title reveal-line" data-about-heading>About</h2>
+        </header>
+
+        <div class="about">
+          <div class="about__text">
+            <p class="about__statement" data-reveal>
+              I&rsquo;m a frontend developer focused on building clear,
+              responsive digital experiences&mdash;from e-commerce storefronts
+              to modern brand websites.
+            </p>
+            <p class="about__support" data-reveal>
+              My work covers storefront UI, content hierarchy, and mobile-first
+              implementation&mdash;with attention to structure, readability,
+              and purposeful interaction.
+            </p>
+            <!-- EDIT: focus labels — replace only with confirmed focus areas. -->
+            <ul class="about__facts" data-reveal>
+              <li>Storefront UI</li>
+              <li>Content hierarchy</li>
+              <li>Mobile-first layouts</li>
+            </ul>
+          </div>
+
+          <div class="about__card" data-reveal aria-hidden="true">
+            <div class="about__card-top">
+              <span class="dot dot--red"></span>
+              <span class="dot dot--yellow"></span>
+              <span class="dot dot--green"></span>
+            </div>
+            <!-- EDIT: keep this card honest — no unverified stack or claims. -->
+            <pre class="about__code"><code><span class="tok-k">const</span> developer = {
+  <span class="tok-p">name</span>: <span class="tok-s">'Nourhan Ashraf'</span>,
+  <span class="tok-p">role</span>: <span class="tok-s">'Frontend Developer &amp; E-Commerce'</span>,
+  <span class="tok-p">focus</span>: [<span class="tok-s">'Storefront UI'</span>, <span class="tok-s">'Brand sites'</span>, <span class="tok-s">'Responsive UI'</span>],
+  <span class="tok-p">hireable</span>: <span class="tok-b">true</span>
+};</code></pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== 05 · My Stack ===================== -->
+    <section class="section" id="stack">
+      <div class="container">
+        <header class="section__head">
+          <div class="section__label reveal-line">
+            <span class="section__num">( 05 )</span>
+            <span class="section__kicker">Tools &amp; tech /</span>
+            <span class="section__rule" aria-hidden="true"></span>
+            <span class="section__bracket">( Stack )</span>
+          </div>
+          <h2 class="section__title reveal-line">My Stack</h2>
+        </header>
+
+        <!-- Confirmed stack only. To add a technology, copy one
+             <li class="stack-item"> into the right category — icon first,
+             name directly beside it — and keep the list to tools that are
+             genuinely in use (no invented entries).
+
+             Icons are inline SVG so nothing is fetched at runtime: the
+             brands use the official Simple Icons (CC0) marks, the two
+             practices use a hand-drawn line mark. Every row is one
+             horizontal flex line, on desktop and mobile alike. -->
+        <!-- Hydrated from Supabase (public.skills, visible rows only),
+             grouped by category with the real icon beside every name.
+             The markup below is the static fallback. -->
+        <div class="stack" data-stack-content>
+          <div class="stack-cat">
+            <div class="stack-cat__head">
+              <h3 class="stack-cat__title">Frontend</h3>
+              <span class="stack-cat__num" aria-hidden="true">( 01 )</span>
+            </div>
+            <ul class="skills" aria-label="Frontend">
+              <li class="stack-item" data-scroll-item>
+                <span class="stack-item__icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="currentColor" focusable="false"><path d="M1.5 0h21l-1.91 21.563L11.977 24l-8.564-2.438L1.5 0zm7.031 9.75l-.232-2.718 10.059.003.23-2.622L5.412 4.41l.698 8.01h9.126l-.326 3.426-2.91.804-2.955-.81-.188-2.11H6.248l.33 4.171L12 19.351l5.379-1.443.744-8.157H8.531z" /></svg>
+                </span>
+                <span class="stack-item__name">HTML</span>
+              </li>
+              <li class="stack-item" data-scroll-item>
+                <span class="stack-item__icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="currentColor" focusable="false"><path d="M1.5 0h21l-1.91 21.563L11.977 24l-8.565-2.438L1.5 0zm17.09 4.413L5.41 4.41l.213 2.622 10.125.002-.255 2.716h-6.64l.24 2.573h6.182l-.366 3.523-2.91.804-2.956-.81-.188-2.11h-2.61l.29 3.855L12 19.288l5.373-1.53L18.59 4.414z" /></svg>
+                </span>
+                <span class="stack-item__name">CSS</span>
+              </li>
+              <li class="stack-item" data-scroll-item>
+                <span class="stack-item__icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="currentColor" focusable="false"><path d="M0 0h24v24H0V0zm22.034 18.276c-.175-1.095-.888-2.015-3.003-2.873-.736-.345-1.554-.585-1.797-1.14-.091-.33-.105-.51-.046-.705.15-.646.915-.84 1.515-.66.39.12.75.42.976.9 1.034-.676 1.034-.676 1.755-1.125-.27-.42-.404-.601-.586-.78-.63-.705-1.469-1.065-2.834-1.034l-.705.089c-.676.165-1.32.525-1.71 1.005-1.14 1.291-.811 3.541.569 4.471 1.365 1.02 3.361 1.244 3.616 2.205.24 1.17-.87 1.545-1.966 1.41-.811-.18-1.26-.586-1.755-1.336l-1.83 1.051c.21.48.45.689.81 1.109 1.74 1.756 6.09 1.666 6.871-1.004.029-.09.24-.705.074-1.65l.046.067zm-8.983-7.245h-2.248c0 1.938-.009 3.864-.009 5.805 0 1.232.063 2.363-.138 2.711-.33.689-1.18.601-1.566.48-.396-.196-.597-.466-.83-.855-.063-.105-.11-.196-.127-.196l-1.825 1.125c.305.63.75 1.172 1.324 1.517.855.51 2.004.675 3.207.405.783-.226 1.458-.691 1.811-1.411.51-.93.402-2.07.397-3.346.012-2.054 0-4.109 0-6.179l.004-.056z" /></svg>
+                </span>
+                <span class="stack-item__name">JavaScript</span>
+              </li>
+              <li class="stack-item" data-scroll-item>
+                <span class="stack-item__icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+                    <rect x="1.6" y="3.6" width="12.6" height="9.2" rx="1.8" />
+                    <path d="M8 12.8v3.4" />
+                    <path d="M5.4 16.2h5.2" />
+                    <rect x="15.1" y="8.4" width="7.3" height="11.6" rx="1.8" />
+                    <path d="M17.8 17.6h2" />
+                  </svg>
+                </span>
+                <span class="stack-item__name">Responsive Design</span>
+              </li>
+              <li class="stack-item" data-scroll-item>
+                <span class="stack-item__icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+                    <path d="M3.6 19.4C9.2 19.4 9.8 5.6 20.4 5.6" />
+                    <circle cx="3.6" cy="19.4" r="1.9" />
+                    <circle cx="20.4" cy="5.6" r="1.9" />
+                  </svg>
+                </span>
+                <span class="stack-item__name">UI Animation</span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="stack-cat">
+            <div class="stack-cat__head">
+              <h3 class="stack-cat__title">Tools &amp; Workflow</h3>
+              <span class="stack-cat__num" aria-hidden="true">( 02 )</span>
+            </div>
+            <ul class="skills" aria-label="Tools and workflow">
+              <li class="stack-item" data-scroll-item>
+                <span class="stack-item__icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="currentColor" focusable="false"><path d="M23.546 10.93L13.067.452c-.604-.603-1.582-.603-2.188 0L8.708 2.627l2.76 2.76c.645-.215 1.379-.07 1.889.441.516.515.658 1.258.438 1.9l2.658 2.66c.645-.223 1.387-.078 1.9.435.721.72.721 1.884 0 2.604-.719.719-1.881.719-2.6 0-.539-.541-.674-1.337-.404-1.996L12.86 8.955v6.525c.176.086.342.203.488.348.713.721.713 1.883 0 2.6-.719.721-1.889.721-2.609 0-.719-.719-.719-1.879 0-2.598.182-.18.387-.316.605-.406V8.835c-.217-.091-.424-.222-.6-.401-.545-.545-.676-1.342-.396-2.009L7.636 3.7.45 10.881c-.6.605-.6 1.584 0 2.189l10.48 10.477c.604.604 1.582.604 2.186 0l10.43-10.43c.605-.603.605-1.582 0-2.187" /></svg>
+                </span>
+                <span class="stack-item__name">Git</span>
+              </li>
+              <li class="stack-item" data-scroll-item>
+                <span class="stack-item__icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="currentColor" focusable="false"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" /></svg>
+                </span>
+                <span class="stack-item__name">GitHub</span>
+              </li>
+              <li class="stack-item" data-scroll-item>
+                <span class="stack-item__icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="currentColor" focusable="false"><path d="M23.15 2.587L18.21.21a1.494 1.494 0 0 0-1.705.29l-9.46 8.63-4.12-3.128a.999.999 0 0 0-1.276.057L.327 7.261A1 1 0 0 0 .326 8.74L3.899 12 .326 15.26a1 1 0 0 0 .001 1.479L1.65 17.94a.999.999 0 0 0 1.276.057l4.12-3.128 9.46 8.63a1.492 1.492 0 0 0 1.704.29l4.942-2.377A1.5 1.5 0 0 0 24 20.06V3.939a1.5 1.5 0 0 0-.85-1.352zm-5.146 14.861L10.826 12l7.178-5.448v10.896z" /></svg>
+                </span>
+                <span class="stack-item__name">VS Code</span>
+              </li>
+              <li class="stack-item" data-scroll-item>
+                <span class="stack-item__icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="currentColor" focusable="false"><path d="M15.852 8.981h-4.588V0h4.588c2.476 0 4.49 2.014 4.49 4.49s-2.014 4.491-4.49 4.491zM12.735 7.51h3.117c1.665 0 3.019-1.355 3.019-3.019s-1.355-3.019-3.019-3.019h-3.117V7.51zm0 1.471H8.148c-2.476 0-4.49-2.014-4.49-4.49S5.672 0 8.148 0h4.588v8.981zm-4.587-7.51c-1.665 0-3.019 1.355-3.019 3.019s1.354 3.02 3.019 3.02h3.117V1.471H8.148zm4.587 15.019H8.148c-2.476 0-4.49-2.014-4.49-4.49s2.014-4.49 4.49-4.49h4.588v8.98zM8.148 8.981c-1.665 0-3.019 1.355-3.019 3.019s1.355 3.019 3.019 3.019h3.117V8.981H8.148zM8.172 24c-2.489 0-4.515-2.014-4.515-4.49s2.014-4.49 4.49-4.49h4.588v4.441c0 2.503-2.047 4.539-4.563 4.539zm-.024-7.51a3.023 3.023 0 0 0-3.019 3.019c0 1.665 1.365 3.019 3.044 3.019 1.705 0 3.093-1.376 3.093-3.068v-2.97H8.148zm7.704 0h-.098c-2.476 0-4.49-2.014-4.49-4.49s2.014-4.49 4.49-4.49h.098c2.476 0 4.49 2.014 4.49 4.49s-2.014 4.49-4.49 4.49zm-.097-7.509c-1.665 0-3.019 1.355-3.019 3.019s1.355 3.019 3.019 3.019h.098c1.665 0 3.019-1.355 3.019-3.019s-1.355-3.019-3.019-3.019h-.098z" /></svg>
+                </span>
+                <span class="stack-item__name">Figma</span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="stack-cat">
+            <div class="stack-cat__head">
+              <h3 class="stack-cat__title">Backend / Services</h3>
+              <span class="stack-cat__num" aria-hidden="true">( 03 )</span>
+            </div>
+            <ul class="skills" aria-label="Backend and services">
+              <li class="stack-item" data-scroll-item>
+                <span class="stack-item__icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="currentColor" focusable="false"><path d="M11.9 1.036c-.015-.986-1.26-1.41-1.874-.637L.764 12.05C-.33 13.427.65 15.455 2.409 15.455h9.579l.113 7.51c.014.985 1.259 1.408 1.873.636l9.262-11.653c1.093-1.375.113-3.403-1.645-3.403h-9.642z" /></svg>
+                </span>
+                <span class="stack-item__name">Supabase</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== 06 · Testimonials (HIDDEN) ===================== -->
+    <!-- Keep `hidden` on this section until REAL, verified testimonials exist.
+         When ready: remove `hidden`, add each quote as a .testimonial card,
+         and double-check the wording with the client. -->
+    <section class="section section--alt section--testimonials" id="testimonials" hidden>
+      <div class="container">
+        <header class="section__head">
+          <div class="section__label">
+            <span class="section__num">( 06 )</span>
+            <span class="section__kicker">Kind words /</span>
+            <span class="section__rule" aria-hidden="true"></span>
+            <span class="section__bracket">( Testimonials )</span>
+          </div>
+          <h2 class="section__title">Testimonials</h2>
+        </header>
+        <div class="testimonials__empty">
+          <p>Client feedback coming soon.</p>
+          <p class="testimonials__note">
+            This section stays hidden from the public site until verified
+            testimonials are added.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== 07 · Contact ===================== -->
+    <section class="section" id="contact">
+      <div class="container">
+        <header class="section__head contact__head">
+          <div class="section__label reveal-line">
+            <span class="section__num">( 07 )</span>
+            <span class="section__kicker">Let&rsquo;s work together /</span>
+            <span class="section__rule" aria-hidden="true"></span>
+            <span class="section__bracket">( Contact )</span>
+          </div>
+        </header>
+
+        <!-- Wide two-column editorial layout: the copy and the real
+             contact methods on the left, the message form on the right. -->
+        <div class="contact" data-contact-content>
+          <div class="contact__intro">
+            <p class="contact__eyebrow reveal-line">
+              <span class="contact__eyebrow-dot" aria-hidden="true"></span>
+              Get in touch /
+            </p>
+            <h2 class="contact__title reveal-line">
+              Let&rsquo;s build something thoughtful.
+            </h2>
+            <p class="contact__desc reveal-line">
+              Have a project in mind or want to collaborate? Reach out on
+              WhatsApp, LinkedIn, or GitHub.
+            </p>
+
+            <!-- The real contact methods — no placeholders. Every row
+                 leads with a real inline SVG icon; nothing is typed as a
+                 letter-mark and nothing is fetched at runtime. Update a
+                 value here if a detail ever changes. -->
+            <div class="contact-rows">
+              <!-- WhatsApp -->
+              <a
+                class="contact-row"
+                data-reveal
+                href="https://wa.me/201011405879"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <span class="contact-row__icon">
+                  <svg class="contact-icon contact-icon--whatsapp" viewBox="0 0 24 24" aria-hidden="true">
+                    <path fill="currentColor" d="M20.5 3.5A11.8 11.8 0 0 0 12.1 0C5.6 0 .3 5.3.3 11.8c0 2.1.6 4.1 1.6 5.9L.2 24l6.5-1.7c1.8.9 3.7 1.3 5.6 1.3h.1c6.5 0 11.7-5.3 11.7-11.8 0-3.1-1.3-6.1-3.6-8.3Zm-8.4 18.1h-.1c-1.7 0-3.4-.5-4.9-1.3l-.4-.2-3.9 1 1-3.8-.3-.4a9.7 9.7 0 1 1 8.6 4.7Zm5.3-7.3c-.3-.2-1.8-.9-2.1-1-.3-.1-.5-.2-.7.2-.2.3-.8 1-.9 1.2-.2.2-.3.2-.6.1-1.6-.8-2.7-1.4-3.8-3.2-.3-.5.3-.5.8-1.6.1-.2.1-.4 0-.6-.1-.2-.7-1.7-.9-2.3-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.6.1-.9.4-.3.3-1.2 1.2-1.2 2.9 0 1.7 1.2 3.3 1.4 3.5.2.2 2.4 3.7 5.8 5.2 2.2 1 2.2.7 2.6.7.4 0 1.8-.7 2.1-1.4.3-.7.3-1.3.2-1.4-.1-.1-.3-.2-.5-.3Z" />
+                  </svg>
+                </span>
+                <span class="contact-row__label">WhatsApp</span>
+                <span class="contact-row__value">01011405879</span>
+                <span class="contact-row__arrow" aria-hidden="true">&nearr;</span>
+              </a>
+
+              <!-- Phone — the tel: link dials straight from a phone -->
+              <a
+                class="contact-row"
+                data-reveal
+                href="tel:+201011405879"
+              >
+                <span class="contact-row__icon">
+                  <svg class="contact-icon contact-icon--phone" viewBox="0 0 24 24" aria-hidden="true">
+                    <path fill="currentColor" d="M6.6 2.8 9 2.2c.7-.2 1.4.2 1.7.9l1.2 2.9c.3.6.1 1.3-.4 1.7L10 8.9a15.8 15.8 0 0 0 5.1 5.1l1.2-1.5c.4-.5 1.1-.7 1.7-.4l2.9 1.2c.7.3 1.1 1 .9 1.7l-.6 2.4c-.2.8-.9 1.3-1.7 1.3C10.8 18.7 5.3 13.2 5.3 6.5c0-.8.5-1.5 1.3-1.7Z" />
+                  </svg>
+                </span>
+                <span class="contact-row__label">Phone</span>
+                <span class="contact-row__value">01011405879</span>
+                <span class="contact-row__arrow" aria-hidden="true">&nearr;</span>
+              </a>
+
+              <!-- LinkedIn -->
+              <a
+                class="contact-row"
+                data-reveal
+                href="https://www.linkedin.com/in/nourhan-ashraf-a1a503272"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <span class="contact-row__icon">
+                  <svg class="contact-icon contact-icon--linkedin" viewBox="0 0 24 24" aria-hidden="true">
+                    <path fill="currentColor" d="M5.2 3.5A2.5 2.5 0 1 1 5.2 8a2.5 2.5 0 0 1 0-4.5ZM3.1 9.7h4.2V21H3.1V9.7Zm6.8 0h4v1.5h.1c.6-1.1 2-1.9 3.9-1.9 4.2 0 5 2.7 5 6.2V21h-4.2v-4.9c0-1.2 0-2.8-1.7-2.8s-2 1.3-2 2.7V21H9.9V9.7Z" />
+                  </svg>
+                </span>
+                <span class="contact-row__label">LinkedIn</span>
+                <span class="contact-row__value">Connect on LinkedIn</span>
+                <span class="contact-row__arrow" aria-hidden="true">&nearr;</span>
+              </a>
+
+              <!-- GitHub -->
+              <a
+                class="contact-row"
+                data-reveal
+                href="https://github.com/Nourhan392003"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <span class="contact-row__icon">
+                  <svg class="contact-icon contact-icon--github" viewBox="0 0 24 24" aria-hidden="true">
+                    <path fill="currentColor" d="M12 .7A11.3 11.3 0 0 0 8.4 22.9c.6.1.8-.3.8-.6v-2.2c-3.1.7-3.8-1.3-3.8-1.3-.5-1.3-1.3-1.6-1.3-1.6-1-.7.1-.7.1-.7 1.1.1 1.7 1.1 1.7 1.1 1 .1.7 1.9 2.8 1.9.8 0 1.4-.3 1.8-.7.1-.7.3-1.1.5-1.4-2.5-.3-5.1-1.3-5.1-5.6 0-1.2.4-2.2 1.1-3-.1-.3-.5-1.4.1-2.9 0 0 .9-.3 3 1.1a10.5 10.5 0 0 1 5.5 0c2.1-1.4 3-1.1 3-1.1.6 1.5.2 2.6.1 2.9.7.8 1.1 1.8 1.1 3 0 4.3-2.6 5.3-5.1 5.6.4.4.7 1.1.7 2.2v3.3c0 .3.2.7.8.6A11.3 11.3 0 0 0 12 .7Z" />
+                  </svg>
+                </span>
+                <span class="contact-row__label">GitHub</span>
+                <span class="contact-row__value">github.com/Nourhan392003</span>
+                <span class="contact-row__arrow" aria-hidden="true">&nearr;</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- Right · the message form. A valid submission is POSTed to the
+               Formspree-compatible endpoint in config.js when one is set;
+               with no endpoint configured it hands the message to the
+               visitor's own mail client, prefilled and addressed. Every
+               message the visitor reads is written by the script — the page
+               never claims a delivery it did not make. -->
+          <div class="contact__panel">
+            <form class="contact-form" id="contact-form" novalidate>
+              <!-- Anti-spam honeypot. No human can see it (display:none) or
+                   reach it (tabindex="-1"), and it is hidden from assistive
+                   tech, so a value here can only come from a script filling
+                   every field it finds. The handler silences submissions
+                   that trip it — no message, no request, no signal back. -->
+              <input
+                type="text"
+                name="_hp_company"
+                style="display: none !important"
+                tabindex="-1"
+                autocomplete="off"
+                aria-hidden="true"
+              />
+
+              <label for="contact-email">Email Address</label>
+              <input
+                id="contact-email"
+                name="email"
+                type="email"
+                autocomplete="email"
+                placeholder="Enter your email"
+                required
+              />
+
+              <label for="contact-message">How can I help?</label>
+              <textarea
+                id="contact-message"
+                name="message"
+                rows="6"
+                maxlength="500"
+                aria-describedby="contact-message-count-label"
+                placeholder="Tell me a little about your project"
+                required
+              ></textarea>
+
+              <!-- Live length feedback for the 500-character message limit.
+                   The visible text is the counter; the visually hidden span
+                   carries the full sentence for screen readers and is the
+                   live region the textarea points at with aria-describedby. -->
+              <p class="contact-form__counter" id="contact-message-counter">
+                <span class="contact-form__counter-count" id="contact-message-count">0 / 500</span>
+                <span class="contact-form__counter-label" id="contact-message-count-label" role="status" aria-live="polite">Message length: 0 of 500 characters</span>
+              </p>
+
+              <button type="submit" class="contact-form__submit">
+                <span>Send Message</span>
+                <span aria-hidden="true">&nearr;</span>
+              </button>
+
+              <p class="contact-form__status" id="contact-form-status" role="status" aria-live="polite"></p>
+
+              <!-- Shown when the page cannot send the message itself — the
+                   direct route to the same inbox, always a real link. -->
+              <p class="contact-form__fallback" id="contact-form-fallback" hidden>
+                <a href="mailto:nourhanagag392003@gmail.com?subject=Portfolio%20Inquiry"
+                  >Or email me directly: nourhanagag392003@gmail.com</a
+                >
+              </p>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer class="footer" data-footer-content>
+    <div class="container footer__inner">
+      <p class="footer__copyright"><span class="footer__copyright-text" data-footer-copyright>©</span> <span id="year" class="footer__year"></span> <span class="footer__name" data-footer-name>Nourhan Ashraf</span></p>
+    </div>
+  </footer>
+
+  <!-- Floating actions — a direct WhatsApp chat plus a back-to-top control.
+       Both are real controls (a link and a button); the back-to-top button
+       stays hidden until the page has scrolled past the hero — see script.js.
+       The WhatsApp anchor carries the same number as the contact section and
+       is kept in sync with the configured value when that loads. -->
+  <div class="fab-stack" data-fab-stack>
+    <button type="button" class="fab fab--top" data-back-to-top
+            aria-label="Scroll to top" title="Scroll to top">
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none"
+           stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 19V5" />
+        <path d="M5.6 11.4 12 5l6.4 6.4" />
+      </svg>
+    </button>
+    <a class="fab fab--whatsapp" data-whatsapp-fab
+       href="https://wa.me/201011405879"
+       target="_blank" rel="noopener noreferrer"         aria-label="Contact via WhatsApp" title="Contact via WhatsApp">
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path fill="currentColor" d="M20.5 3.5A11.8 11.8 0 0 0 12.1 0C5.6 0 .3 5.3.3 11.8c0 2.1.6 4.1 1.6 5.9L.2 24l6.5-1.7c1.8.9 3.7 1.3 5.6 1.3h.1c6.5 0 11.7-5.3 11.7-11.8 0-3.1-1.3-6.1-3.6-8.3Zm-8.4 18.1h-.1c-1.7 0-3.4-.5-4.9-1.3l-.4-.2-3.9 1 1-3.8-.3-.4a9.7 9.7 0 1 1 8.6 4.7Zm5.3-7.3c-.3-.2-1.8-.9-2.1-1-.3-.1-.5-.2-.7.2-.2.3-.8 1-.9 1.2-.2.2-.3.2-.6.1-1.6-.8-2.7-1.4-3.8-3.2-.3-.5.3-.5.8-1.6.1-.2.1-.4 0-.6-.1-.2-.7-1.7-.9-2.3-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.6.1-.9.4-.3.3-1.2 1.2-1.2 2.9 0 1.7 1.2 3.3 1.4 3.5.2.2 2.4 3.7 5.8 5.2 2.2 1 2.2.7 2.6.7.4 0 1.8-.7 2.1-1.4.3-.7.3-1.3.2-1.4-.1-.1-.3-.2-.5-.3Z" />
+      </svg>
+    </a>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+  <script src="script.js?v=17"></script>
+  <!-- Backend (Supabase) — order matters -->
+  <script src="js/vendor/supabase.js"></script>
+  <script src="config.js"></script>
+  <script src="js/supabase-client.js"></script>
+  <script src="js/util.js?v=1"></script>
+  <script src="js/projects.js?v=3"></script>
+  <script src="js/icon-library.js?v=1"></script>
+  <!-- Public Hero + Contact hydration (read-only, falls back to the static
+       markup above when there is no row or the read fails). -->
+  <script src="js/public-content.js?v=7"></script>
+  <!-- js/projects.js self-initialises from the markup (#projects-grid here,
+       #projects-index on projects.html), so no inline loader is needed and
+       the CSP stays strict. -->
+</body>
+</html>

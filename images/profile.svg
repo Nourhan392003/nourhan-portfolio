@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000" role="img" aria-labelledby="title">
+  <title id="title">Abstract portrait placeholder</title>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0d1428"/>
+      <stop offset="1" stop-color="#070a14"/>
+    </linearGradient>
+    <radialGradient id="violet" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#8b5cf6" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#8b5cf6" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="cyan" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#22d3ee" stop-opacity="0.4"/>
+      <stop offset="1" stop-color="#22d3ee" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="suit" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1b2440"/>
+      <stop offset="1" stop-color="#10162a"/>
+    </linearGradient>
+    <linearGradient id="head" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#e9ecf7"/>
+      <stop offset="0.55" stop-color="#c9d2e8"/>
+      <stop offset="1" stop-color="#aeb9d8"/>
+    </linearGradient>
+    <linearGradient id="hair" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2a3554"/>
+      <stop offset="1" stop-color="#161d33"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="800" height="1000" fill="url(#bg)"/>
+
+  <!-- ambient glows -->
+  <ellipse cx="620" cy="180" rx="330" ry="300" fill="url(#violet)"/>
+  <ellipse cx="180" cy="880" rx="360" ry="300" fill="url(#cyan)"/>
+  <ellipse cx="700" cy="840" rx="260" ry="200" fill="url(#cyan)" opacity="0.35"/>
+
+  <!-- shoulders -->
+  <path d="M400 640
+           C 275 640 150 720 130 1000
+           L 670 1000
+           C 650 720 525 640 400 640 Z"
+        fill="url(#suit)" stroke="#31406b" stroke-opacity="0.4" stroke-width="2"/>
+
+  <!-- neck -->
+  <rect x="352" y="560" width="96" height="130" rx="30" fill="url(#head)" opacity="0.92"/>
+
+  <!-- head -->
+  <path d="M400 232
+           C 316 232 250 302 250 396
+           C 250 468 296 528 358 552
+           C 368 557 380 556 384 566
+           L 416 566
+           C 420 556 432 557 442 552
+           C 504 528 550 468 550 396
+           C 550 302 484 232 400 232 Z"
+        fill="url(#head)"/>
+
+  <!-- hair -->
+  <path d="M400 232
+           C 314 232 248 304 250 402
+           C 250 336 320 254 400 254
+           C 480 254 550 336 550 402
+           C 552 304 486 232 400 232 Z"
+        fill="url(#hair)"/>
+
+  <!-- hair side framing -->
+  <path d="M250 400
+           C 252 330 318 258 396 258
+           C 340 260 288 300 268 372
+           C 258 388 252 396 250 400 Z"
+        fill="url(#hair)"/>
+  <path d="M550 400
+           C 548 330 482 258 404 258
+           C 460 260 512 300 532 372
+           C 542 388 548 396 550 400 Z"
+        fill="url(#hair)"/>
+
+  <!-- subtle rim light on the left of the face -->
+  <path d="M400 232
+           C 316 232 250 302 250 396
+           C 250 396 250 330 322 262
+           C 348 240 372 234 400 233 Z"
+        fill="#ffffff" opacity="0.10"/>
+
+  <!-- faint grid sheen -->
+  <g stroke="#7dd3fc" stroke-opacity="0.05" stroke-width="1">
+    <line x1="200" y1="60" x2="200" y2="940"/>
+    <line x1="400" y1="60" x2="400" y2="940"/>
+    <line x1="600" y1="60" x2="600" y2="940"/>
+    <line x1="80" y1="300" x2="720" y2="300"/>
+    <line x1="80" y1="500" x2="720" y2="500"/>
+    <line x1="80" y1="700" x2="720" y2="700"/>
+  </g>
+</svg>

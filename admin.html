@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Admin · Nourhan Ashraf</title>
+  <link rel="icon" type="image/svg+xml" href="images/favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <!-- bump ?v= when admin.css / js/admin-content.js change, so a stale
+       cached copy can never show the old, broken editor layout -->
+  <link rel="stylesheet" href="admin.css?v=3" />
+</head>
+<body class="admin-body">
+
+  <!-- ========== Sidebar ========== -->
+  <aside class="a-side" id="a-side">
+    <div class="a-side__brand">
+      <span class="a-side__logo">NA</span>
+      <div class="a-side__brandtext">
+        <span class="a-side__name" data-i18n="brandName">Nourhan Ashraf</span>
+        <span class="a-side__tag" data-i18n="brandTag">Portfolio CMS</span>
+      </div>
+    </div>
+
+    <nav class="a-side__nav" aria-label="Admin navigation">
+      <a class="a-side__link is-active" href="#" data-nav="dashboard">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="5" rx="1.5"/><rect x="13" y="10" width="8" height="11" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/></svg>
+        <span data-i18n="navDashboard">Dashboard</span>
+      </a>
+      <a class="a-side__link" href="#projects-panel" data-nav="projects">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h10"/></svg>
+        <span data-i18n="navProjects">Projects</span>
+      </a>
+      <a class="a-side__link" href="#" data-nav="hero">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9-4.03-9-9-9zM5 10h2v2H5V10zm4 0h2v4H9V10zm4 0h2v6h-2V10z"/></svg>
+        <span data-i18n="navHero">Hero</span>
+      </a>
+      <a class="a-side__link" href="#" data-nav="services">
+        <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="4" width="18" height="6" rx="1.6"/><rect x="3" y="14" width="18" height="6" rx="1.6"/><path d="M7 7h.01M7 17h.01"/></svg>
+        <span data-i18n="navServices">Services</span>
+      </a>
+      <a class="a-side__link" href="#" data-nav="skills">
+        <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3l2.6 5.6 6.1.8-4.5 4.2 1.2 6-5.4-3-5.4 3 1.2-6L3.3 9.4l6.1-.8L12 3z"/></svg>
+        <span data-i18n="navSkills">Skills</span>
+      </a>
+      <a class="a-side__link" href="#" data-nav="contact">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 15.5c-1.2 0-2.4-.2-3.6-.5-.3 1.8-1.4 3.3-3 4.1V21H7v-2.1c-1.6-.8-2.7-2.3-3-4.1C2.7 15.3 2.5 15.5 1.3 15.5c-.1 0-.2 0-.3.1-1 1-2.3 1.4-3.6 1.4-2.5 0-4.6-1.9-4.6-4.3s2.1-4.3 4.6-4.3c1.3 0 2.4.3 3.5 1l.5-.6C7.9 8.9 9.6 8 11.5 8c2.8 0 5 2 5 4.6 0 1-.2 1.8-.6 2.5C19 12.4 19.5 11.2 20 10c0-.1 0-.2-.1-.3C21.3 9.1 21.7 8.7 22 8c0-3.9-3.1-7-7-7v2c.6.1 1.2.2 1.9.2l.1-.1z"/></svg>
+        <span data-i18n="navContact">Contact</span>
+      </a>
+      <a class="a-side__link" href="#" data-nav="experience">
+        <span class="a-side__dot" aria-hidden="true"></span>
+        <span data-i18n="navExperience">Experience</span>
+      </a>
+      <a class="a-side__link" href="#" data-nav="about">
+        <span class="a-side__dot" aria-hidden="true"></span>
+        <span data-i18n="navAbout">About</span>
+      </a>
+      <a class="a-side__link" href="#" data-nav="footer">
+        <span class="a-side__dot" aria-hidden="true"></span>
+        <span data-i18n="navFooter">Footer</span>
+      </a>
+      <a class="a-side__link" href="index.html" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6"/><path d="M20 4L10 14"/><path d="M18 13v6a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h6"/></svg>
+        <span data-i18n="navViewSite">View site</span>
+      </a>
+    </nav>
+
+    <div class="a-side__foot">
+      <button id="lang-btn" class="a-side__lang" type="button" title="English / العربية">العربية</button>
+      <button id="logout-btn" class="a-side__signout" type="button" data-i18n="signOut">Sign out</button>
+      <div class="a-side__user">
+        <span class="a-side__avatar" id="admin-avatar" aria-hidden="true">?</span>
+        <span class="a-side__email" id="admin-email"></span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ========== Main column ========== -->
+  <div class="a-main">
+
+    <!-- ========== Login view ========== -->
+    <section id="login-view" hidden>
+      <div class="a-center">
+        <div class="admin-card">
+          <h1 class="admin-title" data-i18n="loginTitle">Portfolio admin</h1>
+          <p class="admin-sub" data-i18n="loginSub">Sign in with your admin account.</p>
+          <div id="login-error" class="admin-error" hidden></div>
+          <form id="login-form">
+            <div class="admin-field">
+              <label for="login-email" data-i18n="email">Email</label>
+              <input id="login-email" type="email" autocomplete="username" required />
+            </div>
+            <div class="admin-field">
+              <label for="login-password" data-i18n="password">Password</label>
+              <input id="login-password" type="password" autocomplete="current-password" required />
+            </div>
+            <div class="admin-actions">
+              <button type="submit" class="btn btn--primary" id="login-btn" data-i18n="signIn">Sign in</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== Dashboard view ========== -->
+    <section id="dashboard-view" hidden>
+
+      <!-- Overview header -->
+      <header class="a-header">
+        <div>
+          <p class="a-header__eyebrow" data-i18n="overviewEyebrow">Overview</p>
+          <h1 class="a-header__title" data-i18n="overviewTitle">Dashboard</h1>
+          <p class="a-header__sub" data-i18n="overviewSub">Manage your portfolio projects</p>
+        </div>
+        <button id="new-project-btn" class="btn btn--primary" type="button">
+          <span aria-hidden="true">+</span>&nbsp;<span data-i18n="newProject">New project</span>
+          <span data-i18n="unsaved" class="admin-hint" style="margin-left:14px; color: var(--text-dim)">Unsaved changes will be lost.</span>
+        </button>
+      </header>
+
+      <!-- Stat cards -->
+      <div class="a-stats">
+        <div class="a-stat a-stat--total">
+          <span class="a-stat__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M12 3l9 5-9 5-9-5 9-5z"/><path d="M3 13.5l9 5 9-5"/></svg>
+          </span>
+          <div>
+            <span class="a-stat__num" id="stat-total">0</span>
+            <span class="a-stat__label" data-i18n="statTotal">Total projects</span>
+          </div>
+        </div>
+        <div class="a-stat a-stat--published">
+          <span class="a-stat__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8.5 12.5l2.4 2.4 4.6-5"/></svg>
+          </span>
+          <div>
+            <span class="a-stat__num" id="stat-published">0</span>
+            <span class="a-stat__label" data-i18n="statPublished">Published</span>
+          </div>
+        </div>
+        <div class="a-stat a-stat--draft">
+          <span class="a-stat__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M4 20l4.5-1L20 7.5 16.5 4 5 15.5 4 20z"/><path d="M13.5 7l3.5 3.5"/></svg>
+          </span>
+          <div>
+            <span class="a-stat__num" id="stat-draft">0</span>
+            <span class="a-stat__label" data-i18n="statDraft">Drafts</span>
+          </div>
+        </div>
+        <div class="a-stat a-stat--featured">
+          <span class="a-stat__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1L3.2 9.5l6.1-.9L12 3z"/></svg>
+          </span>
+          <div>
+            <span class="a-stat__num" id="stat-featured">0</span>
+            <span class="a-stat__label" data-i18n="statFeatured">Featured</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Projects panel -->
+      <section class="a-panel" id="projects-panel">
+        <div class="a-panel__head">
+          <h2 class="a-panel__title" data-i18n="projectsTitle">Projects</h2>
+          <div class="a-toolbar">
+            <input id="search-input" class="a-input a-search" type="search"
+                   data-i18n-ph="searchPlaceholder" placeholder="Search projects…"
+                   aria-label="Search projects" />
+            <select id="filter-status" class="a-select" aria-label="Filter by status">
+              <option value="all" data-i18n="filterAll">All statuses</option>
+              <option value="published" data-i18n="filterPublished">Published</option>
+              <option value="draft" data-i18n="filterDraft">Draft</option>
+              <option value="featured" data-i18n="filterFeatured">Featured</option>
+            </select>
+            <button id="refresh-btn" class="admin-iconbtn" type="button" title="Refresh" aria-label="Refresh">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 5v6h-6"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div id="projects-error" class="admin-error" hidden></div>
+        <p class="a-count" id="filter-count" hidden></p>
+
+        <div class="a-table-wrap">
+          <table class="a-table">
+            <thead>
+              <tr>
+                <th data-i18n="thOrder">Order</th>
+                <th data-i18n="thProject">Project</th>
+                <th data-i18n="thStatus">Status</th>
+                <th data-i18n="thActions">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="projects-tbody">
+              <tr><td colspan="4" data-i18n="loading">Loading…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ========== Editor form ========== -->
+      <section class="a-panel" id="editor-card" hidden>
+        <div class="a-panel__head">
+          <div>
+            <h2 class="a-panel__title" id="editor-heading">New project</h2>
+            <p class="a-panel__sub" id="editor-sub"></p>
+          </div>
+          <button id="editor-close" class="admin-iconbtn" type="button" aria-label="Close editor">✕</button>
+        </div>
+
+        <form id="project-form" autocomplete="off">
+          <!-- 1 · Basic information -->
+          <fieldset class="a-fieldset">
+            <legend data-i18n="fsBasic">1 · Basic information</legend>
+            <div class="a-grid">
+              <div class="admin-field">
+                <label for="f-title" data-i18n="fTitle">Title *</label>
+                <input id="f-title" type="text" required />
+              </div>
+              <div class="admin-field">
+                <label for="f-slug" data-i18n="fSlug">Slug *</label>
+                <input id="f-slug" type="text" required pattern="[a-z0-9]+(-[a-z0-9]+)*" title="lowercase letters, numbers, hyphens" />
+              </div>
+              <div class="admin-field a-grid__full">
+                <label for="f-short" data-i18n="fShort">Short description *</label>
+                <input id="f-short" type="text" maxlength="300" required />
+              </div>
+              <div class="admin-field a-grid__full">
+                <label for="f-full" data-i18n="fFull">Full description</label>
+                <textarea id="f-full" rows="5"></textarea>
+              </div>
+            </div>
+          </fieldset>
+
+          <!-- 2 · Project classification -->
+          <fieldset class="a-fieldset">
+            <legend data-i18n="fsClass">2 · Project classification</legend>
+            <div class="a-grid">
+              <div class="admin-field">
+                <label for="f-industry" data-i18n="fIndustry">Industry</label>
+                <input id="f-industry" type="text" />
+              </div>
+              <div class="admin-field">
+                <label for="f-type" data-i18n="fType">Project type</label>
+                <input id="f-type" type="text" />
+              </div>
+            </div>
+          </fieldset>
+
+          <!-- 3 · Technologies -->
+          <fieldset class="a-fieldset">
+            <legend data-i18n="fsTech">3 · Technologies</legend>
+            <div class="admin-field">
+              <label for="f-tech" data-i18n="fTech">Technologies (comma-separated)</label>
+              <input id="f-tech" type="text" placeholder="e.g. Next.js, TypeScript" />
+              <div id="tech-chips" class="a-chips" hidden></div>
+            </div>
+          </fieldset>
+
+          <!-- 4 · Cover and gallery media -->
+          <fieldset class="a-fieldset">
+            <legend data-i18n="fsMedia">4 · Cover &amp; gallery media</legend>
+            <div class="admin-field">
+              <label for="f-cover" data-i18n="fCover">Cover image URL</label>
+              <input id="f-cover" type="url" placeholder="https://…" />
+              <label class="admin-upload">
+                <input type="file" id="f-cover-file" accept="image/*" hidden />
+                <span class="btn btn--ghost" role="button" data-i18n="uploadImage">…or upload an image</span>
+              </label>
+              <div id="cover-preview" class="a-media-preview" hidden>
+                <img id="cover-preview-img" alt="" />
+                <div class="a-media-preview__bar">
+                  <span id="cover-preview-name" class="a-media-preview__name"></span>
+                  <span class="a-media-preview__btns">
+                    <button type="button" class="admin-iconbtn" id="cover-replace-btn" data-i18n="replace">Replace</button>
+                    <button type="button" class="admin-iconbtn admin-iconbtn--danger" id="cover-remove-btn" data-i18n="remove">Remove</button>
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div class="admin-field">
+              <label for="f-gallery" data-i18n="fGallery">Gallery image URLs (one per line)</label>
+              <textarea id="f-gallery" rows="3" placeholder="https://…&#10;https://…"></textarea>
+              <label class="admin-upload">
+                <input type="file" id="f-gallery-files" accept="image/*" multiple hidden />
+                <span class="btn btn--ghost" role="button" data-i18n="uploadGallery">…or upload gallery images</span>
+              </label>
+              <div id="gallery-grid" class="a-gallery" hidden></div>
+            </div>
+          </fieldset>
+
+          <!-- 5 · Links -->
+          <fieldset class="a-fieldset">
+            <legend data-i18n="fsLinks">5 · Links</legend>
+            <div class="a-grid">
+              <div class="admin-field">
+                <label for="f-live" data-i18n="fLive">Live URL</label>
+                <input id="f-live" type="url" placeholder="https://…" />
+              </div>
+              <div class="admin-field">
+                <label for="f-github" data-i18n="fGithub">GitHub URL</label>
+                <input id="f-github" type="url" placeholder="https://…" />
+              </div>
+            </div>
+          </fieldset>
+
+          <!-- 6 · Publishing settings -->
+          <fieldset class="a-fieldset">
+            <legend data-i18n="fsPublishing">6 · Publishing settings</legend>
+            <div class="a-grid a-grid--3">
+              <div class="admin-field">
+                <label for="f-sort" data-i18n="fSort">Sort order</label>
+                <input id="f-sort" type="number" value="0" step="1" />
+              </div>
+              <div class="admin-field">
+                <label for="f-published" data-i18n="fStatus">Status</label>
+                <select id="f-published">
+                  <option value="false" data-i18n="optDraft">Draft (not visible publicly)</option>
+                  <option value="true" data-i18n="optPublished">Published (visible on the site)</option>
+                </select>
+              </div>
+              <div class="admin-field">
+                <label for="f-featured" data-i18n="fFeatured">Featured</label>
+                <select id="f-featured">
+                  <option value="false" data-i18n="optNo">No</option>
+                  <option value="true" data-i18n="optYes">Yes</option>
+                </select>
+              </div>
+            </div>
+          </fieldset>
+
+          <div class="admin-actions">
+            <button type="submit" class="btn btn--primary" id="save-btn" data-i18n="saveProject">Save project</button>
+            <button type="button" class="btn btn--ghost" id="cancel-btn" data-i18n="cancel">Cancel</button>
+          </div>
+        </form>
+      </section>
+    </section>
+
+    <!-- ========== Not-configured view ========== -->
+    <section id="setup-view" hidden>
+      <div class="a-center">
+        <div class="admin-card">
+          <h1 class="admin-title" data-i18n="setupTitle">Backend not configured</h1>
+          <p class="admin-sub">
+            <span data-i18n="setupSub">Copy</span>
+            <code>config.example.js</code> <span data-i18n="setupTo">to</span> <code>config.js</code>
+            <span data-i18n="setupRest">and fill in the brand-new Supabase project's URL and anon key
+            (Settings → API). Then reload this page.</span>
+          </p>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ========== Content editors ==========
+         These live INSIDE .a-main. As body-level siblings they used to miss
+         .a-main's margin-left: 250px and render underneath the fixed sidebar. -->
+    <div id="content-panels"></div>
+    <div id="content-ready" class="admin-status" hidden>Loading content editors…</div>
+
+  </div>
+
+  <!-- mobile quick-action -->
+  <button class="a-fab" id="a-fab" type="button" aria-label="New project" data-i18n-label="newProject">+</button>
+
+  <!-- delete-confirmation modal root -->
+  <div id="modal-root"></div>
+  <!-- toast root -->
+  <div id="toast-root"></div>
+
+  <!-- Backend (Supabase) — order matters -->
+  <script src="js/vendor/supabase.js"></script>
+  <script src="config.js"></script>
+  <script src="js/supabase-client.js"></script>
+  <script src="js/util.js?v=1"></script>
+  <script src="js/admin.js"></script>
+  <script src="js/icon-library.js"></script>
+  <script src="js/admin-content.js?v=4"></script>
+  <script>
+    (function () {
+      if (window.NPContentAdmin && typeof window.NPContentAdmin.init === 'function') {
+        try { window.NPContentAdmin.init(); } catch (e) { console.error('Admin content init failed:', e); }
+      }
+    })();
+  </script>
+</body>
+</html>

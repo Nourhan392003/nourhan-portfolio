@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Content Security Policy — same policy as the homepage. See index.html
+       for what each origin is for; there is no inline script on this page,
+       so script-src carries no 'unsafe-inline'. -->
+  <meta
+    http-equiv="Content-Security-Policy"
+    content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net https://*.supabase.co; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co https://formspree.io; base-uri 'self'; object-src 'none'"
+  />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+
+  <meta name="description" content="Case study by Nourhan Ashraf — a frontend project presented in detail." />
+  <title>Case Study — Nourhan Ashraf</title>
+  <link rel="icon" type="image/svg+xml" href="images/favicon.svg" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <!-- bump the ?v= when styles or the behaviour script change, so browsers
+       (and the local preview) pick the new files up instead of a cached copy -->
+  <link rel="stylesheet" href="styles.css?v=24" />
+  <!-- Before paint: js class, saved theme, ?motion override — see js/boot.js.
+       Extracted from the head so the CSP above can keep script-src free of
+       'unsafe-inline'. Same parser-blocking position, same timing. -->
+  <script src="js/boot.js?v=1"></script>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <header class="nav" id="nav">
+      <div class="container nav__inner">
+        <a href="index.html" class="nav__logo">Nourhan.dev</a>
+        <nav class="nav__links" aria-label="Primary">
+          <a href="index.html#services">Services</a>
+          <a href="index.html#experience">Experience</a>
+          <a href="projects.html">Projects</a>
+          <a href="index.html#about">About</a>
+          <a href="index.html#contact">Contact</a>
+          <button type="button" class="theme-toggle" data-theme-toggle
+                  aria-label="Switch to light mode" title="Switch to light mode">
+            <span class="theme-toggle__icon" aria-hidden="true">&#9790;</span>
+          </button>
+        </nav>
+        <button class="nav__toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </header>
+
+    <!-- The case study is read from ?slug= and rendered by project-detail.js
+         from the same published project records the rest of the site uses.
+         Nothing here writes anywhere — the page is read-only. -->
+    <main id="case-root">
+      <!-- pre-hydration state only: replaced as soon as the project is read -->
+      <section class="cs-loading">
+        <div class="container">
+          <span class="cs-loading__bar cs-loading__bar--wide"></span>
+          <span class="cs-loading__bar"></span>
+          <span class="cs-loading__bar cs-loading__bar--short"></span>
+        </div>
+      </section>
+
+      <noscript>
+        <section class="section page-head">
+          <div class="container">
+            <p class="section__lead">
+              This case study needs JavaScript to load. Please open the
+              <a href="projects.html">published projects</a> to browse the work.
+            </p>
+          </div>
+        </section>
+      </noscript>
+    </main>
+
+    <footer class="footer" data-footer-content>
+      <div class="container footer__inner">
+        <p class="footer__copyright"><span class="footer__copyright-text" data-footer-copyright>&copy;</span> <span id="year" class="footer__year"></span> <span class="footer__name" data-footer-name>Nourhan Ashraf</span></p>
+      </div>
+    </footer>
+
+    <!-- Floating actions — a direct WhatsApp chat plus a back-to-top control.
+         Both are real controls (a link and a button); the back-to-top button
+         stays hidden until the page has scrolled past the hero — see script.js. -->
+    <div class="fab-stack" data-fab-stack>
+      <button type="button" class="fab fab--top" data-back-to-top
+              aria-label="Scroll to top" title="Scroll to top">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none"
+             stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 19V5" />
+          <path d="M5.6 11.4 12 5l6.4 6.4" />
+        </svg>
+      </button>
+      <a class="fab fab--whatsapp" data-whatsapp-fab
+         href="https://wa.me/201011405879"
+         target="_blank" rel="noopener noreferrer"
+         aria-label="Contact via WhatsApp" title="Contact via WhatsApp">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path fill="currentColor" d="M20.5 3.5A11.8 11.8 0 0 0 12.1 0C5.6 0 .3 5.3.3 11.8c0 2.1.6 4.1 1.6 5.9L.2 24l6.5-1.7c1.8.9 3.7 1.3 5.6 1.3h.1c6.5 0 11.7-5.3 11.7-11.8 0-3.1-1.3-6.1-3.6-8.3Zm-8.4 18.1h-.1c-1.7 0-3.4-.5-4.9-1.3l-.4-.2-3.9 1 1-3.8-.3-.4a9.7 9.7 0 1 1 8.6 4.7Zm5.3-7.3c-.3-.2-1.8-.9-2.1-1-.3-.1-.5-.2-.7.2-.2.3-.8 1-.9 1.2-.2.2-.3.2-.6.1-1.6-.8-2.7-1.4-3.8-3.2-.3-.5.3-.5.8-1.6.1-.2.1-.4 0-.6-.1-.2-.7-1.7-.9-2.3-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.6.1-.9.4-.3.3-1.2 1.2-1.2 2.9 0 1.7 1.2 3.3 1.4 3.5.2.2 2.4 3.7 5.8 5.2 2.2 1 2.2.7 2.6.7.4 0 1.8-.7 2.1-1.4.3-.7.3-1.3.2-1.4-.1-.1-.3-.2-.5-.3Z" />
+        </svg>
+      </a>
+    </div>
+
+    <script src="script.js?v=15"></script>
+    <!-- Backend (Supabase) — order matters -->
+    <script src="js/vendor/supabase.js"></script>
+    <script src="config.js"></script>
+    <script src="js/supabase-client.js"></script>
+    <script src="js/util.js?v=1"></script>
+    <script src="js/projects.js?v=3"></script>
+    <script src="js/public-content.js?v=7"></script>
+    <script src="project-detail.js?v=1"></script>
+  </body>
+</html>
