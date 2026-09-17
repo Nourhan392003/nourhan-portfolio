@@ -42,7 +42,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
   <!-- bump the ?v= when styles or the behaviour script change, so browsers
        (and the local preview) pick the new files up instead of a cached copy -->
-  <link rel="stylesheet" href="styles.css?v=37" />
+  <link rel="stylesheet" href="styles.css?v=39" />
   <!-- Before paint: js class, saved theme, ?motion override. Extracted from
        the head into js/boot.js so the CSP above can keep script-src free of
        'unsafe-inline'. Same parser-blocking position, same timing. -->
@@ -417,31 +417,54 @@
           </p>
         </header>
 
-        <!-- data-reveal-rail draws the timeline rule progressively on scroll -->
+        <!-- The rail is markup, not a painted decoration: it spans the whole
+             list and its fill grows with the scroll position (script.js ·
+             module 13, experienceRail). It survives hydration untouched, so
+             it lines up with the fallback rows and the real ones alike. -->
         <div class="xp" data-reveal-rail data-experience-content>
-          <!-- Fallback rows: shown until the Supabase read lands, and kept
-               if it fails or returns nothing. js/public-content.js hides all
-               of these the moment real public.experiences rows arrive, so
-               they mirror that table rather than adding to it. -->
+          <div class="xp__rail" aria-hidden="true">
+            <div class="xp__rail-fill" data-xp-rail-fill>
+              <span class="xp__rail-dot"></span>
+            </div>
+          </div>
+
+          <!-- Fallback rows: shown until the Supabase read lands, and kept if
+               it fails or returns nothing. js/public-content.js hides every
+               one of these the moment real public.experiences rows arrive, so
+               they mirror that table rather than adding to it. The description
+               here is written as one bullet per sentence because that is
+               exactly how the renderer splits a stored description. -->
           <article class="xp__item" data-reveal>
-            <h3 class="xp__role">Freelance Frontend Developer</h3>
-            <p class="xp__meta">Self-Employed / Independent &middot; May 2025 &mdash; Present</p>
-            <p class="xp__desc">
-              Delivered responsive e-commerce web storefronts, brand websites,
-              and interactive client portfolios with secure payment
-              integrations (Paymob) and headless Supabase CMS architectures.
-            </p>
+            <div class="xp__left">
+              <div class="xp__head">
+                <h3 class="xp__role">Freelance Frontend Developer</h3>
+                <p class="xp__company">Self-Employed / Independent</p>
+              </div>
+              <p class="xp__dates">May 2025 &mdash; Present</p>
+            </div>
+            <span class="xp__node" aria-hidden="true"></span>
+            <div class="xp__body">
+              <ul class="xp__points">
+                <li><span class="xp__point-dot" aria-hidden="true"></span><span>Delivered responsive e-commerce web storefronts, brand websites, and interactive client portfolios with secure payment integrations (Paymob) and headless Supabase CMS architectures.</span></li>
+              </ul>
+            </div>
           </article>
 
           <article class="xp__item" data-reveal>
-            <h3 class="xp__role">Frontend Developer [Independent Projects]</h3>
-            <p class="xp__meta">E-Commerce &amp; SaaS Solutions &middot; Jan 2025 &mdash; May 2025</p>
-            <p class="xp__desc">
-              Architected component-driven interfaces using Next.js, React.js,
-              TypeScript, and Tailwind CSS. Implemented secure webhook
-              verification, dynamic inventory filtering, and bidirectional
-              scroll-driven animations.
-            </p>
+            <div class="xp__left">
+              <div class="xp__head">
+                <h3 class="xp__role">Frontend Developer [Independent Projects]</h3>
+                <p class="xp__company">E-Commerce &amp; SaaS Solutions</p>
+              </div>
+              <p class="xp__dates">Jan 2025 &mdash; May 2025</p>
+            </div>
+            <span class="xp__node" aria-hidden="true"></span>
+            <div class="xp__body">
+              <ul class="xp__points">
+                <li><span class="xp__point-dot" aria-hidden="true"></span><span>Architected component-driven interfaces using Next.js, React.js, TypeScript, and Tailwind CSS.</span></li>
+                <li><span class="xp__point-dot" aria-hidden="true"></span><span>Implemented secure webhook verification, dynamic inventory filtering, and bidirectional scroll-driven animations.</span></li>
+              </ul>
+            </div>
           </article>
         </div>
       </div>
@@ -1017,7 +1040,7 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
-  <script src="script.js?v=24"></script>
+  <script src="script.js?v=26"></script>
   <!-- Backend (Supabase) — order matters -->
   <script src="js/vendor/supabase.js"></script>
   <script src="config.js"></script>
@@ -1027,7 +1050,7 @@
   <script src="js/icon-library.js?v=2"></script>
   <!-- Public Hero + Contact hydration (read-only, falls back to the static
        markup above when there is no row or the read fails). -->
-  <script src="js/public-content.js?v=10"></script>
+  <script src="js/public-content.js?v=12"></script>
   <!-- js/projects.js self-initialises from the markup (#projects-grid here,
        #projects-index on projects.html), so no inline loader is needed and
        the CSP stays strict. -->

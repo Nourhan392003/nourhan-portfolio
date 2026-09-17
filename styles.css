@@ -705,6 +705,12 @@ img {
   margin-top: 30px;
   max-width: 100%;
   overflow: hidden;
+  /* Deliberately NOT `flex-wrap: wrap`. Wrapping here is content-dependent:
+     the label plus a long role wraps, the label plus an empty line does not,
+     so the row changes height as the text is typed and everything below it
+     jumps. Measured at 390px: 18.4px → 58.1px, i.e. the buttons moved 38.7px
+     every cycle. The row must be tall enough for the tallest state at ALL
+     times instead — that is what the two rules below do. */
 }
 
 .hero__specialization-label {
@@ -725,13 +731,25 @@ img {
   white-space: nowrap;
   overflow: hidden;
   vertical-align: baseline;
+  /* A stable line box. An empty inline-block is 0px tall, so the row was
+     20.6px tall between phrases and 31.7px while one was on screen (18.4 /
+     27.7 on a phone) — a 9–11px jump of every element below the line on each
+     cycle, at every width. `min-height` equal to the line-height makes the box
+     the same height whether or not it holds text, so the row never changes
+     height. line-height is declared here rather than inherited so the two
+     cannot drift apart. */
+  line-height: 1.65;
+  min-height: 1.65em;
   /* Deliberately no reserved `ch` width. The line used to reserve a fixed
      28ch, which is wider than a narrow copy column — the row then overflowed
      .hero__specialization and its `overflow: hidden` cut the caret off the
      right edge (visible at 1024px, 700px and on phones). The reserved width
      only ever hid the caret for the first characters of each phrase: every
      phrase is shorter than the column, so the line can simply be as wide as
-     the text being typed. Nothing else shares the row, so nothing moves. */
+     the text being typed. Nothing else shares the row, so nothing moves: the
+     caret rides the text, and the block elements below are unaffected by this
+     row's width. `min-width: 0` keeps it shrinkable at the very narrowest
+     viewports, where the row's own `overflow: hidden` is the final guard. */
   min-width: 0;
 }
 
@@ -1265,18 +1283,75 @@ html.js .service.visible::after {
   color: var(--cream);
 }
 
-/* ============ 02 · Experience ============ */
+/* ============ 02 · Experience — centre-rail timeline ============ */
+/* One rail runs the whole list and its fill tracks the scroll position, the
+   glowing head riding the leading edge (script.js · module 13). The rail hugs
+   the left edge while the rows are stacked, then moves dead centre once there
+   is room for a column either side of it: role and dates to the left, what the
+   role actually involved — one bullet per sentence — to the right. */
 .xp {
-  border-top: 1px solid var(--border);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 34px;
+  padding-top: 26px;
+}
+
+.xp__rail {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 9px;
+  width: 2px;
+  border-radius: 999px;
+  background: var(--border);
+}
+
+.xp__rail-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 0;
+  border-radius: 999px;
+  background: linear-gradient(to bottom, var(--amber), var(--copper));
+}
+
+.xp__rail-dot {
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  width: 12px;
+  height: 12px;
+  margin-left: -6px;
+  border-radius: 50%;
+  background: var(--amber);
+  box-shadow: 0 0 10px 2px rgba(var(--accent-rgb), 0.8);
+  animation: xpRailPulse 2.4s ease-in-out infinite;
+}
+
+@keyframes xpRailPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(0.66); }
 }
 
 .xp__item {
+  position: relative;
   display: grid;
-  grid-template-columns: 200px 1fr;
-  gap: 10px 48px;
-  padding: 36px 0;
-  border-bottom: 1px solid var(--border);
-  align-content: start;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+  padding-left: 44px;
+}
+
+.xp__left {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* desktop only — the empty column the rail passes through */
+.xp__node {
+  display: none;
 }
 
 .xp__badge {
@@ -1309,23 +1384,93 @@ html.js .service.visible::after {
 }
 
 .xp__role {
-  font-size: 1.25rem;
+  font-size: clamp(1.15rem, 1rem + 0.55vw, 1.5rem);
   font-weight: 700;
-  letter-spacing: -0.01em;
-  margin-bottom: 4px;
+  letter-spacing: -0.015em;
+  transition: color 0.35s var(--ease-out-expo);
 }
 
-.xp__meta {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.85rem;
+.xp__item:hover .xp__role {
   color: var(--accent);
-  margin-bottom: 14px;
 }
 
-.xp__desc {
+.xp__company {
+  color: var(--text-dim);
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.xp__dates {
+  margin-top: 6px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: clamp(0.92rem, 0.78rem + 0.45vw, 1.3rem);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--accent);
+}
+
+.xp__points {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.xp__points > li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
   color: var(--text-dim);
   font-size: 0.97rem;
-  max-width: 64ch;
+  line-height: 1.68;
+}
+
+.xp__point-dot {
+  flex: 0 0 auto;
+  margin-top: 9px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  opacity: 0.8;
+}
+
+/* Enough room for a column each side of the rail. Below this the rail simply
+   stays on the left — it is the same line either way, so the section keeps its
+   identity on a phone instead of losing it. */
+@media (min-width: 900px) {
+  .xp {
+    gap: clamp(52px, 5.5vw, 92px);
+    padding-top: 40px;
+  }
+
+  .xp__rail {
+    left: 50%;
+    margin-left: -1px;
+  }
+
+  .xp__item {
+    grid-template-columns: minmax(0, 1fr) 40px minmax(0, 1fr);
+    column-gap: clamp(28px, 4vw, 64px);
+    align-items: start;
+    padding-left: 0;
+  }
+
+  .xp__left {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+  }
+
+  .xp__dates {
+    margin-top: 3px;
+    text-align: right;
+  }
+
+  .xp__node {
+    display: block;
+    height: 100%;
+  }
 }
 
 /* ============ 03 · Selected Projects — case studies ============ */
@@ -2509,8 +2654,10 @@ html.js .reveal-line.visible {
 }
 
 /* ---- staggered children ---- */
-html.js .services .service:nth-child(2),
-html.js .xp .xp__item:nth-child(2) { --reveal-delay: 0.12s; }
+/* the experience rows are staggered by the reveal module itself (it indexes
+   the [data-reveal] siblings), because the rail is now the first child of
+   .xp and an nth-child rule here would land on the wrong row */
+html.js .services .service:nth-child(2) { --reveal-delay: 0.12s; }
 
 html.js .services .service:nth-child(3) { --reveal-delay: 0.24s; }
 html.js .services .service:nth-child(4) { --reveal-delay: 0.36s; }
@@ -2530,28 +2677,6 @@ html.js .case__media {
 html.js .case.visible .case__media {
   transform: scale(1);
   opacity: 1;
-}
-
-/* ---- experience timeline: rule draws progressively ---- */
-.xp {
-  position: relative;
-}
-
-.xp::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: -1px;
-  width: 100%;
-  height: 1px;
-  background: linear-gradient(90deg, var(--amber), var(--copper) 55%, transparent);
-  transform: scaleX(0);
-  transform-origin: left center;
-  transition: transform 1.5s var(--ease-out-expo) 0.15s;
-}
-
-html.js .xp.visible::before {
-  transform: scaleX(1);
 }
 
 /* ============================================================ */
@@ -2687,10 +2812,9 @@ html.js [data-scroll-motion].visible[data-scroll-dir='up'] {
     transform: none;
   }
 
+  /* the row keeps its rail gutter when it stacks — only the spacing eases */
   .xp__item {
-    grid-template-columns: 1fr;
-    gap: 8px;
-    padding: 30px 0;
+    gap: 10px;
   }
 
   .case {
@@ -2767,6 +2891,20 @@ html.js [data-scroll-motion].visible[data-scroll-dir='up'] {
 
   .hero__specialization {
     margin-top: 34px;
+    /* 12px is the roomier gap used from 641px up, where the column is wider.
+       Here it is 10px so the three parts clear each other at the narrow end
+       of this range without the TEXT having to give up width. */
+    column-gap: 10px;
+  }
+
+  /* The label is the one part that can lose width for free: uppercase tracked
+     mono is decorative, and 0.18em on twelve characters is 21px of the row.
+     Trimming it to 0.10em buys the ~8px that 601–615px was short by, where
+     the copy column is at its narrowest (304px) but this block's 1.05rem role
+     text is at its widest. Without it that band squeezed the role by 7.2px
+     and its last letter was cut off. */
+  .hero__specialization-label {
+    letter-spacing: 0.1em;
   }
 
   /* the line steps down once more here; it needs no reserved width to clear
@@ -2848,6 +2986,31 @@ html.js [data-scroll-motion].visible[data-scroll-dir='up'] {
 
   .service__caps li {
     font-size: 0.7rem;
+  }
+}
+
+/* ---- very narrow phones: the label steps above the role ---------------
+   Below about 345px the copy column cannot hold the label, the longest role
+   and the caret on one line (at 320px the row needs 296.4px and the column
+   offers 272). Flex would resolve that by shrinking the TEXT — it carries
+   `min-width: 0` — and the role would end mid-word. So the label takes a full
+   line instead. Only the LABEL moves: the row stays a row, which keeps the
+   caret glued to the last letter, and `flex: 1 0 100%` makes the label claim
+   its own line whatever has been typed, so this band is a fixed two-line
+   layout rather than one that changes height as the text grows. `display:
+   flex` + `width: 100%` give the percentages a definite width to resolve
+   against — an inline-flex container sized to its content cannot do that. */
+@media (max-width: 360px) {
+  .hero__specialization {
+    display: flex;
+    width: 100%;
+    flex-wrap: wrap;
+    align-items: baseline;
+    row-gap: 6px;
+  }
+
+  .hero__specialization-label {
+    flex: 1 0 100%;
   }
 }
 
@@ -3539,12 +3702,15 @@ html.js .cs-related-grid {
     animation: quietFadeIn 0.55s ease var(--reveal-delay, 0s) both !important;
   }
 
-  html:not([data-motion='full']) .xp::before,
-  html:not([data-motion='full']) .xp.visible::before,
   html:not([data-motion='full']) .case__media {
     transform: none;
     opacity: 1;
     transition: none;
+  }
+
+  /* the rail still reports position — the head just stops pulsing */
+  html:not([data-motion='full']) .xp__rail-dot {
+    animation: none;
   }
 
   html:not([data-motion='full']) .btn,

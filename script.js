@@ -18,6 +18,8 @@
  *   8. contact     — CONTACT_LINKS → buttons + rows (empty = inert)
  *   9. form        — portfolio message form → validate, then WhatsApp
  *  10. theme       — manual dark / light mode + saved preference
+ *  13. experience  — the rail beside the roles fills with the scroll
+ *                    position (11 to-top, 12 reveal safety net)
  *
  * The hero portrait and the two name lines keep their CSS keyframes (they
  * own no GSAP tweens); everything in the copy column below the eyebrow is
@@ -154,11 +156,14 @@ const CONTACT_LINKS = {
     var output = document.querySelector('.hero__specialization-text');
     if (!output) return;
 
+    /* The rotation, in order. This is the shipped default AND the reduced-
+       motion fallback (see showStatic), so the first entry is the phrase a
+       visitor with reduced motion sees. A stored public.hero list replaces it
+       wholesale via window.NPSpecializations.set below. */
     var phrases = [
       'Frontend Developer',
-      'E-Commerce Specialist',
-      'Brand Website Builder',
-      'Responsive UI Developer'
+      'UI/UX Designer',
+      'E-Commerce Specialist'
     ];
 
     function showStatic() {
@@ -1212,6 +1217,129 @@ const CONTACT_LINKS = {
       window.setTimeout(tick, delay);
     });
     window.setInterval(tick, 600);
+  })();
+
+  /* ============================================================
+     13 · Experience rail — the line fills as the list is scrolled
+     ------------------------------------------------------------
+     The rail spans the whole list; its fill grows from 0 to 100% of the
+     rail as the entries travel from 70% of the viewport up to the centre,
+     and the glowing head rides the leading edge of that fill. Geometry is
+     read on a time throttle and cached, so a scroll event only does
+     arithmetic and (at most) one style write — no layout read per frame,
+     and nothing that a throttled rendering loop can leave stale.
+
+     Reduced motion keeps the rail, fully filled: it reports position
+     rather than performing an entrance, and the head stops pulsing (CSS).
+     ============================================================ */
+  (function experienceRail() {
+    var region = document.querySelector('[data-experience-content]');
+    if (!region) return;
+
+    var fill = region.querySelector('[data-xp-rail-fill]');
+    if (!fill) return;
+
+    /* the same window the design was drawn from: list top meets 70% of the
+       viewport → progress 0, list bottom meets the viewport centre → 1 */
+    var START = 0.7;
+    var END = 0.5;
+
+    var top = 0;
+    var height = 0;
+    var measuredAt = 0;
+    var painted = -1;
+
+    function stamp() {
+      return Date.now ? Date.now() : new Date().getTime();
+    }
+
+    function measure() {
+      var rect = region.getBoundingClientRect();
+      top = rect.top + (window.scrollY || window.pageYOffset || 0);
+      height = rect.height;
+      measuredAt = stamp();
+    }
+
+    function write(pct) {
+      if (pct === painted) return;
+      painted = pct;
+      fill.style.height = pct + '%';
+    }
+
+    function run() {
+      if (reduced()) {
+        write(100);
+        return;
+      }
+
+      if (stamp() - measuredAt > 250) measure();
+
+      var vh = window.innerHeight || document.documentElement.clientHeight;
+      var y = window.scrollY || window.pageYOffset || 0;
+      var from = top - vh * START;
+      var span = top + height - vh * END - from;
+      var progress = span > 0 ? (y - from) / span : 1;
+      if (progress < 0) progress = 0;
+      else if (progress > 1) progress = 1;
+
+      /* two decimal places: below that the move is invisible and the write
+         would be pure noise on every scroll event */
+      write(Math.round(progress * 10000) / 100);
+    }
+
+    /* Re-measuring is not optional. This list is itself a reveal target, and
+       the reveal parks it with a translateY and a rotateX — and a rotateX is a
+       projection, so it moves getBoundingClientRect() without moving the
+       layout. A reading taken mid-entrance is therefore a few pixels out, and
+       the fill with it. Two corrections keep that from sticking:
+         · animationend/transitionend — fire the instant the transform is gone,
+           which is exactly when the measurement becomes true again;
+         · once the scroll stops — a fallback for the case where the class was
+           re-applied and the animation restarted (or never ran at all).
+       Without them the rail would keep the mid-animation figure until the next
+       scroll event, which on a stopped page is a long time. */
+    function resettle() {
+      painted = -1;
+      measure();
+      run();
+    }
+
+    var settle = 0;
+    function onScrollOnly() {
+      run();
+      if (settle) window.clearTimeout(settle);
+      settle = window.setTimeout(resettle, 250);
+    }
+
+    region.addEventListener('animationend', resettle);
+    region.addEventListener('transitionend', resettle);
+    /* window-scoped for animationend only: an entrance on a WRAPPER moves this
+       list without moving the list's own box, but window-level transitionend
+       would also fire for every hover fade on the page, which is not worth a
+       re-measure. */
+    window.addEventListener('animationend', resettle);
+
+    window.addEventListener('scroll', onScrollOnly, { passive: true });
+    window.addEventListener('resize', function () {
+      painted = -1;
+      measure();
+      run();
+    }, { passive: true });
+    window.addEventListener('load', function () {
+      painted = -1;
+      measure();
+      run();
+    });
+
+    measure();
+    run();
+
+    /* hydration replaces the fallback rows and webfonts land late, either of
+       which changes the list height — re-measure rather than trusting the
+       first reading for the life of the page */
+    [0, 250, 700, 1500, 3000].forEach(function (delay) {
+      window.setTimeout(resettle, delay);
+    });
   })();
 
   // Keep the "reduced motion" preference live (users can change it mid-session)

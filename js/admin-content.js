@@ -455,7 +455,7 @@
     last_name: 'Ashraf',
     description_line_1: 'I build clear, responsive web experiences — from e-commerce storefronts to modern brand websites.',
     description_line_2: 'Focused on storefront UI, content hierarchy, and purposeful interaction.',
-    specializations: ['Frontend Developer', 'E-Commerce Specialist', 'Brand Website Builder', 'Responsive UI Developer'],
+    specializations: ['Frontend Developer', 'UI/UX Designer', 'E-Commerce Specialist'],
     profile_image: '',
     cta_1_label: 'View Selected Work',
     cta_1_href: '#projects',
@@ -717,7 +717,7 @@
           '<p class="admin-hint">One per line (max ' + L.specializations + '). The homepage rotates through these.</p>' +
           '<div class="admin-field">' +
             '<label for="hero-specializations">Specializations</label>' +
-            '<textarea id="hero-specializations" rows="4" autocomplete="off" placeholder="Frontend Developer&#10;E-Commerce Specialist"></textarea>' +
+            '<textarea id="hero-specializations" rows="4" autocomplete="off" placeholder="Frontend Developer&#10;UI/UX Designer&#10;E-Commerce Specialist"></textarea>' +
           '</div>' +
         '</fieldset>' +
 

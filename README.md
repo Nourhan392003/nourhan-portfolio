@@ -57,6 +57,7 @@ The admin dashboard is at <http://127.0.0.1:4173/admin.html>.
 | `supabase/03_storage.sql` | Public `project-images` bucket; admin-only writes, folder-scoped |
 | `supabase/04_skills.sql` | `public.skills` seed — the CV skillset. Data only; run in the SQL Editor, because `skills` has RLS on with no policy for `anon` |
 | `supabase/05_experience.sql` | `public.experiences` seed — the two CV roles. Same reason; it also clears the old dummy row |
+| `supabase/06_hero_specializations.sql` | Sets the hero's rotating `specializations` to the three roles, in order. A `jsonb_set` on one key, so the hero's other twelve fields survive. Needed because a stored list wins over the code default and the row still holds five older entries |
 | `serve.js` | Zero-dependency local static server (port 4173, loopback only) |
 
 ### Load order
@@ -88,8 +89,8 @@ page that loads it late will throw.
 `js/public-content.js` replaces a repeatable list **only** when Supabase returns
 visible rows, otherwise the static markup stands as the fallback. So a section
 can legitimately show fewer items than the HTML contains — the database is the
-source of truth once a row is visible. (As of writing: 1 visible service,
-1 visible skill, 1 visible experience.)
+source of truth once a row is visible. (As of writing: 3 visible services,
+18 visible skills, 2 visible experiences.)
 
 ## Contact form
 
@@ -127,6 +128,28 @@ The form validates, then delivers by email:
 - The hero is copy-left / portrait-right on one row from **601px** up (flex on
   `.hero__grid`, with the order on the two children rather than an area map);
   only phones stack it, and then the portrait goes first.
+- The hero's **SPECIALIZING** line is a rotating typewriter (`script.js` · module
+  3). The label is static; the role after it is typed letter by letter, held,
+  then deleted letter by letter, then the next one starts — `TYPE_MS` 70,
+  `HOLD_MS` 1400, `ERASE_MS` 38, `GAP_MS` 380, looping forever. The rotation is
+  `Frontend Developer → UI/UX Designer → E-Commerce Specialist` **in that
+  order**, and the first entry is what a reduced-motion visitor sees. The list
+  is data: a stored `public.portfolio_content` hero row replaces it wholesale
+  through `window.NPSpecializations.set()` (the CMS field is authoritative —
+  `supabase/06_hero_specializations.sql` seeds the three roles). Under
+  `prefers-reduced-motion` the line shows the first role statically instead of
+  animating; the caret keeps blinking in both modes.
+- That line must not resize as the text changes, so the row is deliberately
+  **not** `flex-wrap: wrap`: with wrapping, the label plus a long role wraps and
+  the label plus an empty line does not, so the row changed height as the text
+  was typed and everything below it jumped (measured at 390px: 18.4px → 58.1px,
+  i.e. the buttons moved 38.7px every cycle). Two rules keep it still instead —
+  `line-height: 1.65` with a matching `min-height` on the typed element, so its
+  box is the same height whether or not it holds text (an empty inline-block is
+  0px tall, which was a 9–11px jump per cycle at every width), and a
+  `max-width: 360px` block that moves the label onto its own line, where the
+  copy column is narrower than the label + longest role and flex would otherwise
+  shrink the text and cut the role off mid-word.
 - Selected projects (`index.html`) are full-width centred panels — the copy on
   the LEFT, the large cover on the RIGHT, the same way round on every row —
   that pin at 110px and stack as you scroll (`width: 100%`, `max-width:
@@ -141,6 +164,26 @@ The form validates, then delivers by email:
 - The stack pins **without** a `prefers-reduced-motion` gate: pinning is layout,
   not movement. Such a visitor still loses every entrance animation, and on a
   phone the section reads as an ordinary list.
+- Experience (`index.html`) is a centre-rail timeline. One 2px rail spans the
+  whole list and its fill grows from 0 to 100% of that rail as the entries climb
+  from 70% of the viewport to its centre, with a glowing head riding the leading
+  edge (`script.js` · module 13, `experienceRail`). Its geometry is measured on
+  a time throttle and cached, so a scroll event does arithmetic and at most one
+  style write. It re-measures on `animationend`/`transitionend`, 250ms after the
+  scroll stops, and at 0/250/700/1500/3000ms — hydration and late webfonts both
+  change the list height, and the list is itself a reveal target parked with a
+  `translateY` + `rotateX`, so a reading taken mid-entrance is a few pixels out
+  (a `rotateX` is a projection: it moves the rect without moving the layout).
+  That is why the fill can read up to ~1% off while an entrance is still
+  playing and is exact once it settles, in both scroll directions. From **900px** up the rail sits
+  dead centre with a column either side (role + company left, dates right, one
+  bullet per description sentence on the right); below that it hugs the left
+  edge and the rows stack, keeping the same line. The rail is markup, not a
+  painted decoration, so it survives hydration untouched: stored descriptions
+  are split into bullets on the same rule the static fallback is written with
+  (one sentence per bullet), so nothing shifts when the database rows land.
+  Reduced motion shows the rail **fully filled** — it reports position rather
+  than performing an entrance — and the head stops pulsing (`xp__rail-dot`).
 
 ## Security headers
 
@@ -171,8 +214,12 @@ exercised while working.
 ## Caching
 
 Static assets are requested with a manual `?v=` query string
-(`styles.css?v=25`, `script.js?v=17`, …). **Bump the number when you change the
-file**, otherwise browsers and the local preview keep serving the old copy.
+(`styles.css?v=38`, `script.js?v=25`, `js/public-content.js?v=11`, …). **Bump the
+number when you change the file**, otherwise browsers and the local preview keep
+serving the old copy. `admin.html` makes no reference to `styles.css`, so a
+stylesheet bump does not touch it; the two secondary pages (`projects.html`,
+`project.html`) carry their own `?v=` for `styles.css` and `public-content.js`,
+and must be bumped alongside `index.html`.
 
 ## No-backend mode
 

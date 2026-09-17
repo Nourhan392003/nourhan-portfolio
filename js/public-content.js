@@ -152,7 +152,9 @@
     last_name: 'Ashraf',
     description_line_1: 'I build clear, responsive web experiences — from e-commerce storefronts to modern brand websites.',
     description_line_2: 'Focused on storefront UI, content hierarchy, and purposeful interaction.',
-    specializations: ['Frontend Developer', 'E-Commerce Specialist', 'Brand Website Builder', 'Responsive UI Developer'],
+    /* the rotation, in order — mirrors the typewriter's own default in
+       script.js, and the reduced-motion fallback reads the first entry */
+    specializations: ['Frontend Developer', 'UI/UX Designer', 'E-Commerce Specialist'],
     profile_image: '',
     cta_1_label: 'View Selected Work',
     cta_1_href: '#projects',
@@ -536,6 +538,32 @@
     };
   }
 
+  /* One stored description → the bullet list the timeline is built around.
+     A sentence break is a . ! or ? followed by whitespace and a capital
+     letter, so "Next.js" and "Node.js" never split down the middle; a
+     description that is a single sentence simply stays one bullet. */
+  function splitSentences(text) {
+    var raw = txt(text);
+    if (!raw) return [];
+
+    var pieces = [];
+    var re = /[.!?]+\s+(?=[A-Z])/g;
+    var from = 0;
+    var m;
+    while ((m = re.exec(raw)) !== null) {
+      pieces.push(raw.slice(from, m.index + 1));
+      from = m.index + m[0].length;
+    }
+    pieces.push(raw.slice(from));
+
+    var kept = [];
+    for (var i = 0; i < pieces.length; i++) {
+      var s = pieces[i].replace(/\s+/g, ' ').trim();
+      if (s) kept.push(s);
+    }
+    return kept;
+  }
+
   function hydrateExperiences(rows) {
     var region = q('[data-experience-content]');
     if (!region) return false;
@@ -584,47 +612,62 @@
 
     /* database content only ever reaches the DOM through textContent —
        no stored string is ever interpolated as markup */
+    function node(tag, className, text) {
+      var el = document.createElement(tag);
+      if (className) el.className = className;
+      if (text != null) el.textContent = text;
+      return el;
+    }
+
+    function bulletNode(text) {
+      var li = node('li');
+      var dot = node('span', 'xp__point-dot');
+      dot.setAttribute('aria-hidden', 'true');
+      li.appendChild(dot);
+      li.appendChild(node('span', null, text));
+      return li;
+    }
+
     var frag = document.createDocumentFragment();
     for (var k = 0; k < items.length; k++) {
       var it = items[k];
       /* echo only what is actually stored — no invented employers or dates */
       var dates = it.start && it.end ? it.start + ' \u2014 ' + it.end : (it.start || it.end);
-      var meta = [];
-      if (it.company) meta.push(it.company);
-      if (dates) meta.push(dates);
 
-      var article = document.createElement('article');
-      article.className = 'xp__item xp__item--dynamic';
+      var article = node('article', 'xp__item xp__item--dynamic');
       article.setAttribute('data-reveal', '');
 
+      /* left of the rail: who and when */
+      var head = node('div', 'xp__head');
       if (!it.end) {
-        var badge = document.createElement('span');
-        badge.className = 'xp__badge xp__badge--live';
-        var dot = document.createElement('span');
-        dot.className = 'xp__badge-dot';
-        dot.setAttribute('aria-hidden', 'true');
-        badge.appendChild(dot);
+        var badge = node('span', 'xp__badge xp__badge--live');
+        var badgeDot = node('span', 'xp__badge-dot');
+        badgeDot.setAttribute('aria-hidden', 'true');
+        badge.appendChild(badgeDot);
         badge.appendChild(document.createTextNode('Ongoing'));
-        article.appendChild(badge);
+        head.appendChild(badge);
       }
+      head.appendChild(node('h3', 'xp__role', it.role));
+      if (it.company) head.appendChild(node('p', 'xp__company', it.company));
 
-      var roleEl = document.createElement('h3');
-      roleEl.className = 'xp__role';
-      roleEl.textContent = it.role;
-      article.appendChild(roleEl);
+      var left = node('div', 'xp__left');
+      left.appendChild(head);
+      if (dates) left.appendChild(node('p', 'xp__dates', dates));
+      article.appendChild(left);
 
-      if (meta.length) {
-        var metaEl = document.createElement('p');
-        metaEl.className = 'xp__meta';
-        metaEl.textContent = meta.join(' \u00b7 ');
-        article.appendChild(metaEl);
-      }
+      /* the empty column the rail passes through */
+      var spacer = node('span', 'xp__node');
+      spacer.setAttribute('aria-hidden', 'true');
+      article.appendChild(spacer);
 
-      if (it.description) {
-        var descEl = document.createElement('p');
-        descEl.className = 'xp__desc';
-        descEl.textContent = it.description;
-        article.appendChild(descEl);
+      /* right of the rail: what the role involved, one bullet per sentence */
+      var points = splitSentences(it.description);
+      if (points.length) {
+        var list = node('ul', 'xp__points');
+        for (var p = 0; p < points.length; p++) list.appendChild(bulletNode(points[p]));
+        var body = node('div', 'xp__body');
+        body.appendChild(list);
+        article.appendChild(body);
       }
 
       frag.appendChild(article);
@@ -929,6 +972,7 @@
     hydrateFooter: hydrateFooter,
     serviceFromRow: serviceFromRow,
     skillFromRow: skillFromRow,
+    splitSentences: splitSentences,
     heroFromRow: heroFromRow,
     contactFromRow: contactFromRow,
     replayReveal: replayReveal,
