@@ -116,6 +116,15 @@ The form validates, then delivers by email:
 - Motion is opt-in-safe: the OS `prefers-reduced-motion` setting is honoured by
   default, and every animation has a reduced-motion path. `?motion=full` forces
   the full choreography for the session, `?motion=system` undoes it.
+- Selected projects (`index.html`) carry one **shared numeral** in its own
+  pinned column on the left — the rows below 640px still print their own — and
+  it rolls like an odometer as each project takes over: the digit leaves the
+  mask, the next one is swapped in off-screen, then arrives. The numeral shown
+  is always the last project whose top edge crossed a quarter of the viewport,
+  which is the rule the reference portfolio drives with a ScrollTrigger per
+  card, so the roll reads identically scrolling down and back up. With reduced
+  motion (or a dropped column) the number still tracks, it simply never
+  travels. The timing lives in the `projectsIndex` module in `script.js`.
 
 ## Security headers
 

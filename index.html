@@ -42,7 +42,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
   <!-- bump the ?v= when styles or the behaviour script change, so browsers
        (and the local preview) pick the new files up instead of a cached copy -->
-  <link rel="stylesheet" href="styles.css?v=26" />
+  <link rel="stylesheet" href="styles.css?v=32" />
   <!-- Before paint: js class, saved theme, ?motion override. Extracted from
        the head into js/boot.js so the CSP above can keep script-src free of
        'unsafe-inline'. Same parser-blocking position, same timing. -->
@@ -470,7 +470,17 @@
              When nothing is published (or the backend is not configured),
              an honest empty state is shown — there are no static
              placeholder cards. -->
-        <div class="projects" id="projects-grid"></div>
+        <div class="projects-shell">
+          <!-- One shared index, pinned in its own column beside the rows.
+               Its digit rolls like an odometer as each project takes over,
+               so the numeral always names the row you are looking at.
+               Decorative — below 640px the column is dropped and every row
+               prints its own number again. -->
+          <div class="projects__index" aria-hidden="true">
+            <span class="projects__index-lead" data-projects-index-lead>0</span><span class="projects__index-roll"><span class="projects__index-digit" data-projects-index>1.</span></span>
+          </div>
+          <div class="projects" id="projects-grid"></div>
+        </div>
 
         <!-- Every published project, presented as its own case study -->
         <div class="projects__more" data-reveal>
@@ -955,7 +965,7 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
-  <script src="script.js?v=17"></script>
+  <script src="script.js?v=19"></script>
   <!-- Backend (Supabase) — order matters -->
   <script src="js/vendor/supabase.js"></script>
   <script src="config.js"></script>
