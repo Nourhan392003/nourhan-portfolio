@@ -114,17 +114,31 @@ The form validates, then delivers by email:
   the page never flashes the wrong mode. All colours come from CSS custom
   properties in `styles.css`.
 - Motion is opt-in-safe: the OS `prefers-reduced-motion` setting is honoured by
-  default, and every animation has a reduced-motion path. `?motion=full` forces
-  the full choreography for the session, `?motion=system` undoes it.
-- Selected projects (`index.html`) carry one **shared numeral** in its own
-  pinned column on the left — the rows below 640px still print their own — and
-  it rolls like an odometer as each project takes over: the digit leaves the
-  mask, the next one is swapped in off-screen, then arrives. The numeral shown
-  is always the last project whose top edge crossed a quarter of the viewport,
-  which is the rule the reference portfolio drives with a ScrollTrigger per
-  card, so the roll reads identically scrolling down and back up. With reduced
-  motion (or a dropped column) the number still tracks, it simply never
-  travels. The timing lives in the `projectsIndex` module in `script.js`.
+  default. It governs *movement*, not rhythm — the hero still appears, the
+  butterflies stay visible as static art, and every scroll entrance becomes a
+  plain opacity fade with the same stagger (`quietFadeIn`), so the page still
+  assembles as you scroll; it just never slides, rotates, scales or chases the
+  pointer. `?motion=full` forces the complete choreography for the session (it
+  is also how the motion gets reviewed on a machine whose OS reports reduced
+  motion), `?motion=system` undoes it. The reveal engine and its safety net run
+  in both modes, so a fade can never leave content stranded at opacity 0.
+- The hero is copy-left / portrait-right on one row from **601px** up (flex on
+  `.hero__grid`, with the order on the two children rather than an area map);
+  only phones stack it, and then the portrait goes first.
+- Selected projects (`index.html`) are full-width centred panels — the copy on
+  the LEFT, the large cover on the RIGHT, the same way round on every row —
+  that pin at 110px and stack as you scroll (`width: 100%`, `max-width:
+  1100px`, `margin: 0 auto 3.5rem`). The pin starts at **520px**, so the stack
+  is visible in a narrow desktop window and in this app's own preview pane;
+  below 601px the numeral simply moves from its side gutter to a line above
+  its card, and below 520px the rows become the phone list (cover over copy,
+  nothing pinned). The big numeral lives in the rail INSIDE each row, so a
+  card never gives up width for it. Nothing outside the rows holds a column:
+  an earlier revision put the numeral in its own grid track beside them, and
+  the cards collapsed into that ~130px track whenever the numeral was hidden.
+- The stack pins **without** a `prefers-reduced-motion` gate: pinning is layout,
+  not movement. Such a visitor still loses every entrance animation, and on a
+  phone the section reads as an ordinary list.
 
 ## Security headers
 

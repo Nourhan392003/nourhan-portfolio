@@ -306,16 +306,24 @@ const CONTACT_LINKS = {
     }
 
     // Only elements carrying `data-scroll-motion` are hidden and offset by
-    // the CSS, and this marker is written by JS only — so reduced motion
-    // (where this never runs) leaves the page visible and untouched.
+    // the CSS, and this marker is written by JS only — with no JS at all the
+    // page is visible and untouched.
     function markMotion(node) {
       if (isRail(node)) return;
       node.setAttribute('data-scroll-motion', '1');
       node.setAttribute('data-scroll-dir', scrollDirection);
     }
 
-    // No IntersectionObserver (or reduced motion) → everything is visible.
-    if (!('IntersectionObserver' in window) || reduced()) {
+    // No IntersectionObserver → everything is visible from the start.
+    //
+    // Reduced motion is deliberately NOT a reason to skip the reveal. The
+    // observer still runs, and the reduced-motion block in styles.css swaps
+    // every entrance for a plain opacity fade with the same stagger — no
+    // travel, no rotation. So a visitor who asked for less motion still gets
+    // a page that assembles as they scroll, and still loses every slide,
+    // zoom and pointer-chasing effect. `data-motion="full"` opts back into
+    // the complete choreography.
+    if (!('IntersectionObserver' in window)) {
       window.NPReveal = {
         observeAll: function (scope) {
           var root = scope || document;
@@ -432,173 +440,6 @@ const CONTACT_LINKS = {
         }).observe(grid, { childList: true });
       }
     }
-  })();
-
-  /* ============================================================
-     4b · Selected projects — the rolling index
-     ------------------------------------------------------------
-     The projects section carries one numeral, pinned in its own column
-     beside the rows, and it rolls like an odometer as each project takes
-     over: the current digit leaves the box, the next one is swapped in
-     while it is off-screen, then it arrives.
-     The rule is the same one the reference portfolio drives with a
-     ScrollTrigger per card (start: 'top 25%'): the numeral shown is the
-     last project whose top edge is above a quarter of the viewport, so
-     the roll reads identically scrolling down and back up.
-     No-ops on every page without the index column, below the 640px
-     breakpoint (where each row prints its own numeral), and under
-     reduced motion — the numeral is decoration, never the only cue.
-     ============================================================ */
-  (function projectsIndex() {
-    // `digit` is the element that travels; `clip` is the mask it travels
-    // behind. They must stay separate: a transform on the mask would move
-    // the whole numeral instead of rolling it through the opening.
-    var digits = document.querySelector('[data-projects-index]');
-    var clip = document.querySelector('.projects__index-roll');
-    var strip = document.querySelector('.projects__index');
-    var lead = document.querySelector('[data-projects-index-lead]');
-    var grid = document.getElementById('projects-grid');
-    if (!digits || !clip || !strip || !grid) return;
-
-    var OUT = '130%';                  // clears the clip box, not just one line
-    var EXIT = 0.3;                    // s — the old numeral leaves
-    var ENTER = 0.3;                   // s — the new one settles in
-    var EASE_OUT = 'cubic-bezier(0.87, 0, 0.13, 1)';          // ≈ power4.inOut
-    var EASE_IN = 'cubic-bezier(0.455, 0.03, 0.515, 0.955)';  // ≈ power1.inOut
-
-    var shown = 1;                     // the numeral the markup starts on
-    var busy = false;
-    var timer = null;
-    var ticking = false;
-
-    function rows() {
-      return grid.querySelectorAll('.case:not(.case--skeleton)');
-    }
-
-    function paint(n) {
-      digits.textContent = n + '.';
-      if (lead) lead.textContent = n < 10 ? '0' : '';
-      shown = n;
-    }
-
-    // the last project whose top edge has crossed a quarter of the viewport
-    function atLine() {
-      var line = window.innerHeight * 0.25;
-      var list = rows();
-      var n = list.length ? 1 : 0;
-      for (var i = 0; i < list.length; i++) {
-        if (list[i].getBoundingClientRect().top <= line) n = i + 1;
-      }
-      return n;
-    }
-
-    function still() {
-      window.clearTimeout(timer);
-      busy = false;
-      digits.style.transition = 'none';
-      digits.style.transform = 'none';
-    }
-
-    // the mask has no layout when the column is dropped (below 640px), and
-    // reduced motion turns the roll off — either way the numeral still has
-    // to read correctly, it just never travels
-    function masked() {
-      return reduced() || !clip.offsetHeight;
-    }
-
-    function move(to, ms, ease, done) {
-      digits.style.transition = 'transform ' + ms + 's ' + ease;
-      digits.style.transform = 'translateY(' + to + ')';
-      window.clearTimeout(timer);
-      timer = window.setTimeout(done, ms * 1000 + 24);
-    }
-
-    // park the digit on the far side of the mask without animating, so the
-    // next move always starts from a known place
-    function park(x) {
-      digits.style.transition = 'none';
-      digits.style.transform = 'translateY(' + x + ')';
-      void digits.offsetHeight;
-    }
-
-    function arrive(from) {
-      busy = true;
-      move(from, ENTER, EASE_IN, function () {
-        busy = false;
-        digits.style.transition = 'none';
-        digits.style.transform = 'none';
-      });
-    }
-
-    function roll(n, forward) {
-      var out = forward ? '-' + OUT : OUT;
-      var back = forward ? OUT : '-' + OUT;
-
-      window.clearTimeout(timer);
-
-      if (masked()) {
-        paint(n);
-        still();
-        return;
-      }
-
-      // a roll is already in flight — scrolling fast must not stack
-      // animations, so that digit is dropped out of sight right away
-      if (busy) {
-        busy = false;
-        park(out);
-        paint(n);
-        park(back);
-        arrive('0');
-        return;
-      }
-
-      busy = true;
-      move(out, EXIT, EASE_OUT, function () {
-        park(back);          // the swap happens while it is out of sight
-        paint(n);
-        arrive('0');
-      });
-    }
-
-    function tick() {
-      ticking = false;
-
-      // nothing to number while the column is off (below the breakpoint)
-      if (!clip.offsetHeight) return;
-
-      if (!rows().length) {
-        strip.classList.add('is-empty');
-        return;
-      }
-      strip.classList.remove('is-empty');
-
-      var next = atLine();
-      if (!next || next === shown) return;
-      roll(next, next > shown);
-    }
-
-    window.addEventListener('scroll', function () {
-      if (ticking) return;
-      ticking = true;
-      // the frame keeps this in step with the paint; the timeout is the way
-      // out of a throttled tab, where rAF can be paused while scroll events
-      // keep arriving — without it the guard would stay shut for good
-      window.requestAnimationFrame(tick);
-      window.setTimeout(function () {
-        if (ticking) tick();
-      }, 90);
-    }, { passive: true });
-    window.addEventListener('resize', tick, { passive: true });
-
-    // rows arrive from Supabase after load, so keep re-reading the list
-    if ('MutationObserver' in window) {
-      new MutationObserver(tick).observe(grid, { childList: true });
-    }
-    window.addEventListener('load', tick);
-    [0, 400, 1200].forEach(function (delay) {
-      window.setTimeout(tick, delay);
-    });
   })();
 
   /* ============================================================
@@ -1311,8 +1152,9 @@ const CONTACT_LINKS = {
      scroll, on resize, on load and a few timed passes later. It never waits
      on requestAnimationFrame, so it still runs when frames are not being
      produced, and it only ever ADDS .visible, leaving the observer in full
-     control of the replay. Reduced motion never parks anything, so this is a
-     no-op there.
+     control of the replay. It matters most under reduced motion, where every
+     entrance is an opacity fade: this net is what guarantees a parked
+     element can never be left invisible.
      ============================================================ */
   (function revealSafetyNet() {
     var SELECTOR =
