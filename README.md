@@ -186,7 +186,9 @@ DevTools reports one expected 404 for the not-yet-created `config.js`.
   drop the real PDF at that path (or update the `href` on the three pages).
 - Real projects only: **TCG Vault / Hatartcg**, **Social Culture**.
 - No invented metrics, years, clients, testimonials, screenshots or links.
-- Real screenshots / profile photo: drop into `images/` or upload via the admin.
+- Real screenshots / profile photo: drop into `assets/images/` or upload via the admin.
+- The CV PDF lives in `assets/docs/`; the **Download CV** buttons on all three
+  public pages link to it directly.
 
 ## Project boundaries
 

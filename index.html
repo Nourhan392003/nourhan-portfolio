@@ -27,7 +27,7 @@
 
   <meta name="description" content="Nourhan Ashraf — frontend developer building clear, responsive digital experiences: e-commerce storefronts and modern brand websites." />
   <title>Nourhan Ashraf — Frontend Developer &amp; E-Commerce Specialist</title>
-  <link rel="icon" type="image/svg+xml" href="images/favicon.svg" />
+  <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg" />
 
   <!-- Social share cards -->
   <meta property="og:type" content="website" />
@@ -290,14 +290,15 @@
               <div class="hero__visual-glow" aria-hidden="true"></div>
               <div class="hero__visual-frame">
                 <figure class="hero__frame" data-hero-image>
-                  <!-- Swap the portrait by replacing images/profile.jpg.
-                       script.js falls back to images/profile.jpeg and only then
-                       to the editorial placeholder below, so a missing file
-                       never leaves an empty frame. -->
+                  <!-- Swap the portrait by replacing assets/images/profile.jpg.
+                       script.js falls back to assets/images/profile.jpeg and only
+                       then to the editorial placeholder below, so a missing file
+                       never leaves an empty frame. Supabase supplies an https
+                       URL here whenever a portrait is set in the dashboard. -->
                   <img
                     class="hero__photo hero-photo"
                     id="hero-photo"
-                    src="images/profile.jpg"
+                    src="assets/images/profile.jpg"
                     alt="Nourhan Ashraf — portrait"
                     width="1086"
                     height="1448"
@@ -947,7 +948,7 @@
         SOMETHING <span class="accent-glow">MEMORABLE.</span>
       </h2>
       <div class="cta-footer__cta-row" data-reveal>
-        <a class="cta-cv" href="cv/nourhan-ashraf-cv.pdf" download
+        <a class="cta-cv" href="assets/docs/Nourhan_Ashraf_CV.pdf" download="nourhan-ashraf-cv.pdf"
            title="Download CV (PDF)">
           <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none"
                stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
@@ -1016,7 +1017,7 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
-  <script src="script.js?v=23"></script>
+  <script src="script.js?v=24"></script>
   <!-- Backend (Supabase) — order matters -->
   <script src="js/vendor/supabase.js"></script>
   <script src="config.js"></script>
@@ -1026,7 +1027,7 @@
   <script src="js/icon-library.js?v=2"></script>
   <!-- Public Hero + Contact hydration (read-only, falls back to the static
        markup above when there is no row or the read fails). -->
-  <script src="js/public-content.js?v=9"></script>
+  <script src="js/public-content.js?v=10"></script>
   <!-- js/projects.js self-initialises from the markup (#projects-grid here,
        #projects-index on projects.html), so no inline loader is needed and
        the CSP stays strict. -->

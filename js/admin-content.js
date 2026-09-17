@@ -97,11 +97,13 @@
     }
   }
 
-  /* the public renderer accepts a local images/ path or an https URL */
+  /* the public renderer accepts a local path under images/ or an https URL.
+     "assets/images/…" is the current location; the bare "images/…" form is
+     still accepted so an older stored value can round-trip through the form. */
   function isSafeImageRef(value) {
     var raw = String(value == null ? '' : value).trim();
     if (!raw) return true; /* empty = keep the current portrait */
-    if (/^images\//i.test(raw) && raw.indexOf('..') === -1) return true;
+    if (/^(?:assets\/)?images\//i.test(raw) && raw.indexOf('..') === -1) return true;
     return /^https:\/\//i.test(raw) && isHttpUrl(raw);
   }
 
@@ -512,7 +514,7 @@
       labelText = heroImage.saved;
     } else {
       showSrc = '';
-      labelText = 'Using the portrait already on the site (images/profile.jpg).';
+      labelText = 'Using the portrait already on the site (assets/images/profile.jpg).';
     }
 
     if (showSrc) {
@@ -620,7 +622,7 @@
       if (d.cta_1_href && !isAnchorOrUrl(d.cta_1_href)) p.push('Primary CTA link must be a #section or a full URL.');
       if (d.cta_2_href && !isAnchorOrUrl(d.cta_2_href)) p.push('Secondary CTA link must be a #section or a full URL.');
       if (d.availability_text.length > MAX.availability) p.push('Availability text is too long.');
-      if (!isSafeImageRef(d.profile_image)) p.push('The profile image must be a local images/ path or an https URL.');
+      if (!isSafeImageRef(d.profile_image)) p.push('The profile image must be a local assets/images/ path or an https URL.');
       if (d.profile_image.length > MAX.imageUrl) p.push('The profile image URL is too long.');
       d.specializations.forEach(function (s) {
         if (s.length > MAX.specialization) p.push('Specialization "' + s.slice(0, 20) + '…" is too long (max ' + MAX.specialization + ').');

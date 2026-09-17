@@ -64,11 +64,14 @@
     return true;
   }
 
-  /* only http(s) URLs and local "images/…" paths are accepted */
+  /* only http(s) URLs and local paths under images/ are accepted.
+     "assets/images/…" is where the files live now; the bare "images/…"
+     form is still honoured so an older stored value is never silently
+     dropped from the page. */
   function safeImageSrc(value) {
     var raw = String(value == null ? '' : value).trim();
     if (!raw) return null;
-    if (/^images\//i.test(raw) && raw.indexOf('..') === -1 && !/^images:\/\//i.test(raw)) {
+    if (/^(?:assets\/)?images\//i.test(raw) && raw.indexOf('..') === -1) {
       return raw;
     }
     if (/^https:\/\//i.test(raw)) {

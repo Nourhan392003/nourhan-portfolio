@@ -6,7 +6,8 @@
  * hero entrance simply plays once on load.
  *
  * Modules
- *   1. portrait    — images/profile.jpg → images/profile.jpeg → placeholder
+ *   1. portrait    — assets/images/profile.jpg → assets/images/profile.jpeg →
+ *                    placeholder
  *   2. side copy   — one-time GSAP entrance timeline for the hero copy column
  *   3. typewriter  — rotating specialization line
  *   4. reveal      — direction-aware IntersectionObserver reveals
@@ -62,14 +63,14 @@ const CONTACT_LINKS = {
 
   /* ============================================================
      1 · Portrait — swap-friendly loading
-     Replace images/profile.jpg to change the hero photo.
+     Replace assets/images/profile.jpg to change the hero photo.
      ============================================================ */
   (function portrait() {
     var img = document.getElementById('hero-photo');
     if (!img) return;
 
     var frame = img.closest('.hero__frame') || img.parentNode;
-    var sources = ['images/profile.jpg', 'images/profile.jpeg'];
+    var sources = ['assets/images/profile.jpg', 'assets/images/profile.jpeg'];
     var index = 0;
 
     function showPlaceholder() {
