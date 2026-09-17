@@ -1,6 +1,8 @@
-# Local runtime config (this project's Supabase URL + anon key).
-# config.example.js is committed as the template.
-config.js
+# Runtime config is COMMITTED on purpose — see the header of config.js.
+# A static site cannot read environment variables, and config.js holds only
+# the public Supabase URL and the publishable (anon) key, which is safe to
+# expose: RLS is what protects the data. Never add a service_role key or any
+# private token to it. config.example.js stays as the template for a clone.
 
 # Agent / editor scratch space: timestamped copies of files taken before edits.
 .freebuff/

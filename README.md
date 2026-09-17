@@ -50,7 +50,8 @@ The admin dashboard is at <http://127.0.0.1:4173/admin.html>.
 | `js/admin.js` | Admin login, project CRUD, publish/featured toggles, reorder, uploads, i18n (EN/AR) |
 | `js/admin-content.js` | The section editors (hero, contact, services, skills, experience, about, footer) |
 | `js/icon-library.js` | Fixed icon allowlist (22 keys) — no stored string is ever rendered as markup. A skill whose `icon_key` is not on the allowlist is skipped by the public hydration, on purpose |
-| `config.example.js` | Template → copy to `config.js` (gitignored) |
+| `config.js` | **Committed:** the public Supabase URL + publishable key. See “`config.js` is committed” below |
+| `config.example.js` | Template for a fresh clone |
 | `js/vendor/supabase.js` | Vendored supabase-js, so the client is not a CDN dependency |
 | `supabase/01_schema.sql` | `projects` + `profiles` tables, triggers, `is_admin()` helper |
 | `supabase/02_policies.sql` | RLS: public reads published rows only; admins write |
@@ -78,11 +79,29 @@ page that loads it late will throw.
    ```sql
    update public.profiles set is_admin = true where id = '<your-user-uuid>';
    ```
-6. **Settings → API**: copy the Project URL and the **anon public** key. Copy
-   `config.example.js` → `config.js` and paste both values, then reload.
+6. **Settings → API**: copy the Project URL and the **anon public** key into
+   `config.js` (use `config.example.js` as the template for a fresh clone).
 
 > The anon key is public by design — Row Level Security is the safety boundary.
 > Never place the `service_role` key in any file here.
+
+### `config.js` is committed
+
+`config.js` ships in the repository on purpose. A static page cannot read
+environment variables, and all four pages load it with
+`<script src="config.js">`, so a deploy built from this repo needs the file
+present. It contains **only** two values:
+
+| key | why it is safe to publish |
+|---|---|
+| `SUPABASE_URL` | the address the browser already talks to |
+| `SUPABASE_ANON_KEY` | Supabase's publishable key (`sb_publishable_…`), designed to be visible in client code — RLS is what protects the data, and anonymous writes to every table are refused |
+
+Anything secret belongs on a server, never here: the `service_role` key
+bypasses RLS entirely, so adding it to this file would publish full write
+access to the database. `CONTACT_ENDPOINT` and `CONTACT_EMAIL` are optional and
+omitted here — `script.js` falls back to its built-in default inbox and to the
+visitor's mail client when no endpoint is set, so the form works either way.
 
 ### Content summary or empty state
 
@@ -225,7 +244,8 @@ and must be bumped alongside `index.html`.
 
 Without `config.js`, the site works exactly as before: the static markup is
 shown, `admin.html` explains the setup step, and no errors reach visitors.
-DevTools reports one expected 404 for the not-yet-created `config.js`.
+DevTools reports one expected 404 for the missing `config.js`. The repository
+ships the file, so this only happens if it is deleted locally.
 
 ## Content rules
 
