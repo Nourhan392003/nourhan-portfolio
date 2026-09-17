@@ -1328,22 +1328,6 @@ html.js .service.visible::after {
   max-width: 64ch;
 }
 
-/* clearly-marked, honest placeholder entry */
-.xp__item--placeholder .xp__role,
-.xp__item--placeholder .xp__desc {
-  color: var(--text-dim);
-}
-
-.xp__item--placeholder {
-  border-bottom-style: dashed;
-}
-
-.xp__item--placeholder .xp__badge {
-  border-style: dashed;
-  color: var(--yellow);
-  border-color: rgba(var(--accent-hover-rgb), 0.35);
-}
-
 /* ============ 03 · Selected Projects — case studies ============ */
 /* One row = a sticky numeral rail beside the card itself. The ROW is the
    elevated surface (not just the inner card), so when a row pins and the next

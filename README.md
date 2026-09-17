@@ -49,12 +49,14 @@ The admin dashboard is at <http://127.0.0.1:4173/admin.html>.
 | `js/public-content.js` | Read-only hydration of hero, about, skills, services, experience, contact and footer from Supabase |
 | `js/admin.js` | Admin login, project CRUD, publish/featured toggles, reorder, uploads, i18n (EN/AR) |
 | `js/admin-content.js` | The section editors (hero, contact, services, skills, experience, about, footer) |
-| `js/icon-library.js` | Fixed icon allowlist — no stored string is ever rendered as markup |
+| `js/icon-library.js` | Fixed icon allowlist (22 keys) — no stored string is ever rendered as markup. A skill whose `icon_key` is not on the allowlist is skipped by the public hydration, on purpose |
 | `config.example.js` | Template → copy to `config.js` (gitignored) |
 | `js/vendor/supabase.js` | Vendored supabase-js, so the client is not a CDN dependency |
 | `supabase/01_schema.sql` | `projects` + `profiles` tables, triggers, `is_admin()` helper |
 | `supabase/02_policies.sql` | RLS: public reads published rows only; admins write |
 | `supabase/03_storage.sql` | Public `project-images` bucket; admin-only writes, folder-scoped |
+| `supabase/04_skills.sql` | `public.skills` seed — the CV skillset. Data only; run in the SQL Editor, because `skills` has RLS on with no policy for `anon` |
+| `supabase/05_experience.sql` | `public.experiences` seed — the two CV roles. Same reason; it also clears the old dummy row |
 | `serve.js` | Zero-dependency local static server (port 4173, loopback only) |
 
 ### Load order

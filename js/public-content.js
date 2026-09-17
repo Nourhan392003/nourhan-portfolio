@@ -537,12 +537,30 @@
     var region = q('[data-experience-content]');
     if (!region) return false;
 
-    var placeholder = region.querySelector('.xp__item--placeholder');
+    /* Every .xp__item that ships in the HTML is pre-hydration fallback
+       content. Real rows REPLACE it rather than sitting beside it — the
+       fallback is a stand-in for the rows, not an extra entry. */
+    var statics = region.querySelectorAll('.xp__item:not(.xp__item--dynamic)');
 
-    /* no visible rows (or a failed read) → keep the honest static markup:
-       the placeholder row stays visible and nothing is invented */
+    /* .xp__item sets an explicit display, so the [hidden] attribute alone
+       does not hide it — the inline display has to be cleared as well */
+    function hideStatics() {
+      for (var a = 0; a < statics.length; a++) {
+        statics[a].hidden = true;
+        statics[a].style.display = 'none';
+      }
+    }
+
+    function showStatics() {
+      for (var b = 0; b < statics.length; b++) {
+        statics[b].hidden = false;
+        statics[b].style.display = '';
+      }
+    }
+
+    /* no visible rows (or a failed read) → keep the honest static markup */
     if (!Array.isArray(rows) || !rows.length) {
-      if (placeholder) { placeholder.hidden = false; placeholder.style.display = ''; }
+      showStatics();
       return false;
     }
 
@@ -552,16 +570,14 @@
       if (x) items.push(x);
     }
     if (!items.length) {
-      if (placeholder) { placeholder.hidden = true; placeholder.style.display = 'none'; }
+      showStatics();
       return false;
     }
 
     /* idempotent: never stack duplicates if the page re-hydrates */
     var dynamic = region.querySelectorAll('.xp__item--dynamic');
     for (var d = 0; d < dynamic.length; d++) dynamic[d].remove();
-    /* style.display, not just [hidden] — .xp__item sets an explicit display,
-       which would otherwise win over the UA hidden rule */
-    if (placeholder) { placeholder.hidden = true; placeholder.style.display = 'none'; }
+    hideStatics();
 
     /* database content only ever reaches the DOM through textContent —
        no stored string is ever interpolated as markup */
@@ -611,10 +627,8 @@
       frag.appendChild(article);
     }
 
-    /* keep the static ongoing anchor first, then the roles in sort order */
-    var anchor = region.querySelector('.xp__item--practice');
-    if (anchor && anchor.parentNode) anchor.parentNode.insertBefore(frag, anchor.nextSibling);
-    else region.appendChild(frag);
+    /* the roles in sort order, replacing the fallback rows entirely */
+    region.appendChild(frag);
 
     replayReveal(region);
     return true;
