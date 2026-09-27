@@ -4743,11 +4743,17 @@ html.js .hero-track {
     justify-content: center;
     margin-bottom: 0;
   }
+  /* Compact buttons so BOTH CTAs (+ availability) fit the pinned viewport
+     instead of the second one clipping below the fold. */
+  .hero__grid--triple .hero__actions .btn {
+    padding: 10px 20px;
+    font-size: 0.88rem;
+  }
   .hero__grid--triple .hero__availability { order: 8; }
 
   .hero__frame.is-turntable .hero__turntable {
-    height: 34vh;
-    height: 34dvh;
+    height: 32vh;
+    height: 32dvh;
     max-height: 300px;
   }
 }
@@ -4773,8 +4779,8 @@ html.js .hero-track {
   }
 
   .hero__frame.is-turntable .hero__turntable {
-    height: 26vh;
-    height: 26dvh;
+    height: 24vh;
+    height: 24dvh;
   }
 
   .hero__grid--triple .hero__availability {
