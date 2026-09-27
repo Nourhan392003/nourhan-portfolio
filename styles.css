@@ -4676,62 +4676,109 @@ html.js .hero-track {
 .hero {
   z-index: 1;
 }
-   description/CTAs. The two text columns flatten (display: contents) so
-   every item lands in this exact order with no duplication and no overlap.
-   Pinning and the scroll rotation stay intact. */
+/* Mobile (<=767px): compact cinematic column that fits the pinned viewport:
+   title/spec, portrait, description/CTAs. Flex column, centered text; the two
+   text columns flatten so both CTAs land below the portrait. dvh units (vh
+   fallback) track the mobile URL bar; the pin track is shorter here so the
+   rotation never traps the visitor in empty space. */
 @media (max-width: 767px) {
-  .hero__grid--triple {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-areas:
-      'eyebrow'
-      'name'
-      'spec'
-      'portrait'
-      'desc'
-      'ctap'
-      'ctas'
-      'avail';
-    justify-items: center;
-    text-align: center;
-    gap: 10px;
+  html.js .hero-track {
+    height: 180vh;
   }
 
-  /* flatten the columns: children become grid items in the order above */
+  html.js .hero-track .hero--turntable {
+    height: 100vh;
+    min-height: 100vh;
+    max-height: 100vh;
+    height: 100dvh;
+    min-height: 100dvh;
+    max-height: 100dvh;
+    padding-top: calc(var(--nav-h) + 4px);
+    padding-bottom: 12px;
+  }
+
+  .hero__grid--triple {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 1rem;
+    gap: 0.75rem;
+  }
+
+  /* flatten the columns: children become flex items in visual order */
   .hero__grid--triple > .hero__copy,
   .hero__grid--triple > .hero__side--right {
     display: contents;
   }
 
-  .hero__grid--triple .hero__eyebrow { grid-area: eyebrow; margin-bottom: 0; }
+  .hero__grid--triple .hero__eyebrow { order: 1; margin-bottom: 0; }
   .hero__grid--triple .hero__name {
-    grid-area: name;
-    font-size: clamp(2rem, 9vw, 2.6rem);
+    order: 2;
+    font-size: clamp(1.8rem, 8vw, 2.2rem);
     margin-bottom: 0;
   }
-  .hero__grid--triple .hero__specialization { grid-area: spec; margin-top: 0; }
+  .hero__grid--triple .hero__specialization {
+    order: 3;
+    margin-top: 0;
+    align-items: center;
+  }
   .hero__grid--triple > .hero__visual {
-    grid-area: portrait;
+    order: 4;
     width: 100%;
     max-width: 280px;
     margin: 0 auto;
-    padding: 4px 0;
+    padding: 0;
   }
   .hero__grid--triple .hero__desc {
-    grid-area: desc;
+    order: 5;
     margin-bottom: 0;
-    font-size: 0.98rem;
+    font-size: 0.92rem;
+    max-width: 34ch;
   }
-  .hero__grid--triple > .hero__copy .hero__actions { grid-area: ctap; }
-  .hero__grid--triple > .hero__side--right .hero__actions { grid-area: ctas; }
+  .hero__grid--triple > .hero__copy .hero__actions { order: 6; }
+  .hero__grid--triple > .hero__side--right .hero__actions { order: 7; }
   .hero__grid--triple .hero__actions {
     justify-content: center;
     margin-bottom: 0;
   }
-  .hero__grid--triple .hero__availability { grid-area: avail; }
+  .hero__grid--triple .hero__availability { order: 8; }
 
   .hero__frame.is-turntable .hero__turntable {
-    height: min(30svh, 300px);
+    height: 34vh;
+    height: 34dvh;
+    max-height: 300px;
+  }
+}
+
+/* Short screens (landscape phones, small windows): compact further so the
+   stack never clips — smaller canvas and title, tighter type. */
+@media (max-width: 767px) and (max-height: 700px) {
+  .hero__grid--triple {
+    padding: 0.5rem;
+    gap: 0.5rem;
+  }
+
+  .hero__grid--triple .hero__name {
+    font-size: clamp(1.6rem, 7vw, 1.9rem);
+  }
+
+  .hero__grid--triple .hero__specialization-text {
+    font-size: 0.95rem;
+  }
+
+  .hero__grid--triple .hero__desc {
+    font-size: 0.85rem;
+  }
+
+  .hero__frame.is-turntable .hero__turntable {
+    height: 26vh;
+    height: 26dvh;
+  }
+
+  .hero__grid--triple .hero__availability {
+    font-size: 0.72rem;
   }
 }
 
