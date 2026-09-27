@@ -48,6 +48,20 @@
     : null;
   var docEl = document.documentElement;
 
+  /* Coarse pointers (touch phones/tablets): position:sticky is unreliable
+     there once any ancestor clips horizontal overflow (long-standing iOS
+     behavior) — the hero would scroll away normally and section borders
+     would cut mid-screen. On such devices the pinned viewport uses
+     position:fixed instead (the track still reserves the scroll length,
+     so the choreography is identical). Fine-pointer desktops keep sticky. */
+  var coarseQuery = window.matchMedia
+    ? window.matchMedia('(hover: none)')
+    : null;
+
+  function useFixedPin() {
+    return !!(coarseQuery && coarseQuery.matches);
+  }
+
   function reduced() {
     if (docEl.getAttribute('data-motion') === 'full') return false;
     return !!(reduceQuery && reduceQuery.matches);
@@ -155,6 +169,15 @@
   function run() {
     raf = null;
     if (destroyed || !active || !pinned) return;
+    var y = window.scrollY || window.pageYOffset || 0;
+    /* Fixed pin (touch) must dock: stuck while inside the track, in normal
+       flow above it, attached to the track bottom past it — otherwise the
+       hero would cover the screen forever. Sticky (desktop) docks itself. */
+    if (useFixedPin()) {
+      var end = heroTop + heroSpan;
+      hero.classList.toggle('hero--fixed', y >= heroTop && y <= end);
+      hero.classList.toggle('hero--tail', y > end);
+    }
     var p = progress();
     var index = Math.min(
       frames.length - 1,
@@ -183,6 +206,13 @@
   function updatePin() {
     if (destroyed || !active) return;
     if (pinAllowed()) {
+      /* Clear touch-only docking states when the pointer is fine: without
+         this, toggling emulation (or a detachable keyboard) could strand
+         a fixed hero on a mouse-driven page. */
+      if (!useFixedPin()) {
+        hero.classList.remove('hero--fixed');
+        hero.classList.remove('hero--tail');
+      }
       if (!pinned) {
         hero.classList.add('hero--turntable');
         pinned = true;
@@ -194,6 +224,8 @@
     }
     if (pinned) {
       hero.classList.remove('hero--turntable');
+      hero.classList.remove('hero--fixed');
+      hero.classList.remove('hero--tail');
       pinned = false;
     }
     layout();
@@ -216,6 +248,9 @@
     window.removeEventListener('scroll', onScroll);
     window.removeEventListener('resize', onResize);
     window.removeEventListener('pagehide', cleanup);
+    if (coarseQuery && typeof coarseQuery.removeEventListener === 'function') {
+      coarseQuery.removeEventListener('change', onResize);
+    }
     if (reduceQuery && typeof reduceQuery.removeEventListener === 'function') {
       reduceQuery.removeEventListener('change', onResize);
     }
@@ -230,6 +265,9 @@
 
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', onResize, { passive: true });
+    if (coarseQuery && typeof coarseQuery.addEventListener === 'function') {
+      coarseQuery.addEventListener('change', onResize);
+    }
     /* Late layout shifts (webfonts, Supabase hydration) change the track
        length — re-measure on the same schedule the rest of the page uses. */
     window.addEventListener('load', measure);

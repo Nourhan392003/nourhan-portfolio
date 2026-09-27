@@ -4830,6 +4830,27 @@ html.js .hero-track .hero--turntable {
   overflow: hidden;
 }
 
+/* Touch devices: sticky fails once any ancestor clips horizontal overflow
+   (iOS Safari behavior) — the hero would scroll away and section borders
+   would slice mid-screen. position:fixed needs no ancestor cooperation;
+   the track still reserves the scroll length, so the pin is identical. */
+html.js .hero-track .hero--turntable.hero--fixed {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
+/* Docked past the track: rides the track bottom out instead of covering
+   the page (sticky does this natively; fixed needs the explicit state). */
+html.js .hero-track .hero--turntable.hero--tail {
+  position: absolute;
+  top: auto;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
 html.js .hero--turntable .hero__inner {
   position: relative;
   width: 100%;
