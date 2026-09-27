@@ -4249,10 +4249,13 @@ html.js .contact .contact-row[data-scroll-motion].visible {
 }
 
 /* phones only: one column, so the card stacks its cover over the copy, and the
-   rows go back to a plain list with a plain gap between them */
+   rows go back to a plain list with a plain gap between them — pinning still
+   applies (see the deck block above), only with a tighter pin line that
+   wastes less of the small viewport under the fixed nav */
 @media (max-width: 519.98px) {
   .projects .case {
     margin-bottom: clamp(22px, 4vw, 46px);
+    top: calc(84px + var(--card-offset, 0px));
   }
 
   .case__card,
@@ -4279,12 +4282,13 @@ html.js .contact .contact-row[data-scroll-motion].visible {
 }
 
 /* --------------------------------------------------------------------------
-   The pinned panel — 520px and up. Declared AFTER the narrow-band rules so
-   its `margin: 0 auto 3.5rem` wins there and the centred full-width panel is
-   the arrangement on every width above a phone.
+   The pinned panel — ALL widths, phones included. The deck-stacking effect
+   (each row pins while the next slides over it) is the same choreography
+   on mobile as on desktop; only the card *interior* reflows per width
+   (see the narrow-band + phone rules). `margin: 0 auto 3.5rem` gives every
+   pinned row the trailing scroll room it needs to travel.
    -------------------------------------------------------------------------- */
-@media (min-width: 520px) {
-  .projects .case {
+.projects .case {
     position: -webkit-sticky;
     position: sticky;
     z-index: 1;
@@ -4316,7 +4320,6 @@ html.js .contact .contact-row[data-scroll-motion].visible {
   html[data-theme='light'] .projects .case {
     box-shadow: 0 20px 50px rgba(var(--shadow-rgb), 0.22);
   }
-}
 
 /* reduced motion: the numeral arrives in place, the rows simply do not pin */
 @media (prefers-reduced-motion: reduce) {
