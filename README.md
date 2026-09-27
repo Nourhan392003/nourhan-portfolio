@@ -72,7 +72,7 @@ page that loads it late will throw.
 ## Backend setup (one time)
 
 1. **Create a brand-new Supabase project** (do not reuse an old one).
-2. **SQL Editor** → run `supabase/01_schema.sql`, then `02_policies.sql`, then `03_storage.sql`.
+2. **SQL Editor** → run `supabase/01_schema.sql`, then `02_policies.sql`, then `03_storage.sql`, then `07_content_policies.sql` (RLS for the CMS content tables).
 3. **Auth → Providers → Email**: disable *"Allow new users to sign up"* (only the admin account should exist).
 4. **Auth → Users**: add yourself (email + password).
 5. Promote yourself — SQL Editor (you run this yourself):

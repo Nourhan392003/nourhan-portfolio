@@ -94,6 +94,20 @@
     }
   }
 
+  /* Every DB-driven href passes through here before setAttribute: only
+     http(s), mailto:, tel:, #anchors and plain site-relative paths survive.
+     Anything with an exotic scheme (notably javascript:) is dropped to '',
+     and setAttr already skips empty values — so a hostile stored URL can
+     never become a clickable control. CSP remains the second layer. */
+  function safeHref(value) {
+    var raw = String(value == null ? '' : value).trim();
+    if (!raw) return '';
+    if (/^(https?:\/\/|mailto:|tel:|#)/i.test(raw)) return raw;
+    if (/^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(raw)) return '';
+    if (/^[\w\-./?#=&%+~]+$/.test(raw)) return raw;
+    return '';
+  }
+
   function digitsOf(value) {
     return String(value == null ? '' : value).replace(/[^\d+]/g, '');
   }
@@ -328,11 +342,11 @@
     var ctas = qa('.hero__actions .hero__cta');
     if (ctas.length >= 1) {
       setText(ctas[0], hero.cta_1_label);
-      setAttr(ctas[0], 'href', hero.cta_1_href);
+      setAttr(ctas[0], 'href', safeHref(hero.cta_1_href));
     }
     if (ctas.length >= 2) {
       setText(ctas[1], hero.cta_2_label);
-      setAttr(ctas[1], 'href', hero.cta_2_href);
+      setAttr(ctas[1], 'href', safeHref(hero.cta_2_href));
     }
 
     var availability = q('.hero__availability');
@@ -357,7 +371,7 @@
     var value = q('.contact-row__value', row);
     if (value && cfg.value != null && cfg.value !== '') setText(value, cfg.value);
 
-    if (cfg.href) setAttr(row, 'href', cfg.href);
+    if (cfg.href) setAttr(row, 'href', safeHref(cfg.href));
   }
 
   function hydrateContact(row) {

@@ -612,9 +612,14 @@
 
   document.getElementById('f-cover-file').addEventListener('change', function () {
     if (this.files && this.files[0]) {
-      pendingCoverFile = this.files[0];
-      pendingCoverRemoved = false;
-      updateCoverPreview();
+      var problem = validateProjectImage(this.files[0]);
+      if (problem) {
+        toast(problem, true);
+      } else {
+        pendingCoverFile = this.files[0];
+        pendingCoverRemoved = false;
+        updateCoverPreview();
+      }
     }
     this.value = ''; // allow re-picking the same file
   });
@@ -698,7 +703,14 @@
 
   document.getElementById('f-gallery-files').addEventListener('change', function () {
     var incoming = Array.prototype.slice.call(this.files || []);
-    incoming.forEach(function (f) { pendingGalleryFiles.push(f); });
+    incoming.forEach(function (f) {
+      var problem = validateProjectImage(f);
+      if (problem) {
+        toast((f.name || 'File') + ': ' + problem, true);
+        return;
+      }
+      pendingGalleryFiles.push(f);
+    });
     this.value = '';
     renderGalleryGrid();
   });
@@ -713,14 +725,64 @@
   }
 
   async function uploadImage(file, stem, suffix) {
-    var ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
+    var problem = validateProjectImage(file);
+    if (problem) throw new Error(problem);
+    var ext = projectImageExt(file);
     var safeStem = slugify(stem) || 'project';
     var path = 'nourhan-portfolio/' + safeStem + '-' + Date.now() + '-' + suffix + '.' + ext;
     var res = await window.NP.sb.storage
       .from('project-images')
-      .upload(path, file, { cacheControl: '3600', upsert: false });
+      .upload(path, file, { cacheControl: '3600', upsert: false, contentType: file.type });
     if (res.error) throw res.error;
     return window.NP.sb.storage.from('project-images').getPublicUrl(path).data.publicUrl;
+  }
+
+  /* Client-side file gate for project covers/gallery — mirrors the hero
+     image validator in js/admin-content.js (same allowlist, same 5 MB cap).
+     SVG/GIF/video are rejected by MIME and by extension (either one alone
+     can lie), so a stored-SVG XSS payload can never reach the public
+     bucket from this form. Storage RLS remains the server-side layer. */
+  var PROJECT_IMAGE_TYPES = {
+    'image/jpeg': 'jpg',
+    'image/png': 'png',
+    'image/webp': 'webp'
+  };
+  var PROJECT_IMAGE_MAX_BYTES = 5 * 1024 * 1024; /* 5 MB */
+
+  function projectImageExt(file) {
+    var byType = PROJECT_IMAGE_TYPES[String(file.type || '').toLowerCase()];
+    if (byType) return byType;
+    var name = String(file.name || '');
+    var m = /\.([a-z0-9]+)$/i.exec(name);
+    var ext = m ? m[1].toLowerCase() : '';
+    if (ext === 'jpg' || ext === 'jpeg') return 'jpg';
+    if (ext === 'png' || ext === 'webp') return ext;
+    return 'jpg';
+  }
+
+  function validateProjectImage(file) {
+    if (!file) return 'No file was selected.';
+    var type = String(file.type || '').toLowerCase();
+    var name = String(file.name || '');
+    if (type === 'image/svg+xml' || /\.svg$/i.test(name)) {
+      return 'SVG files are not allowed. Use a JPG, PNG or WebP image.';
+    }
+    if (type === 'image/gif' || /\.gif$/i.test(name)) {
+      return 'GIF files are not allowed. Use a JPG, PNG or WebP image.';
+    }
+    if (type.indexOf('video/') === 0) {
+      return 'Video files cannot be uploaded here.';
+    }
+    if (!PROJECT_IMAGE_TYPES[type]) {
+      return 'Only JPG, PNG or WebP images are allowed.';
+    }
+    if (!file.size) {
+      return 'That file appears to be empty.';
+    }
+    if (file.size > PROJECT_IMAGE_MAX_BYTES) {
+      return 'That image is too large. The maximum size is 5 MB.';
+    }
+    return null;
   }
 
   projectForm.addEventListener('submit', async function (ev) {

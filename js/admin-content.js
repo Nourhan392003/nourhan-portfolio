@@ -1593,184 +1593,11 @@
     '</section>';
   }
 
-  /* ============================================================ */
-  /*  panel switching                                            */
-  /* ============================================================ */
-
-  function contentPanels() {
-    return Array.prototype.slice.call(document.querySelectorAll('#content-panels .a-panel--content'));
-  }
-
-  function showOnlyContentPanel(panelId) {
-    var projectsPanel = $('projects-panel');
-    var editorCard = $('editor-card');
-    if (projectsPanel) projectsPanel.hidden = true;
-    if (editorCard) editorCard.hidden = true;
-    if (gateMessage) gateMessage.hidden = true;
-
-    contentPanels().forEach(function (p) { p.hidden = p.id !== panelId; });
-    var target = $(panelId);
-    if (target) target.hidden = false;
-  }
-
-  function showProjectsPanel() {
-    contentPanels().forEach(function (p) { p.hidden = true; });
-    var projectsPanel = $('projects-panel');
-    if (projectsPanel) projectsPanel.hidden = false;
-  }
-
-  /* ============================================================ */
-  /*  boot                                                       */
-  /* ============================================================ */
-
-  function build() {
-    var root = $('content-panels');
-    if (!root || root.dataset.built === '1') return;
-    root.dataset.built = '1';
-    root.insertAdjacentHTML('beforeend', heroTemplate());
-    root.insertAdjacentHTML('beforeend', contactTemplate());
-    root.insertAdjacentHTML('beforeend', servicesTemplate());
-    root.insertAdjacentHTML('beforeend', skillsTemplate());
-    heroEditor.built = true;
-    contactEditor.built = true;
-    servicesEditor.built = true;
-    skillsEditor.built = true;
-    heroEditor.bind();
-    contactEditor.bind();
-    servicesEditor.bind();
-    skillsEditor.bind();
-    bindHeroImage();
-    var iconSelect = $('skill-icon');
-    if (iconSelect && !iconSelect.dataset.bound) {
-      iconSelect.dataset.bound = '1';
-      iconSelect.addEventListener('change', function () { renderSkillPreview(this.value); });
-    }
-  }
-
-  function findNav() {
-    navLinks.hero = document.querySelector('#a-side nav a[data-nav="hero"]');
-    navLinks.contact = document.querySelector('#a-side nav a[data-nav="contact"]');
-    navLinks.services = document.querySelector('#a-side nav a[data-nav="services"]');
-    navLinks.skills = document.querySelector('#a-side nav a[data-nav="skills"]');
-    navLinks.experience = document.querySelector('#a-side nav a[data-nav="experience"]');
-    navLinks.about = document.querySelector('#a-side nav a[data-nav="about"]');
-    navLinks.footer = document.querySelector('#a-side nav a[data-nav="footer"]');
-  }
-
-  function bindNav() {
-    if (navLinks.hero && !navLinks.hero.dataset.bound) {
-      navLinks.hero.dataset.bound = '1';
-      navLinks.hero.addEventListener('click', function (ev) {
-        ev.preventDefault();
-        heroEditor.open();
-      });
-    }
-    if (navLinks.contact && !navLinks.contact.dataset.bound) {
-      navLinks.contact.dataset.bound = '1';
-      navLinks.contact.addEventListener('click', function (ev) {
-        ev.preventDefault();
-        contactEditor.open();
-      });
-    }
-    if (navLinks.services && !navLinks.services.dataset.bound) {
-      navLinks.services.dataset.bound = '1';
-      navLinks.services.addEventListener('click', function (ev) {
-        ev.preventDefault();
-        servicesEditor.open();
-      });
-    }
-    if (navLinks.skills && !navLinks.skills.dataset.bound) {
-      navLinks.skills.dataset.bound = '1';
-      navLinks.skills.addEventListener('click', function (ev) {
-        ev.preventDefault();
-        skillsEditor.open();
-      });
-    }
-    var projectsNav = document.querySelector('#a-side nav a[data-nav="projects"]');
-    if (projectsNav && !projectsNav.dataset.boundGo) {
-      projectsNav.dataset.boundGo = '1';
-      projectsNav.addEventListener('click', function () { showProjectsPanel(); });
-    }
-    var dashNav = document.querySelector('#a-side nav a[data-nav="dashboard"]');
-    if (dashNav && !dashNav.dataset.boundGo) {
-      dashNav.dataset.boundGo = '1';
-      dashNav.addEventListener('click', function () { showProjectsPanel(); });
-    }
-  }
-
-  function ensureGateMessage() {
-    if (gateMessage) return gateMessage;
-    var host = $('dashboard-view');
-    if (!host) return null;
-    gateMessage = document.createElement('div');
-    gateMessage.id = 'content-gate';
-    gateMessage.className = 'admin-error';
-    gateMessage.hidden = true;
-    gateMessage.style.margin = '16px 0';
-    var anchor = $('content-panels');
-    if (anchor && anchor.parentNode) anchor.parentNode.insertBefore(gateMessage, anchor);
-    else host.insertBefore(gateMessage, host.firstChild);
-    return gateMessage;
-  }
-
+  /* Panel switching + boot live once, further below (build/findNav/bindNav/
+     ensureGateMessage/init/export). The shared session signature for init()
+     stays here so both readers find it next to the gate helpers above. */
   var lastState = null;
 
-  async function init() {
-    var ready = $('content-ready');
-    if (ready) ready.hidden = true;
-
-    build();
-    findNav();
-    ensureGateMessage();
-
-    var state = await isAdminSession();
-    var signature = state.reason + (state.user ? ':' + state.user.id : '');
-    if (signature === lastState) return; /* no redundant work on repeat calls */
-    lastState = signature;
-
-    var canEdit = state.ok;
-    if (navLinks.hero) navLinks.hero.hidden = !canEdit;
-    if (navLinks.contact) navLinks.contact.hidden = !canEdit;
-    if (navLinks.services) navLinks.services.hidden = !canEdit;
-    if (navLinks.skills) navLinks.skills.hidden = !canEdit;
-
-    if (!canEdit) {
-      showProjectsPanel();
-      if (gateMessage) {
-        gateMessage.textContent = 'You do not have permission to edit portfolio content.';
-        gateMessage.hidden = state.reason === 'no-session';
-      }
-      return;
-    }
-
-    bindNav();
-    if (gateMessage) gateMessage.hidden = true;
-
-    if (!heroEditor.loaded) { heroEditor.loaded = true; heroEditor.load(); }
-    if (!contactEditor.loaded) { contactEditor.loaded = true; contactEditor.load(); }
-    /* services + skills are only fetched when their tab is opened, so the
-       dashboard does not fire four reads on every sign-in */
-  }
-
-  window.NPContentAdmin = {
-    init: init,
-    _hero: heroEditor,
-    _contact: contactEditor,
-    _services: servicesEditor,
-    _skills: skillsEditor,
-    _experiences: experiencesEditor,
-    _about: aboutEditor,
-    _footer: footerEditor,
-    _renderSkillPreview: renderSkillPreview,
-    _heroImage: heroImage,
-    _validateImageFile: validateImageFile,
-    _renderHeroImage: renderHeroImage,
-    _bindHeroImage: bindHeroImage,
-    _uploadProfileImage: uploadProfileImage,
-    BUCKET: BUCKET,
-    MAX_IMAGE_BYTES: MAX_IMAGE_BYTES,
-    _showProjectsPanel: showProjectsPanel
-  };
 
   /* ============================================================ */
   /*  Experience — repeatable rows                              */
@@ -2028,158 +1855,8 @@
     '</section>';
   }
 
-  /* ============================================================ */
-  /*  Experience — repeatable roles (real table)                 */
-  /* ============================================================ */
+  /* The experience list editor lives once, above (experiencesEditor). */
 
-  var experienceEditor = makeListEditor({
-    table: 'experiences',
-    columns: 'id, role, company_or_team, description, start_date, end_date, sort_order, is_visible, created_at, updated_at',
-    noun: 'role',
-    plural: 'roles',
-    panelId: 'content-experience',
-    statusId: 'experience-status',
-    formId: 'experience-form',
-    formTitleId: 'experience-form-title',
-    listId: 'experience-list',
-    countId: 'experience-count',
-    addId: 'experience-add',
-    saveId: 'experience-form-save',
-    formCancelId: 'experience-form-cancel',
-    reloadId: 'experience-reload',
-    closeId: 'experience-close',
-    fill: function (row) {
-      var set = function (id, v) { var el = $(id); if (el) el.value = v == null ? '' : String(v); };
-      set('exp-role', row.role || '');
-      set('exp-company', row.company_or_team || '');
-      set('exp-description', row.description || '');
-      set('exp-start', row.start_date || '');
-      set('exp-end', row.end_date || '');
-      set('exp-order', row.sort_order == null ? '' : row.sort_order);
-      var box = $('exp-visible');
-      if (box) box.checked = row.is_visible !== false;
-    },
-    collect: function (val, toIntFn, parseCsvFn, M) {
-      return {
-        role: val('exp-role').trim(),
-        company_or_team: val('exp-company').trim(),
-        description: val('exp-description').trim(),
-        start_date: val('exp-start').trim(),
-        end_date: val('exp-end').trim(),
-        sort_order: toIntFn(val('exp-order'), 0),
-        is_visible: !!($('exp-visible') && $('exp-visible').checked)
-      };
-    },
-    validate: function (d, M) {
-      var p = [];
-      if (!d.role) p.push('Role is required.');
-      else if (d.role.length > M.skillName) p.push('Role is too long.');
-      if (d.description.length > M.serviceDesc) p.push('Description is too long.');
-      if (d.company_or_team.length > M.category) p.push('Company / team is too long.');
-      if (d.start_date && d.start_date.length > M.url) p.push('Start date is too long.');
-      if (d.end_date && d.end_date.length > M.url) p.push('End date is too long.');
-      if (d.sort_order < 0 || d.sort_order > M.order) p.push('Order must be between 0 and ' + M.order + '.');
-      return p;
-    },
-    rowMarkup: function (row, index, total) {
-      var inner =
-        '<span class="admin-list__main">' +
-          '<span class="admin-list__title">' +
-            (row.role ? escapeHtml(row.role) : '(no role)') +
-          '</span>' +
-          '<span class="admin-list__meta">' +
-            (row.company_or_team ? escapeHtml(row.company_or_team) : '') +
-            (row.start_date ? ' · ' + escapeHtml(row.start_date) : '') +
-          '</span>' +
-        '</span>';
-      return listRowShell(inner, row, index, total);
-    },
-    onDelete: confirmDelete
-  });
-
-  function experienceTemplate() {
-    return '' +
-    '<section class="a-panel a-panel--content" id="content-experience" hidden>' +
-      '<div class="a-panel__head">' +
-        '<div>' +
-          '<h2 class="a-panel__title">Experience <span class="admin-count" id="experience-count"></span></h2>' +
-          '<p class="a-panel__sub">Past and current roles. No fabricated dates or employers — leave a field empty if you are not sure yet.</p>' +
-        '</div>' +
-        '<div class="a-panel__tools">' +
-          '<button class="btn btn--ghost" type="button" id="experience-reload">Reload</button>' +
-          '<button class="btn btn--primary" type="button" id="experience-add">Add role</button>' +
-          '<button class="admin-iconbtn" type="button" id="experience-close" aria-label="Close experience editor">&times;</button>' +
-        '</div>' +
-      '</div>' +
-      '<div class="admin-status" id="experience-status" role="status" aria-live="polite" hidden></div>' +
-      '<div id="experience-list"></div>' +
-      '<form id="experience-form" class="a-fieldset admin-form-card" autocomplete="off" novalidate hidden>' +
-        '<h3 class="admin-form-title" id="experience-form-title">New role</h3>' +
-        '<div class="a-grid a-grid--2">' +
-          field('exp-role', 'Role', 'text', LIST_MAX.skillName, 'Frontend Developer') +
-          field('exp-company', 'Company / context', 'text', LIST_MAX.category, 'Studio name or leave empty') +
-        '</div>' +
-        '<div class="admin-field">' +
-          '<label for="exp-description">Description</label>' +
-          '<textarea id="exp-description" rows="4" maxlength="' + LIST_MAX.serviceDesc + '" ' +
-            'placeholder="What this role actually involved — one or two honest sentences."></textarea>' +
-        '</div>' +
-        '<div class="a-grid a-grid--2">' +
-          field('exp-start', 'Start date', 'text', LIST_MAX.url, '2022 or “Present”') +
-          field('exp-end', 'End date', 'text', LIST_MAX.url, '2024 or leave empty') +
-        '</div>' +
-        '<div class="a-grid a-grid--2">' +
-          field('exp-order', 'Order', 'number', 4, '1') +
-          '<div class="admin-field"><label class="admin-checkbox">' +
-            '<input id="exp-visible" type="checkbox" checked />' +
-            '<span>Show on the site</span>' +
-          '</label></div>' +
-        '</div>' +
-        '<div class="admin-form-actions">' +
-          '<button type="button" class="btn btn--ghost" id="experience-form-cancel">Cancel</button>' +
-          '<button type="submit" class="btn btn--primary" id="experience-form-save">Save Role</button>' +
-        '</div>' +
-      '</form>' +
-    '</section>';
-  }
-
-  function bindAboutForm() {
-    var form = $('about-form');
-    if (!form || form.dataset.bound === '1') return;
-    form.dataset.bound = '1';
-    form.addEventListener('submit', function (ev) { ev.preventDefault(); aboutEditor.save(); });
-    var cancel = $('about-cancel');
-    if (cancel) cancel.addEventListener('click', function () {
-      if (aboutEditor.dirty && !confirm('You have unsaved changes. Discard them?')) return;
-      aboutEditor.reset();
-    });
-    var close = $('about-close');
-    if (close) close.addEventListener('click', function () {
-      if (aboutEditor.dirty && !confirm('You have unsaved changes. Discard them?')) return;
-      aboutEditor.reset();
-      $('content-about').hidden = true;
-      showProjectsPanel();
-    });
-  }
-
-  function bindFooterForm() {
-    var form = $('footer-form');
-    if (!form || form.dataset.bound === '1') return;
-    form.dataset.bound = '1';
-    form.addEventListener('submit', function (ev) { ev.preventDefault(); footerEditor.save(); });
-    var cancel = $('footer-cancel');
-    if (cancel) cancel.addEventListener('click', function () {
-      if (footerEditor.dirty && !confirm('You have unsaved changes. Discard them?')) return;
-      footerEditor.reset();
-    });
-    var close = $('footer-close');
-    if (close) close.addEventListener('click', function () {
-      if (footerEditor.dirty && !confirm('You have unsaved changes. Discard them?')) return;
-      footerEditor.reset();
-      $('content-footer').hidden = true;
-      showProjectsPanel();
-    });
-  }
 
   /* ============================================================ */
   /*  boot                                                       */
@@ -2304,6 +1981,48 @@
   }
 
   /* ============================================================ */
+  /*  about/footer form wiring (single home for both)          */
+  /* ============================================================ */
+
+  function bindAboutForm() {
+    var form = $('about-form');
+    if (!form || form.dataset.bound === '1') return;
+    form.dataset.bound = '1';
+    form.addEventListener('submit', function (ev) { ev.preventDefault(); aboutEditor.save(); });
+    var cancel = $('about-cancel');
+    if (cancel) cancel.addEventListener('click', function () {
+      if (aboutEditor.dirty && !confirm('You have unsaved changes. Discard them?')) return;
+      aboutEditor.reset();
+    });
+    var close = $('about-close');
+    if (close) close.addEventListener('click', function () {
+      if (aboutEditor.dirty && !confirm('You have unsaved changes. Discard them?')) return;
+      aboutEditor.reset();
+      $('content-about').hidden = true;
+      showProjectsPanel();
+    });
+  }
+
+  function bindFooterForm() {
+    var form = $('footer-form');
+    if (!form || form.dataset.bound === '1') return;
+    form.dataset.bound = '1';
+    form.addEventListener('submit', function (ev) { ev.preventDefault(); footerEditor.save(); });
+    var cancel = $('footer-cancel');
+    if (cancel) cancel.addEventListener('click', function () {
+      if (footerEditor.dirty && !confirm('You have unsaved changes. Discard them?')) return;
+      footerEditor.reset();
+    });
+    var close = $('footer-close');
+    if (close) close.addEventListener('click', function () {
+      if (footerEditor.dirty && !confirm('You have unsaved changes. Discard them?')) return;
+      footerEditor.reset();
+      $('content-footer').hidden = true;
+      showProjectsPanel();
+    });
+  }
+
+  /* ============================================================ */
   /*  boot                                                       */
   /* ============================================================ */
 
@@ -2332,8 +2051,6 @@
     experiencesEditor.bind();
     aboutEditor.bind();
     footerEditor.bind();
-    bindAboutForm();
-    bindFooterForm();
     bindAboutForm();
     bindFooterForm();
     bindHeroImage();
@@ -2472,8 +2189,6 @@
     if (!experiencesEditor.loaded) { experiencesEditor.loaded = true; experiencesEditor.load(); }
     if (!aboutEditor.loaded) { aboutEditor.loaded = true; aboutEditor.load(); }
     if (!footerEditor.loaded) { footerEditor.loaded = true; footerEditor.load(); }
-    bindAboutForm();
-    bindFooterForm();
     bindAboutForm();
     bindFooterForm();
   }

@@ -110,20 +110,43 @@
      Data — the one query every public page goes through
      ------------------------------------------------------------ */
 
-  function fetchPublished() {
+  function fetchPublished(limit, columns) {
     if (!window.NP || !window.NP.isConfigured()) {
       return Promise.reject(new Error('Supabase is not configured.'));
     }
 
-    return window.NP.sb
+    var query = window.NP.sb
       .from('projects')
-      .select(COLUMNS)
+      .select(columns || COLUMNS)
       .eq('published', true)
+      .order('featured', { ascending: false })
       .order('sort_order', { ascending: true })
-      .order('created_at', { ascending: false })
-      .then(function (result) {
+      .order('created_at', { ascending: false });
+    if (limit) query = query.limit(limit);
+    return query.then(function (result) {
         if (result.error) throw result.error;
         return (result.data || []).slice().sort(byPresentationOrder);
+      });
+  }
+
+  /* Homepage cards render a fixed lightweight subset — never the full
+     descriptions or gallery URL arrays. Bounded by HOMEPAGE_LIMIT so the
+     initial view stays cheap no matter how large the portfolio grows. */
+  var HOMEPAGE_LIMIT = 6;
+  var CARD_COLUMNS =
+    'id,title,slug,short_description,project_type,industry,technologies,' +
+    'cover_image_url,live_url,github_url,featured,published,sort_order';
+
+  /* Exact published count without transferring rows (head request), so the
+     "( N )" badge stays truthful even though the cards are limited. */
+  function fetchPublishedCount() {
+    return window.NP.sb
+      .from('projects')
+      .select('id', { count: 'exact', head: true })
+      .eq('published', true)
+      .then(function (result) {
+        if (result.error) throw result.error;
+        return typeof result.count === 'number' ? result.count : 0;
       });
   }
 
@@ -324,7 +347,7 @@
     grid.appendChild(skeletonRows(2));
 
     try {
-      var rows = await fetchPublished();
+      var rows = await fetchPublished(HOMEPAGE_LIMIT, CARD_COLUMNS);
 
       grid.textContent = '';
       grid.classList.remove('is-loading');
@@ -342,7 +365,11 @@
       });
       // let rendered cases join the scroll-reveal system (if present)
       if (window.NPReveal) window.NPReveal.observeAll(grid);
-      updateCount(countEl, rows.length);
+      /* truthful total (cards are limited); failure keeps the shown count */
+      fetchPublishedCount().then(
+        function (total) { updateCount(countEl, total || rows.length); },
+        function () { updateCount(countEl, rows.length); }
+      );
     } catch (err) {
       console.error('[nourhan-portfolio] projects load failed:', err);
       grid.textContent = '';

@@ -42,7 +42,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
   <!-- bump the ?v= when styles or the behaviour script change, so browsers
        (and the local preview) pick the new files up instead of a cached copy -->
-  <link rel="stylesheet" href="styles.css?v=39" />
+  <link rel="stylesheet" href="styles.css?v=49" />
   <!-- Before paint: js class, saved theme, ?motion override. Extracted from
        the head into js/boot.js so the CSP above can keep script-src free of
        'unsafe-inline'. Same parser-blocking position, same timing. -->
@@ -72,7 +72,11 @@
 
     <main>
       <!-- ===================== Hero ===================== -->
-      <section class="hero" id="home">
+      <!-- Scroll track for the pinned turntable: the track supplies the
+           scroll distance while the hero viewport below stays stuck until
+           the rotation finishes. -->
+      <div class="hero-track" data-hero-track>
+      <section class="hero hero-viewport" id="home">
         <!-- Background layers -->
         <div class="hero__bg" aria-hidden="true">
           <div class="hero__bg-grid"></div>
@@ -237,8 +241,9 @@
         </div>
 
         <div class="container hero__inner">
-          <div class="hero__grid" data-hero-content>
-            <!-- Left · copy -->
+          <div class="hero__grid hero__grid--triple" data-hero-content>
+            <!-- Left · eyebrow, name, specialization, primary CTA.
+                 All animation classes are unchanged; only the column changed. -->
             <div class="hero__copy">
               <p class="hero__eyebrow hero-eyebrow">
                 <span class="hero__eyebrow-star" aria-hidden="true">✦</span>
@@ -256,17 +261,6 @@
                 </span>
               </h1>
 
-              <p class="hero__desc hero-desc">
-                <span class="hero__desc-line">
-                  I build clear, responsive web experiences — from e-commerce
-                  storefronts to modern brand websites.
-                </span>
-                <span class="hero__desc-line">
-                  Focused on storefront UI, content hierarchy, and purposeful
-                  interaction.
-                </span>
-              </p>
-
               <!-- Rotating specialization typewriter line -->
               <div class="hero__specialization hero-specialization">
                 <span class="hero__specialization-label" aria-hidden="true">specializing</span>
@@ -276,20 +270,26 @@
 
               <div class="hero__actions hero-actions">
                 <a href="#projects" class="btn btn--primary hero__cta">View Selected Work</a>
-                <a href="#contact" class="btn btn--ghost hero__cta">Let&rsquo;s Talk</a>
               </div>
-
-              <p class="hero__availability hero-availability">
-                <span class="hero__availability-dot" aria-hidden="true"></span>
-                <span class="hero__availability-text">Open for freelance &amp; new projects</span>
-              </p>
             </div>
 
-            <!-- Right · portrait -->
+            <!-- Center · portrait -->
             <div class="hero__visual">
               <div class="hero__visual-glow" aria-hidden="true"></div>
               <div class="hero__visual-frame">
                 <figure class="hero__frame" data-hero-image>
+                  <!-- 9-frame scroll turntable prototype (hero visual only).
+                       The canvas is primary; the <img> below stays untouched
+                       as the fallback if the frames fail to load. -->
+                  <canvas
+                    class="hero__turntable"
+                    data-turntable-canvas
+                    width="326"
+                    height="396"
+                    role="img"
+                    aria-label="Nourhan Ashraf — portrait turntable"
+                    hidden
+                  ></canvas>
                   <!-- Swap the portrait by replacing assets/images/profile.jpg.
                        script.js falls back to assets/images/profile.jpeg and only
                        then to the editorial placeholder below, so a missing file
@@ -319,6 +319,30 @@
                 </figure>
               </div>
             </div>
+
+            <!-- Right · description, secondary CTA, availability.
+                 Same animation classes as before; only the column changed. -->
+            <div class="hero__side hero__side--right">
+              <p class="hero__desc hero-desc">
+                <span class="hero__desc-line">
+                  I build clear, responsive web experiences — from e-commerce
+                  storefronts to modern brand websites.
+                </span>
+                <span class="hero__desc-line">
+                  Focused on storefront UI, content hierarchy, and purposeful
+                  interaction.
+                </span>
+              </p>
+
+              <div class="hero__actions hero-actions">
+                <a href="#contact" class="btn btn--ghost hero__cta">Let&rsquo;s Talk</a>
+              </div>
+
+              <p class="hero__availability hero-availability">
+                <span class="hero__availability-dot" aria-hidden="true"></span>
+                <span class="hero__availability-text">Open for freelance &amp; new projects</span>
+              </p>
+            </div>
           </div>
 
           <p class="hero__scrollcue" aria-hidden="true">
@@ -327,6 +351,7 @@
           </p>
         </div>
       </section>
+      </div>
 
     <!-- ===================== 01 · Services ===================== -->
     <section class="section" id="services">
@@ -1040,7 +1065,9 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
-  <script src="script.js?v=26"></script>
+  <script src="script.js?v=30"></script>
+  <!-- Hero turntable prototype (hero visual only, vanilla JS, no new libs) -->
+  <script src="js/hero-turntable.js?v=6"></script>
   <!-- Backend (Supabase) — order matters -->
   <script src="js/vendor/supabase.js"></script>
   <script src="config.js"></script>

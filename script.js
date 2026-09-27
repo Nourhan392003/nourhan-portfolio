@@ -360,8 +360,19 @@ const CONTACT_LINKS = {
           // Left the viewport → drop the visible state and park the element
           // on the side it will come back from.
           if (!node.classList.contains('visible')) return;
+          // Hold the state while ANY part is still on screen. Without this,
+          // an element resting exactly on the viewport edge flaps between
+          // enter/exit on fractional-pixel rounding and replays its entrance
+          // forever while the visitor stands still. Reset only once fully
+          // out — replay on genuine re-entry still works. This also covers
+          // pinned project rows, which never leave while stuck.
+          if (!isRail(node)) {
+            var box = node.getBoundingClientRect();
+            var vhNow = window.innerHeight || docEl.clientHeight;
+            if (box.bottom > 0 && box.top < vhNow) return;
+            node.setAttribute('data-scroll-dir', scrollDirection);
+          }
           node.classList.remove('visible');
-          if (!isRail(node)) node.setAttribute('data-scroll-dir', scrollDirection);
         });
       },
       // threshold 0 (not a ratio): a partially clipped heading still counts
@@ -634,7 +645,7 @@ const CONTACT_LINKS = {
   })();
 
   /* ============================================================
-     6 · Chrome — mobile nav, current year
+     6 · Chrome — mobile nav, current year, smooth anchors
      ============================================================ */
   (function chrome() {
     var year = document.getElementById('year');
@@ -655,6 +666,35 @@ const CONTACT_LINKS = {
         }
       });
     }
+
+    /* Smooth in-page navigation without a global CSS scroll-behavior (which
+       desyncs sticky-pin geometry and per-frame scroll math): only genuine
+       #anchor clicks animate, and they jump instantly under reduced motion.
+       scroll-padding-top (CSS) keeps the target clear of the fixed nav. */
+    document.addEventListener('click', function (event) {
+      var anchor = event.target && event.target.closest
+        ? event.target.closest('a[href^="#"]')
+        : null;
+      if (!anchor) return;
+      var hash = anchor.getAttribute('href');
+      if (!hash || hash.length < 2) return;
+      var target = null;
+      try {
+        target = document.getElementById(hash.slice(1)) ||
+          document.querySelector(hash);
+      } catch (err) {
+        target = null;
+      }
+      if (!target) return;
+      event.preventDefault();
+      target.scrollIntoView({
+        behavior: reduced() ? 'auto' : 'smooth',
+        block: 'start'
+      });
+      if (window.history && window.history.replaceState) {
+        window.history.replaceState(null, '', hash);
+      }
+    });
   })();
 
   /* ============================================================
@@ -1181,6 +1221,9 @@ const CONTACT_LINKS = {
         // node the page jumped clean past (an instant scroll can overshoot a
         // row while the renderer is stalled), so nothing can be left behind.
         if (node.getBoundingClientRect().top < limit) {
+          // Same direction tag the observer writes, so the entrance plays
+          // the scroll-correct variant instead of a default one.
+          node.setAttribute('data-scroll-dir', scrollDirection);
           node.classList.add('visible');
           continue;
         }
@@ -1198,6 +1241,14 @@ const CONTACT_LINKS = {
       if (now - lastRun < 120) return;
       lastRun = now;
       parked = settle();
+    }
+
+    // Touch momentum can end without a final desktop-style wheel/scroll tick
+    // landing exactly on a parked card: settle again when the gesture and
+    // the scroll itself finish, so nothing stays parked at opacity 0.
+    window.addEventListener('touchend', onScroll, { passive: true });
+    if ('onscrollend' in window) {
+      window.addEventListener('scrollend', onScroll, { passive: true });
     }
 
     // A stalled renderer can also swallow scroll events, so a light interval
@@ -1330,6 +1381,13 @@ const CONTACT_LINKS = {
       measure();
       run();
     });
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(function () {
+        painted = -1;
+        measure();
+        run();
+      });
+    }
 
     measure();
     run();
