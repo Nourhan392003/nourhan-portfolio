@@ -4541,6 +4541,141 @@ html.js .contact .contact-row[data-scroll-motion].visible {
   }
 }
 
+@media (max-width: 767px) {
+  .hero__grid--triple .hero__specialization {
+    align-items: center;
+  }
+}
+
+.hero__frame.is-turntable .hero__turntable {
+  display: block;
+}
+
+.hero__frame.is-turntable .hero__photo {
+  display: none;
+}
+
+/* Turntable mode drops the glass card entirely: no padding, border, tint,
+   shadow or shine sweep, so no rectangular box survives around the canvas.
+   The fallback <img> keeps the full glass treatment (rules above). */
+.hero__frame.is-turntable {
+  padding: 0;
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+  /* subtle purple silhouette backlight - follows the subject alpha */
+  filter: drop-shadow(0 18px 46px rgba(138, 92, 246, 0.2));
+}
+
+.hero__frame.is-turntable::after,
+.hero__frame.is-turntable .hero__frame-edge {
+  display: none;
+}
+
+@media (min-width: 1100px) {
+  .hero__grid--triple {
+    display: grid;
+    grid-template-columns: minmax(320px, 1fr) auto minmax(300px, 1fr);
+    align-items: center;
+    gap: clamp(32px, 4vw, 72px);
+  }
+
+  .hero__grid--triple > .hero__copy {
+    order: 1;
+    text-align: left;
+  }
+
+  .hero__grid--triple > .hero__visual {
+    order: 2;
+    justify-self: center;
+    padding: 12px 0 20px;
+  }
+
+  .hero__grid--triple > .hero__side--right {
+    order: 3;
+  }
+
+  /* the portrait column sizes to the canvas; the glass frame hugs it */
+  .hero--turntable .hero__visual-frame {
+    width: auto;
+    max-width: none;
+  }
+}
+
+/* Laptop / tablet (768ΓÇô1099px): compact triple - same three columns with
+   proportionally scaled type and canvas, no truncation, no overlap. */
+@media (min-width: 768px) and (max-width: 1099px) {
+  .hero__grid--triple {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    align-items: center;
+    gap: 24px;
+  }
+
+  .hero__grid--triple > .hero__copy {
+    order: 1;
+  }
+
+  .hero__grid--triple > .hero__visual {
+    order: 2;
+    justify-self: center;
+    padding: 8px 0;
+  }
+
+  .hero__grid--triple > .hero__side--right {
+    order: 3;
+  }
+
+  .hero__grid--triple .hero__name {
+    font-size: clamp(2rem, 4vw, 3rem);
+  }
+
+  .hero__grid--triple .hero__desc {
+    font-size: 0.98rem;
+  }
+
+  .hero__frame.is-turntable .hero__turntable {
+    height: clamp(240px, 44vh, 400px);
+  }
+
+  .hero--turntable .hero__visual-frame {
+    width: auto;
+    max-width: none;
+  }
+}
+
+/* ==========================================================================
+   Pin/release anti-glitch + no-white-flash hardening (appended, additive)
+   --------------------------------------------------------------------------
+   - html carries the page base color so overscroll/rubber-banding and any
+     unpainted spacer can never flash browser-default white.
+   - The hero track reuses the hero navy tone so the 250vh pin runway reads
+     as one continuous surface (the hero's own gradient paints the stuck
+     viewport; the track shows only beneath it).
+   - Main sections establish their own stacking context so sticky rows
+     (hero viewport, project deck) and reveal transforms can never paint
+     across section boundaries when a scroll halts mid-flight.
+   ========================================================================== */
+html {
+  background-color: #080B1B;
+}
+
+html[data-theme='light'] {
+  background-color: #F7F5FF;
+}
+
+html.js .hero-track {
+  background-color: var(--hero-navy);
+}
+
+.section {
+  position: relative;
+  z-index: 1;
+}
+
+.hero {
+  z-index: 1;
+}
 /* Mobile (<=767px): compact cinematic column that fits the pinned viewport:
    title/spec, portrait, description, then BOTH CTAs side by side in one row.
    The two text columns flatten so every item lands exactly; dvh units (vh
