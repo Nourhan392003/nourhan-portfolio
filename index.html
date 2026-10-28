@@ -42,7 +42,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
   <!-- bump the ?v= when styles or the behaviour script change, so browsers
        (and the local preview) pick the new files up instead of a cached copy -->
-  <link rel="stylesheet" href="styles.css?v=55" />
+  <link rel="stylesheet" href="styles.css?v=69" />
   <!-- Before paint: js class, saved theme, ?motion override. Extracted from
        the head into js/boot.js so the CSP above can keep script-src free of
        'unsafe-inline'. Same parser-blocking position, same timing. -->
@@ -803,12 +803,105 @@
       </div>
     </section>
 
-    <!-- ===================== 07 · Contact ===================== -->
+    <!-- ===================== AI Recruiter =====================
+         A recruiter-facing assistant grounded in verified portfolio
+         facts. The browser only ever calls /api/chat (same origin);
+         the model key lives server-side. With no backend or no key the
+         section still renders its copy and the real contact fallback —
+         no reply is ever faked. See js/ai-recruiter.js, api/chat.js. -->
+    <section class="section" id="ai-recruiter">
+      <div class="container">
+        <header class="section__head">
+          <div class="section__label reveal-line">
+            <span class="section__num">( 07 )</span>
+            <span class="section__kicker">Ask my portfolio /</span>
+            <span class="section__rule" aria-hidden="true"></span>
+            <span class="section__bracket">( AI Recruiter )</span>
+          </div>
+        </header>
+
+        <div class="air" data-ai-recruiter data-reveal>
+          <!-- LEFT: the copy and the trigger. The button opens the chat that
+               sits directly under the mascot; the mascot on the right is also
+               a button that does the same thing. Both are real <button>s, so
+               the whole section is keyboard-reachable. -->
+          <div class="air__intro">
+            <p class="air__eyebrow reveal-line">
+              <span class="air__eyebrow-dot" aria-hidden="true"></span>
+              Hiring? Start here /
+            </p>
+            <h2 class="air__title reveal-line">
+              Ask the AI Recruiter<br />
+              about my work.
+            </h2>
+            <p class="air__desc reveal-line">
+              A recruiter-facing assistant that answers from verified
+              portfolio facts — skills, projects, experience and how to get
+              in touch. It never invents experience, and it tells you plainly
+              when something is not on record.
+            </p>
+            <ul class="air__meta reveal-line">
+              <li><span aria-hidden="true">&#9670;</span> Grounded in verified facts only</li>
+              <li><span aria-hidden="true">&#9670;</span> Projects, skills &amp; experience</li>
+              <li><span aria-hidden="true">&#9670;</span> No fabricated credentials</li>
+            </ul>
+
+            <button type="button" class="air__cta reveal-line" data-ai-open>
+              <span class="air__cta-dot" aria-hidden="true"></span>
+              <span>Ask My Chatbot Assistant</span>
+              <span class="air__cta-arrow" aria-hidden="true">&rarr;</span>
+            </button>
+          </div>
+
+          <!-- RIGHT: the mascot. It is a <button> — clicking it opens the chat
+               that appears directly beneath it. A small bubble beside it
+               carries the welcome line. -->
+          <div class="air__stage reveal-line">
+            <span class="air__bubble" aria-hidden="true">
+              Hi! I&rsquo;m Nourhan&rsquo;s AI Recruiter. Ask me anything about her work.
+            </span>
+            <button type="button" class="air-mascot air-mascot--btn" data-air-mascot
+                    data-ai-open aria-label="Open the AI Recruiter chat"
+                    title="Chat with the AI Recruiter"></button>
+
+            <!-- The chat opens HERE, directly under the robot, and is hidden
+                 until the visitor asks for it. -->
+            <div class="air-chat" id="ai-chat" data-ai-chat data-open="false" aria-hidden="true">
+              <button class="air-panel__close" data-air-close type="button"
+                      aria-label="Close chat">&times;</button>
+
+              <div class="air-chat__body">
+                <div class="air-log" data-air-log role="log" aria-live="polite" aria-label="Conversation"></div>
+              </div>
+
+              <div class="air-suggestions" data-air-suggestions aria-label="Suggested questions"></div>
+
+              <form class="air-form" data-air-form novalidate>
+                <label class="air-visually-hidden" for="air-input-inline">Your question</label>
+                <input
+                  class="air-form__input"
+                  id="air-input-inline"
+                  data-air-input
+                  type="text"
+                  name="message"
+                  maxlength="1000"
+                  autocomplete="off"
+                  placeholder="Ask about skills, projects or experience…"
+                />
+                <button class="air-form__send" data-air-send type="submit">Send</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== 08 · Contact ===================== -->
     <section class="section" id="contact">
       <div class="container">
         <header class="section__head contact__head">
           <div class="section__label reveal-line">
-            <span class="section__num">( 07 )</span>
+            <span class="section__num">( 08 )</span>
             <span class="section__kicker">Let&rsquo;s work together /</span>
             <span class="section__rule" aria-hidden="true"></span>
             <span class="section__bracket">( Contact )</span>
@@ -1062,6 +1155,15 @@
         <path fill="currentColor" d="M20.5 3.5A11.8 11.8 0 0 0 12.1 0C5.6 0 .3 5.3.3 11.8c0 2.1.6 4.1 1.6 5.9L.2 24l6.5-1.7c1.8.9 3.7 1.3 5.6 1.3h.1c6.5 0 11.7-5.3 11.7-11.8 0-3.1-1.3-6.1-3.6-8.3Zm-8.4 18.1h-.1c-1.7 0-3.4-.5-4.9-1.3l-.4-.2-3.9 1 1-3.8-.3-.4a9.7 9.7 0 1 1 8.6 4.7Zm5.3-7.3c-.3-.2-1.8-.9-2.1-1-.3-.1-.5-.2-.7.2-.2.3-.8 1-.9 1.2-.2.2-.3.2-.6.1-1.6-.8-2.7-1.4-3.8-3.2-.3-.5.3-.5.8-1.6.1-.2.1-.4 0-.6-.1-.2-.7-1.7-.9-2.3-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.6.1-.9.4-.3.3-1.2 1.2-1.2 2.9 0 1.7 1.2 3.3 1.4 3.5.2.2 2.4 3.7 5.8 5.2 2.2 1 2.2.7 2.6.7.4 0 1.8-.7 2.1-1.4.3-.7.3-1.3.2-1.4-.1-.1-.3-.2-.5-.3Z" />
       </svg>
     </a>
+    <!-- AI Recruiter launcher — opens the chat in the section, then scrolls
+         to it. Carries [data-ai-open] like the section's own button. -->
+    <button type="button" class="fab fab--ai" data-ai-open
+            aria-controls="ai-chat" aria-expanded="false"
+            aria-label="Open the AI Recruiter chat" title="Ask the AI Recruiter">
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path fill="currentColor" d="M12 2.6 3.2 7v9.8L12 21.4l8.8-4.6V7L12 2.6Zm0 2.3 6.8 3.5v7.2L12 19.1l-6.8-3.5V8.4L12 4.9Zm0 3.1a3.3 3.3 0 0 0-3.3 3.3c0 1.4.9 2.6 2.1 3.1l-.5 1.9h3.4l-.5-1.9a3.3 3.3 0 0 0 2.1-3.1A3.3 3.3 0 0 0 12 8Zm0 2a1.3 1.3 0 1 1 0 2.6 1.3 1.3 0 0 1 0-2.6Z"/>
+      </svg>
+    </button>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
@@ -1078,6 +1180,10 @@
   <!-- Public Hero + Contact hydration (read-only, falls back to the static
        markup above when there is no row or the read fails). -->
   <script src="js/public-content.js?v=12"></script>
+  <!-- AI Recruiter mascot (inline SVG, CSS-animated) -->
+  <script src="js/ai-mascot.js?v=2"></script>
+  <!-- AI Recruiter chat panel (public behaviour; calls /api/chat only) -->
+  <script src="js/ai-recruiter.js?v=11"></script>
   <!-- js/projects.js self-initialises from the markup (#projects-grid here,
        #projects-index on projects.html), so no inline loader is needed and
        the CSP stays strict. -->

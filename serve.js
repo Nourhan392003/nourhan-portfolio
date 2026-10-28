@@ -29,8 +29,7 @@ const path = require('path');
 const crypto = require('crypto');
 
 const ROOT = __dirname;
-const PORT = 4173;
-const TYPES = {
+const PORT = 4173;const TYPES = {
   '.html': 'text/html; charset=utf-8',
   '.css': 'text/css; charset=utf-8',
   '.js': 'text/javascript; charset=utf-8',
@@ -141,6 +140,64 @@ function compress(encoding, body) {
   return body;
 }
 
+/* ---- local .env loader (dev only) --------------------------------
+   Vercel injects environment variables itself; locally there is no
+   process to do that, so api/chat.js would see no GEMINI_API_KEY.
+   This reads a plain KEY=VALUE `.env` if one exists and sets anything
+   that is not already in the environment. It never logs a value and
+   never fails the server: a missing .env is the normal no-key state. */
+function loadDotEnv() {
+  const envPath = path.join(ROOT, '.env');
+  let raw;
+  try {
+    raw = fs.readFileSync(envPath, 'utf8');
+  } catch (err) {
+    return; // no .env — fine, api/chat.js reports "not configured"
+  }
+  raw.split(/\r?\n/).forEach((line) => {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed[0] === '#') return;
+    const eq = trimmed.indexOf('=');
+    if (eq === -1) return;
+    const key = trimmed.slice(0, eq).trim();
+    let value = trimmed.slice(eq + 1).trim();
+    // strip one layer of matching quotes
+    if (
+      (value[0] === '"' && value[value.length - 1] === '"') ||
+      (value[0] === "'" && value[value.length - 1] === "'")
+    ) {
+      value = value.slice(1, -1);
+    }
+    if (key && process.env[key] === undefined) process.env[key] = value;
+  });
+}
+loadDotEnv();
+
+/* ---- the AI Recruiter endpoint, served locally ----------------
+   The deployed site runs api/chat.js as a Vercel Serverless Function.
+   `node serve.js` cannot do that, so the chat would 404 in local dev
+   and the feature could not be reviewed. This mounts the SAME module
+   (checks included) as a Node request handler, so /api/chat behaves
+   identically here and in production. It never runs on Vercel — this
+   file is the dev server only. */
+function handleApi(req, res, urlPath) {
+  let mod;
+  try {
+    mod = require(path.join(ROOT, 'api', 'chat.js'));
+  } catch (err) {
+    res.writeHead(500, { 'Content-Type': 'application/json; charset=utf-8' });
+    return res.end(JSON.stringify({ error: 'Chat module failed to load.', code: 'module_error' }));
+  }
+  // api/chat.js is an async (req, res) handler — the same shape Vercel uses.
+  Promise.resolve(mod(req, res)).catch((err) => {
+    console.error('[dev] /api/chat threw:', err && err.message);
+    if (!res.headersSent) {
+      res.writeHead(500, { 'Content-Type': 'application/json; charset=utf-8' });
+    }
+    res.end(JSON.stringify({ error: 'Unexpected server error.', code: 'server_error' }));
+  });
+}
+
 http
   .createServer((req, res) => {
     let urlPath;
@@ -156,6 +213,11 @@ http
     // ever reaches path.join.
     if (urlPath.indexOf('\0') !== -1 || urlPath[0] !== '/') {
       return send(res, 400, 'Bad request');
+    }
+
+    // The one dynamic route. Everything else is a static file.
+    if (urlPath === '/api/chat') {
+      return handleApi(req, res, urlPath);
     }
 
     if (urlPath.endsWith('/')) urlPath += 'index.html';

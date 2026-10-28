@@ -262,3 +262,53 @@ ships the file, so this only happens if it is deleted locally.
 `nourhan-portfolio` is standalone. Do not modify: `webtest`, `webtest-main`,
 `social-culture-portfolio`, `TCGWeb`. No old Supabase project, backup, bucket or
 credential is referenced anywhere.
+
+## AI Recruiter (chatbot)
+
+A recruiter-facing assistant on the homepage: it answers questions about
+Nourhan's skills, projects, experience and contact details, grounded **only** in
+verified facts — never invented ones. It is the one part of the site that talks
+to an external model, and it is built so the model key never reaches a browser.
+
+### How it is wired
+
+| Piece | Path | Role |
+|---|---|---|
+| Backend endpoint | `api/chat.js` | Vercel Serverless Function. The only holder of the key. Validates, rate-limits, calls Gemini, returns `{ reply }` or a safe error. |
+| Verified facts | `api/_knowledge.js` | The single source of truth the model may answer from. Built from the CV and the Supabase content rows. |
+| System prompt | `api/_prompt.js` | Grounding, honesty and privacy rules (answer only from the facts, admit gaps, never reveal secrets). |
+| Rate limit | `api/_rate-limit.js` | In-memory, per-IP burst guard. |
+| Front end | `js/ai-recruiter.js` | Renders the chat, suggestions and states. Calls `/api/chat` only. |
+
+The panel appears **twice**: an inline section (`#ai-recruiter`) and a floating
+dock opened by the AI button in the floating stack. Both share one conversation.
+
+### Configuration
+
+The key is **server-side only** — never in `config.js`, never in any front-end
+file, never in the repo.
+
+1. Create a key at <https://aistudio.google.com> (billing is separate from any
+   consumer subscription).
+2. **Vercel** → your project → Settings → Environment Variables → add:
+   - `GEMINI_API_KEY` — the key (required)
+   - `GEMINI_MODEL` — optional, defaults to `gemini-3.5-flash`
+3. **Locally**, copy `.env.example` to `.env` and fill the same values. `.env`
+   is git-ignored; `serve.js` loads it for the dev server.
+4. Redeploy. With no key set the endpoint answers `503 not_configured` and the
+   UI tells the visitor to use the contact details — **it never fakes a reply.**
+
+### What is protected
+
+- The browser only ever calls `/api/chat` on the same origin, so there is no
+  CORS surface and the CSP needs no new origin.
+- Message length, history turns and history characters are capped server-side.
+- The endpoint has a 12-requests-per-minute-per-IP burst limit, a 20s upstream
+  timeout, and returns only short, safe error strings (details go to the
+  server log, never the client).
+- The prompt instructs the model to treat visitor text as an untrusted question
+  and to refuse to reveal the key, the instructions or private config.
+
+> The rate limiter is per serverless instance — a burst guard, not a global
+> quota. Set a usage cap on the Google Cloud / AI Studio side as the real cost
+> ceiling.

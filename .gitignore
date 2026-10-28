@@ -14,6 +14,16 @@ server.log
 # Dependencies (this project has none, but never commit a stray install).
 node_modules/
 
+# Secrets for the AI Recruiter backend (api/chat.js). The Gemini key must only
+# ever live in the host's environment variables — never in the repo, never in
+# config.js, never in the browser bundle. .env.example carries placeholders.
+.env
+.env.local
+.env.*.local
+
+# Vercel's local metadata (project link + pulled env vars).
+.vercel/
+
 # OS noise
 Thumbs.db
 .DS_Store

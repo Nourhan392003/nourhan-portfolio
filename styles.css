@@ -4135,6 +4135,20 @@ html.js .contact .contact-row[data-scroll-motion].visible {
   box-shadow: 0 16px 34px rgba(37, 211, 102, 0.3);
 }
 
+/* the AI Recruiter launcher — accent gradient so it reads as the assistant */
+.fab--ai {
+  background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+  border-color: rgba(var(--accent-rgb), 0.6);
+  color: #fff;
+}
+
+.fab--ai:hover {
+  background: linear-gradient(135deg, var(--accent-hover), var(--accent));
+  border-color: var(--accent-hover);
+  color: #fff;
+  box-shadow: 0 16px 34px rgba(var(--accent-rgb), 0.42);
+}
+
 /* back to top stays hidden (and out of the tab order) until it is needed */
 .fab--top {
   opacity: 0;
@@ -4867,4 +4881,853 @@ html.js .hero--turntable .hero__scrollcue {
   html.js .hero--turntable .hero__scrollcue {
     display: none;
   }
+}
+
+/* ==========================================================================
+   AI Recruiter — chat (in-section, under the mascot)
+   --------------------------------------------------------------------------
+   One assistant with one home: the `.air-chat` panel that sits directly under
+   the robot and is hidden until the visitor asks for it. Every message,
+   suggestion and composer rule below is written against `.air-panel` / `.air-*`
+   so the same markup works wherever it is hosted.
+
+   Colours are theme tokens only, so the panel is correct in both modes with
+   no extra rule. The live "pulse" and the typing dots are the only motion, and
+   both are opt-out under reduced motion.
+   ========================================================================== */
+.air {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.92fr);
+  gap: clamp(28px, 5vw, 72px);
+  align-items: center;
+  margin-top: clamp(28px, 5vw, 56px);
+}
+
+.air__intro { max-width: 34rem; }
+
+/* ---- the trigger button (left column) ---- */
+.air__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: clamp(22px, 3vw, 32px);
+  padding: 15px 26px;
+  border: 1px solid rgba(var(--accent-rgb), 0.55);
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgba(var(--accent-rgb), 0.22), rgba(var(--accent-rgb), 0.08));
+  color: var(--text);
+  font-size: 0.94rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition: transform 0.3s var(--ease-out-expo), border-color 0.3s ease,
+    box-shadow 0.3s ease, background 0.3s ease;
+}
+
+.air__cta:hover,
+.air__cta:focus-visible {
+  transform: translateY(-2px);
+  border-color: var(--accent);
+  background: linear-gradient(135deg, rgba(var(--accent-rgb), 0.34), rgba(var(--accent-rgb), 0.14));
+  box-shadow: 0 14px 34px rgba(var(--accent-rgb), 0.26);
+}
+
+.air__cta-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--accent-cool);
+  box-shadow: 0 0 12px rgba(var(--accent-cool-rgb, 125, 211, 252), 0.9);
+  animation: air-pulse 2.4s ease-out infinite;
+}
+
+.air__cta-arrow {
+  font-size: 1.05rem;
+  transition: transform 0.3s var(--ease-out-expo);
+}
+
+.air__cta:hover .air__cta-arrow,
+.air__cta:focus-visible .air__cta-arrow {
+  transform: translateX(4px);
+}
+
+/* ---- the robot stage (right column) ---- */
+.air__stage {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: clamp(60px, 8vw, 90px);
+}
+
+/* the small welcome bubble above/beside the robot */
+.air__bubble {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: 16rem;
+  text-align: center;
+  padding: 12px 15px;
+  border: 1px solid var(--border-soft);
+  border-radius: 16px;
+  background: rgba(var(--surface-raised-rgb), 0.9);
+  color: var(--text);
+  font-size: 0.83rem;
+  line-height: 1.55;
+  box-shadow: 0 14px 34px rgba(var(--shadow-rgb), 0.32);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  animation: air-bubble 5s ease-in-out infinite;
+}
+
+@keyframes air-bubble {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(-5px); }
+}
+
+/* ==========================================================================
+   AI Recruiter — the mascot
+   --------------------------------------------------------------------------
+   A friendly STANDING robot drawn by js/ai-mascot.js as inline SVG, in the
+   site's violet palette. Nothing is downloaded, so it costs no request and
+   stays crisp at any size. Modeled on the reference: a big egg head, a large
+   glossy visor, thick upward-curving eyes, raised arms and jointed feet.
+
+   Motion (all CSS, all transform/opacity so it rides the compositor):
+     · a slow full-body sway (weight shift)      (air-sway)
+     · the head tilts gently                       (air-tilt)
+     · the raised arms wave hello                  (air-wave-l / air-wave-r)
+     · the eyes blink                             (air-blink)
+     · the antenna bulb pulses                    (air-bulb)
+     · the visor sheen sweeps                     (air-sheen)
+     · the chest core beats and its ring turns     (air-core / air-ring)
+     · the motes drift                            (air-mote)
+
+   [data-thinking] — set by the chat while a reply is in flight — speeds the
+   bulb, the sheen and the wave up so the character reacts. Everything stops
+   under reduced motion; the character stays, just still. The mascot DOES NOT
+   float: the reference robot stands, so here it stands and sways.
+   ========================================================================== */
+/* the mascot as a button: strip the default chrome, keep it clickable */
+.air-mascot--btn {
+  border: 0;
+  padding: 0;
+  background: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.air-mascot--btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 10px;
+  border-radius: 20px;
+}
+
+.air-mascot--btn:hover .air-mascot__svg {
+  transform: translateY(-4px);
+}
+
+.air-mascot {
+  position: relative;
+  width: clamp(150px, 20vw, 200px);
+  margin: 0 0 clamp(18px, 3vw, 28px);
+}
+
+.air-mascot__svg {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+/* the soft glow behind the character */
+.air-mascot__halo {
+  position: absolute;
+  z-index: 0;
+  inset: 6% 8% 12%;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 44%, rgba(var(--accent-rgb), 0.4), transparent 68%);
+  filter: blur(18px);
+  animation: air-halo 5.5s ease-in-out infinite;
+}
+
+@keyframes air-halo {
+  0%, 100% { opacity: 0.5; transform: scale(0.96); }
+  50% { opacity: 0.9; transform: scale(1.04); }
+}
+
+/* the whole character sways from the feet, like a standing idle */
+.air-mascot__float {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: air-sway 5.2s ease-in-out infinite;
+}
+
+@keyframes air-sway {
+  0%, 100% { transform: rotate(0deg) translateY(0); }
+  25% { transform: rotate(-1.6deg) translateY(-2px); }
+  75% { transform: rotate(1.6deg) translateY(-2px); }
+}
+
+.air-mascot__head {
+  transform-box: fill-box;
+  transform-origin: 50% 88%;
+  animation: air-tilt 6.4s ease-in-out infinite;
+}
+
+@keyframes air-tilt {
+  0%, 100% { transform: rotate(0deg); }
+  30% { transform: rotate(2.6deg); }
+  70% { transform: rotate(-2.6deg); }
+}
+
+/* arms: raised and waving hello */
+.air-mascot__arm { transform-box: fill-box; }
+.air-mascot__arm--left {
+  transform-origin: 52% 92%;
+  animation: air-wave-l 2.8s ease-in-out infinite;
+}
+.air-mascot__arm--right {
+  transform-origin: 48% 92%;
+  animation: air-wave-r 2.8s ease-in-out infinite;
+}
+
+@keyframes air-wave-l {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(-13deg); }
+}
+
+@keyframes air-wave-r {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(13deg); }
+}
+
+/* antenna */
+.air-mascot__stem {
+  stroke: rgba(var(--accent-rgb), 0.8);
+  stroke-width: 2.6;
+  stroke-linecap: round;
+}
+
+.air-mascot__bulb {
+  fill: var(--accent-cool);
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: air-bulb 2.6s ease-in-out infinite;
+}
+
+@keyframes air-bulb {
+  0%, 100% { opacity: 0.6; transform: scale(0.9); }
+  50% { opacity: 1; transform: scale(1.16); }
+}
+
+/* visor sheen sweep */
+.air-mascot__sheen { animation: air-sheen 5s ease-in-out infinite; }
+
+@keyframes air-sheen {
+  0%, 100% { transform: translate(0, 0); opacity: 0.75; }
+  50% { transform: translate(7px, 6px); opacity: 1; }
+}
+
+/* eyes: two thick upturned arcs that blink */
+.air-mascot__eye {
+  fill: none;
+  stroke: #F2F6FF;
+  stroke-width: 9;
+  stroke-linecap: round;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: air-blink 5.4s ease-in-out infinite;
+}
+
+@keyframes air-blink {
+  0%, 92%, 100% { transform: scaleY(1); }
+  95% { transform: scaleY(0.08); }
+}
+
+.air-mascot__mouth {
+  fill: none;
+  stroke: rgba(242, 246, 255, 0.92);
+  stroke-width: 4;
+  stroke-linecap: round;
+}
+
+/* chest core */
+.air-mascot__core { animation: air-core 3.4s ease-in-out infinite; }
+
+@keyframes air-core {
+  0%, 100% { opacity: 0.82; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.08); }
+}
+
+.air-mascot__core-ring {
+  fill: none;
+  stroke: rgba(var(--accent-rgb), 0.55);
+  stroke-width: 2;
+  stroke-dasharray: 6 8;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: air-ring 9s linear infinite;
+}
+
+@keyframes air-ring {
+  to { transform: rotate(360deg); }
+}
+
+/* the ground shadow only breathes a little (the robot stands, it does not fly) */
+.air-mascot__shadow {
+  fill: rgba(var(--accent-deep-rgb, 58, 47, 110), 0.45);
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: air-shadow 5.2s ease-in-out infinite;
+}
+
+@keyframes air-shadow {
+  0%, 100% { transform: scale(1); opacity: 0.42; }
+  50% { transform: scale(0.94); opacity: 0.32; }
+}
+
+/* motes */
+.air-mascot__mote { fill: var(--accent-cool); transform-box: fill-box; transform-origin: center; }
+.air-mascot__mote--1 { animation: air-mote 6s ease-in-out infinite; }
+.air-mascot__mote--2 { animation: air-mote 7.5s ease-in-out infinite reverse; }
+.air-mascot__mote--3 { animation: air-mote 8.5s ease-in-out infinite; }
+
+@keyframes air-mote {
+  0%, 100% { transform: translate(0, 0); opacity: 0.4; }
+  50% { transform: translate(4px, -6px); opacity: 1; }
+}
+
+/* the character reacts while a reply is in flight */
+.air-mascot[data-thinking] .air-mascot__bulb { animation-duration: 0.7s; }
+.air-mascot[data-thinking] .air-mascot__sheen { animation-duration: 1.6s; }
+.air-mascot[data-thinking] .air-mascot__mote { animation-duration: 1.6s; }
+.air-mascot[data-thinking] .air-mascot__arm { animation-duration: 1.1s; }
+.air-mascot[data-thinking] .air-mascot__halo { animation-duration: 1.8s; }
+
+/* the small mascot in the docked panel's header (replaces the "AI" tile) */
+.air-panel__avatar--mascot {
+  background: linear-gradient(135deg, rgba(var(--accent-rgb), 0.28), rgba(var(--accent-deep-rgb, 58, 47, 110), 0.45));
+  border: 1px solid var(--border-soft);
+  overflow: hidden;
+}
+
+.air-panel__avatar--mascot svg {
+  width: 26px;
+  height: auto;
+  overflow: visible;
+  animation: air-sway 5.2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html:not([data-motion='full']) .air-mascot__float,
+  html:not([data-motion='full']) .air-mascot__head,
+  html:not([data-motion='full']) .air-mascot__arm,
+  html:not([data-motion='full']) .air-mascot__bulb,
+  html:not([data-motion='full']) .air-mascot__sheen,
+  html:not([data-motion='full']) .air-mascot__eye,
+  html:not([data-motion='full']) .air-mascot__core,
+  html:not([data-motion='full']) .air-mascot__core-ring,
+  html:not([data-motion='full']) .air-mascot__shadow,
+  html:not([data-motion='full']) .air-mascot__mote,
+  html:not([data-motion='full']) .air-mascot__halo,
+  html:not([data-motion='full']) .air-panel__avatar--mascot svg {
+    animation: none;
+  }
+}
+
+.air__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 18px;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.air__eyebrow-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 10px rgba(var(--accent-rgb), 0.9);
+}
+
+.air__title {
+  margin: 0 0 18px;
+  font-size: clamp(1.9rem, 4vw, 3rem);
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+
+.air__desc {
+  margin: 0 0 26px;
+  font-size: 1.02rem;
+  line-height: 1.7;
+  color: var(--muted);
+}
+
+.air__meta {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.air__meta li {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  font-size: 0.94rem;
+  color: var(--text);
+}
+
+.air__meta li span {
+  color: var(--accent-cool);
+  font-size: 0.7rem;
+}
+
+.air__panel-wrap { display: grid; gap: 14px; }
+
+.air__note {
+  margin: 0;
+  font-size: 0.8rem;
+  line-height: 1.6;
+  color: var(--quiet);
+}
+
+/* ---- the panel itself ---- */
+.air-panel {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background:
+    radial-gradient(120% 130% at 88% 0%, rgba(var(--accent-rgb), 0.12), transparent 60%),
+    var(--surface);
+  box-shadow: 0 24px 60px rgba(var(--shadow-rgb), 0.42);
+  overflow: hidden;
+}
+
+.air-panel__head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--border-soft);
+  background: rgba(var(--surface-raised-rgb), 0.5);
+}
+
+.air-panel__avatar {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+  color: #fff;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.air-panel__id { display: grid; gap: 2px; }
+.air-panel__name { font-size: 0.95rem; font-weight: 600; color: var(--text); }
+
+.air-panel__status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.74rem;
+  color: var(--green);
+}
+
+.air-panel__pulse {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 0 0 rgba(var(--green-rgb), 0.7);
+  animation: air-pulse 2.4s ease-out infinite;
+}
+
+@keyframes air-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(var(--green-rgb), 0.55); }
+  70% { box-shadow: 0 0 0 7px rgba(var(--green-rgb), 0); }
+  100% { box-shadow: 0 0 0 0 rgba(var(--green-rgb), 0); }
+}
+
+/* The close control. It has to be the most obvious thing in the panel, so it
+   carries a solid accent fill in both themes rather than a faint outline. */
+.air-panel__close {
+  margin-left: auto;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--accent);
+  border-radius: 50%;
+  background: rgba(var(--accent-rgb), 0.22);
+  color: var(--text);
+  font-size: 1.6rem;
+  line-height: 1;
+  font-weight: 400;
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+}
+
+.air-panel__close:hover,
+.air-panel__close:focus-visible {
+  color: var(--on-accent, #1C1A3A);
+  border-color: var(--accent-hover);
+  background: var(--accent-hover);
+  transform: rotate(90deg);
+}
+
+.air-panel__body {
+  padding: 18px;
+  max-height: min(52vh, 460px);
+  min-height: 220px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.air-log { display: flex; flex-direction: column; gap: 14px; }
+
+.air-msg { display: flex; }
+.air-msg--user { justify-content: flex-end; }
+.air-msg--assistant,
+.air-msg--error { justify-content: flex-start; }
+
+.air-msg__bubble {
+  max-width: 84%;
+  padding: 12px 15px;
+  border-radius: 14px;
+  font-size: 0.92rem;
+  line-height: 1.62;
+  color: var(--text);
+  background: rgba(var(--surface-raised-rgb), 0.85);
+  border: 1px solid var(--border-soft);
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+/* Rendered model output: a tiny safe Markdown subset (see ai-recruiter.js).
+   Paragraphs carry their own rhythm so a multi-line answer stays readable
+   without the old <br> stack. */
+.air-msg__bubble .air-p { margin: 0; }
+.air-msg__bubble .air-p + .air-p { margin-top: 8px; }
+
+.air-msg__bubble .air-p--heading {
+  font-weight: 600;
+  color: var(--text);
+  margin-top: 10px;
+}
+
+.air-msg__bubble .air-gap { display: block; height: 6px; }
+
+.air-msg__bubble ul {
+  margin: 8px 0 0;
+  padding-left: 20px;
+  display: grid;
+  gap: 5px;
+}
+
+.air-msg__bubble li::marker { color: var(--accent); }
+
+.air-msg__bubble strong { color: var(--text); font-weight: 650; }
+
+.air-msg__bubble code {
+  padding: 1px 5px;
+  border-radius: 5px;
+  background: rgba(var(--bg-rgb), 0.7);
+  border: 1px solid var(--border-soft);
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 0.85em;
+}
+
+.air-msg--user .air-msg__bubble {
+  background: linear-gradient(135deg, rgba(var(--accent-rgb), 0.9), rgba(var(--accent-deep-rgb, 58, 47, 110), 0.9));
+  border-color: transparent;
+  color: #fff;
+}
+
+.air-msg--error .air-msg__bubble {
+  border-color: rgba(var(--red-rgb), 0.5);
+  background: rgba(var(--red-rgb), 0.08);
+}
+
+.air-msg__error-title {
+  margin: 0 0 6px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--red);
+}
+
+.air-msg__error-text { margin: 0; color: var(--muted); font-size: 0.88rem; }
+
+.air-retry {
+  margin-top: 10px;
+  padding: 6px 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.air-retry:hover,
+.air-retry:focus-visible {
+  border-color: var(--accent);
+  background: rgba(var(--accent-rgb), 0.1);
+}
+
+/* typing indicator */
+.air-msg--typing .air-msg__bubble {
+  display: inline-flex;
+  gap: 5px;
+  align-items: center;
+  padding: 15px;
+}
+
+.air-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--muted);
+  animation: air-bounce 1.2s ease-in-out infinite;
+}
+
+.air-dot:nth-child(2) { animation-delay: 0.15s; }
+.air-dot:nth-child(3) { animation-delay: 0.3s; }
+
+@keyframes air-bounce {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+  30% { transform: translateY(-4px); opacity: 1; }
+}
+
+/* ---- suggestions ---- */
+.air-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0 18px 14px;
+}
+
+.air-chip {
+  padding: 7px 13px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.3;
+  cursor: pointer;
+  text-align: left;
+  transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.air-chip:hover,
+.air-chip:focus-visible {
+  color: var(--text);
+  border-color: var(--accent);
+  background: rgba(var(--accent-rgb), 0.1);
+}
+
+/* ---- composer ---- */
+.air-form {
+  display: flex;
+  gap: 10px;
+  padding: 14px 18px 18px;
+  border-top: 1px solid var(--border-soft);
+}
+
+.air-form__input {
+  flex: 1;
+  min-width: 0;
+  padding: 12px 15px;
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  background: rgba(var(--bg-rgb), 0.6);
+  color: var(--text);
+  font-size: 0.9rem;
+  font-family: inherit;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.air-form__input::placeholder { color: var(--quiet); }
+
+.air-form__input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.16);
+}
+
+.air-form__send {
+  padding: 0 20px;
+  border: none;
+  border-radius: 11px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+  color: #fff;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: filter 0.2s ease, transform 0.15s ease;
+}
+
+.air-form__send:hover,
+.air-form__send:focus-visible { filter: brightness(1.12); }
+.air-form__send:active { transform: translateY(1px); }
+
+.air-panel[data-busy='true'] .air-form__send,
+.air-panel[data-busy='true'] .air-form__input {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.air-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---- the in-section chat ----
+   It lives directly under the mascot and is hidden until the visitor asks
+   for it (the mascot, the section button, or the floating launcher all set
+   [data-open="true"]). Closed it is fully out of the way: no height, no
+   pointer events, no tab stops. Open it lifts in with a short transition. */
+.air-chat {
+  position: relative;
+  width: 100%;
+  margin-top: 22px;
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background:
+    radial-gradient(120% 130% at 88% 0%, rgba(var(--accent-rgb), 0.12), transparent 60%),
+    var(--surface);
+  box-shadow: 0 24px 60px rgba(var(--shadow-rgb), 0.42);
+  text-align: left;
+
+  /* the hidden state */
+  max-height: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  margin-top: 0;
+  overflow: hidden;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px);
+  transition: opacity 0.32s var(--ease-out-expo), transform 0.32s var(--ease-out-expo),
+    visibility 0.32s, max-height 0.32s ease, padding 0.32s ease, margin 0.32s ease;
+}
+
+.air-chat[data-open='true'] {
+  max-height: 78vh;
+  padding: 18px;
+  margin-top: 22px;
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.air-chat__body {
+  max-height: min(42vh, 360px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+/* the close control sits in the panel's top-right corner */
+.air-chat > .air-panel__close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 2;
+}
+
+.air-chat .air-log { padding-right: 44px; }
+
+.air-chat .air-suggestions { padding: 6px 0 14px; }
+
+.air-chat .air-form { padding: 14px 0 0; }
+
+/* ==========================================================================
+   AI Recruiter — responsive
+   --------------------------------------------------------------------------
+   Below 901px the intro and the panel stack (intro first, so the reader meets
+   the explanation before the input); below 601px the panel fills the width
+   and the dock takes the phone width minus its gutters. The floating launcher
+   hides on phones only while the dock is open, so it cannot sit on top of the
+   close button.
+   ========================================================================== */
+/* Only true phones stack the section. Anything wider keeps the reference
+   composition — copy on the LEFT, robot on the RIGHT — even in a narrow
+   window, because a stacked robot-over-text pushes the conversation off the
+   first screen. 720px is roughly an iPhone Pro Max landscape / large phablet. */
+@media (max-width: 720px) {
+  .air {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 30px;
+  }
+
+  .air__intro { max-width: none; }
+
+  /* the robot comes first on phones, so the "meet the assistant" moment
+     leads the copy */
+  .air__stage {
+    order: -1;
+  }
+}
+
+/* the narrow-but-not-phone band: side by side, just tighter */
+@media (min-width: 721px) and (max-width: 980px) {
+  .air {
+    gap: clamp(20px, 3vw, 34px);
+  }
+
+  .air__title { font-size: clamp(1.6rem, 3.4vw, 2.2rem); }
+
+  .air__stage { padding-top: clamp(54px, 7vw, 72px); }
+
+  .air-mascot { width: clamp(130px, 19vw, 168px); }
+}
+
+@media (max-width: 600px) {
+  .air-chat__body { max-height: min(46vh, 360px); }
+  .air-msg__bubble { max-width: 90%; }
+}
+
+/* reduced motion: no pulse, no typing bounce, the chat opens instantly */
+@media (prefers-reduced-motion: reduce) {
+  html:not([data-motion='full']) .air-panel__pulse,
+  html:not([data-motion='full']) .air-dot {
+    animation: none;
+  }
+
+  html:not([data-motion='full']) .air-chat {
+    transition: none;
+  }
+}
+
+/* light theme: the chat shadow needs to read on a pale page */
+html[data-theme='light'] .air-chat {
+  box-shadow: 0 24px 60px rgba(var(--shadow-rgb), 0.2);
 }
