@@ -265,15 +265,15 @@ credential is referenced anywhere.
 
 ## First-visit name hook
 
-The day's first open greets a dark stage: **NOURHAN** forms white, **ASHRAF**
-forms in the accent, letter by letter out of a blur, a thin REAL progress bar
-tracks the actual hero turntable frames and the webfonts, and an **OPEN** pill
-lifts the stage away into the hero.
+Every fresh open of the site greets a dark stage: **NOURHAN** forms white,
+**ASHRAF** forms in the accent, letter by letter out of a blur, a thin REAL
+progress bar tracks the actual hero turntable frames and the webfonts, and an
+**OPEN** pill lifts the stage away into the hero.
 
 | Guard | Behaviour |
 |---|---|
-| `localStorage` day stamp (`np-hook-day`) | shows at most once per calendar day per browser |
-| back/forward restore (`performance.type === 2`) | skipped instantly |
+| `sessionStorage` flag (`np-hook-session`) | plays once per TAB session — closing the tab replays it on the next open; in-site navigation and back/forward never replay |
+| `?hook=1` in the URL | forces a replay any time (demos and review) |
 | JS blocked (no `html.js`) | overlay never displays (markup exists, CSS hides it) |
 | script fails after boot | CSS auto-fade lifts the stage at 9s — nobody strands |
 | impatient | auto-enters ~7s after ready, hard cap 11s |

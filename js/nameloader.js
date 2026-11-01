@@ -2,7 +2,7 @@
  * ============================================================
  * The first-visit name hook.
  *
- * On the day's first open the site greets with a dark stage, the name
+ * On every fresh open of the site the stage greets: the name
  * "NOURHAN ASHRAF" forming letter by letter, a thin REAL progress bar
  * (it tracks the hero turntable frames + the webfonts actually loading),
  * and an OPEN pill. Click it — or wait for the auto-enter — and the stage
@@ -13,38 +13,43 @@
  *     with JS blocked never sees a wall (CSS hides the overlay without .js)
  *   · the overlay self-dismisses via CSS at 9s if this script ever fails
  *     after boot.js has already run — nobody can be stranded behind it
- *   · shows at most ONCE PER DAY per browser (localStorage day stamp), so
- *     recruiters are hooked, then left alone
- *   · reduced motion: no ceremony — a brief static beat, then in
+ *   · plays once per TAB session (sessionStorage): navigating inside the
+ *     site and back/forward do not replay it, but closing the tab and
+ *     opening the site again does — that fresh-open moment is the hook
+ *   · ?hook=1 forces a replay for demos and review, any time
+ *   · the ceremony plays for everyone: on reduced-motion OSes the CSS swaps
+ *     the letter entrance to soft opacity fades (no travel), verified in
+ *     styles.css — the old "flash at 0% then vanish" behaviour is gone
  *   · zero dependencies, CSP-safe (no inline anything)
  * ============================================================ */
 (function () {
   'use strict';
 
   var LOADER_ID = 'np-loader';
-  var STORE_KEY = 'np-hook-day';
-
-  function todayStamp() {
-    var d = new Date();
-    return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2);
-  }
+  var STORE_KEY = 'np-hook-session';
 
   var overlay = document.getElementById(LOADER_ID);
   if (!overlay) return;
 
-  /* Already shown today (or this is a back/forward restore where the node
-     was left behind) — clear it instantly and get on with the site. */
+  var force = false;
   try {
-    if (window.localStorage.getItem(STORE_KEY) === todayStamp()) {
-      teardown(true);
-      return;
-    }
-    if ((window.performance && performance.type === 2)) {
-      /* back/forward navigation restore — skip the hook */
-      teardown(true);
-      return;
-    }
-  } catch (e) { /* storage blocked — show the hook, fail open */ }
+    force = new URLSearchParams(window.location.search).get('hook') === '1';
+  } catch (e) { force = false; }
+
+  /* Within the same tab session the hook already played — get on with the
+     site. Back/forward restores count as the same session too. */
+  if (!force) {
+    try {
+      if (window.sessionStorage.getItem(STORE_KEY) === '1') {
+        teardown(true);
+        return;
+      }
+      if (window.performance && performance.type === 2) {
+        teardown(true);
+        return;
+      }
+    } catch (e) { /* storage blocked — show the hook, fail open */ }
+  }
 
   /* The ceremony plays for EVERYONE. A reduced-motion OS does not shorten it
      into a flash (that read as "the hook is broken"); instead the CSS swaps
@@ -95,8 +100,14 @@
   }
 
   function maybeReady() {
-    /* Small minimum hold so the name can finish forming even on cache hits. */
+    /* Pill shows only when ALL tracked assets landed AND the name had its
+       minimum hold. The 11s cap force-enters regardless, so a slow asset can
+       never hang the stage forever. */
     if (ready) return;
+    if (done < total) {
+      window.setTimeout(maybeReady, 250);
+      return;
+    }
     if (Date.now() - started < 1500) {
       window.setTimeout(maybeReady, 1500 - (Date.now() - started));
       return;
@@ -126,7 +137,7 @@
   function enter() {
     if (entered) return;
     entered = true;
-    try { window.localStorage.setItem(STORE_KEY, todayStamp()); } catch (e) { }
+    try { window.sessionStorage.setItem(STORE_KEY, '1'); } catch (e) { }
     overlay.classList.add('np-done');
     document.documentElement.classList.add('np-entered');
     window.setTimeout(teardown, 820);
@@ -137,7 +148,7 @@
     if (node) node.parentNode.removeChild(node);
     document.documentElement.classList.add('np-entered');
     if (instant) {
-      try { window.localStorage.setItem(STORE_KEY, todayStamp()); } catch (e) { }
+      try { window.sessionStorage.setItem(STORE_KEY, '1'); } catch (e) { }
     }
   }
 
