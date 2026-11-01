@@ -3657,15 +3657,10 @@ html.js .cs-related-grid {
     clip-path: none !important;
   }
 
-  /* butterflies: still visible, simply parked */
-  html:not([data-motion='full']) .butterfly,
-  html:not([data-motion='full']) .butterfly-wings {
-    animation: none !important;
-  }
-
-  html:not([data-motion='full']) .butterfly {
-    opacity: 0.72;
-  }
+  /* butterflies always fly — deliberate owner decision (2026-11): their
+     drift and wing-flap are gentle ornamental motion, and a frozen flock
+     read as "the butterflies are gone". Reduced-motion still softens every
+     travelling/entrance animation site-wide below. */
 
   html:not([data-motion='full']) .hero__photo {
     animation: none !important;
@@ -5952,10 +5947,19 @@ html.js .np-loader.np-ready .np-loader__open:focus-visible {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  html:not([data-motion='full']) .hero-chip { animation: none; }
-
+  /* the ceremony still plays — this is the site's opening moment and a plain
+     skip read as breakage. Only the letter entrance is softened: opacity-only
+     sequential fades, no blur, no scale, no travel. */
   html:not([data-motion='full']) .np-loader.np-armed .np-loader__letter {
-    animation-duration: 0.01s;
-    animation-delay: 0s;
+    filter: none;
+    transform: none;
+    animation-name: np-letter-in-soft;
+    animation-duration: 0.5s;
   }
+
+  html:not([data-motion='full']) .hero-chip { animation: none; }
+}
+
+@keyframes np-letter-in-soft {
+  to { opacity: 1; }
 }

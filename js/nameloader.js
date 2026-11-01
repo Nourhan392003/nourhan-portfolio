@@ -46,13 +46,11 @@
     }
   } catch (e) { /* storage blocked — show the hook, fail open */ }
 
-  var reduceQuery = window.matchMedia
-    ? window.matchMedia('(prefers-reduced-motion: reduce)')
-    : null;
-  function reduced() {
-    if (document.documentElement.getAttribute('data-motion') === 'full') return false;
-    return !!(reduceQuery && reduceQuery.matches);
-  }
+  /* The ceremony plays for EVERYONE. A reduced-motion OS does not shorten it
+     into a flash (that read as "the hook is broken"); instead the CSS swaps
+     the letter entrance from a blur-and-lift to a plain sequential fade, so
+     the stage still forms and breathes without throwing anything across the
+     screen. See the reduced-motion block in styles.css. */
 
   /* ---- build the letter spans ---------------------------------------- */
 
@@ -162,13 +160,4 @@
   window.setTimeout(function () {
     if (!entered) { ready = true; overlay.classList.add('np-ready'); enter(); }
   }, 11000);
-
-  /* Reduced motion: static beat, straight in. */
-  if (reduced()) {
-    window.setTimeout(function () {
-      ready = true;
-      overlay.classList.add('np-ready');
-      enter();
-    }, 700);
-  }
 })();

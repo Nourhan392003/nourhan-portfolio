@@ -276,8 +276,12 @@ lifts the stage away into the hero.
 | back/forward restore (`performance.type === 2`) | skipped instantly |
 | JS blocked (no `html.js`) | overlay never displays (markup exists, CSS hides it) |
 | script fails after boot | CSS auto-fade lifts the stage at 9s — nobody strands |
-| `prefers-reduced-motion` (no `?motion=full`) | no ceremony: ~0.7s static beat, straight in |
-| impatient | auto-enters ~7s after load completes, hard cap 11s |
+| impatient | auto-enters ~7s after ready, hard cap 11s |
+
+**Reduced motion:** the ceremony plays for everyone — a plain skip read as
+breakage. When the OS asks for less motion the letter entrance swaps to a
+soft opacity-only sequential fade (`np-letter-in-soft`; no blur, no scale,
+no travel), so the stage still forms and breathes.
 
 Markup lives at the top of `<body>` in `index.html`; logic in
 `js/nameloader.js`; styles in `styles.css` → "The first-visit name hook". The
@@ -293,6 +297,15 @@ site's own palette. They live inside `.hero__bg` (behind everything,
 never sit on copy (1 & 3 hover above the portrait; 2 & 4 hold the side
 margins), hide two of themselves under 720px, and freeze under reduced
 motion. Marked positions collide-checked at an 800px viewport.
+
+## Butterflies always fly
+
+The hero's five butterflies were previously frozen to static art under
+`prefers-reduced-motion`, which — on machines whose OS actually reports
+reduced motion — made them read as deleted. As of 2026-11 (owner decision)
+the flock flies unconditionally: the drift and wing-flap are gentle,
+ornamental motion with no large excursions. Every *travelling/entrance*
+animation on the site is still softened or skipped under the same setting.
 
 ## Uppercase section titles
 
