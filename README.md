@@ -263,6 +263,43 @@ ships the file, so this only happens if it is deleted locally.
 `social-culture-portfolio`, `TCGWeb`. No old Supabase project, backup, bucket or
 credential is referenced anywhere.
 
+## First-visit name hook
+
+The day's first open greets a dark stage: **NOURHAN** forms white, **ASHRAF**
+forms in the accent, letter by letter out of a blur, a thin REAL progress bar
+tracks the actual hero turntable frames and the webfonts, and an **OPEN** pill
+lifts the stage away into the hero.
+
+| Guard | Behaviour |
+|---|---|
+| `localStorage` day stamp (`np-hook-day`) | shows at most once per calendar day per browser |
+| back/forward restore (`performance.type === 2`) | skipped instantly |
+| JS blocked (no `html.js`) | overlay never displays (markup exists, CSS hides it) |
+| script fails after boot | CSS auto-fade lifts the stage at 9s — nobody strands |
+| `prefers-reduced-motion` (no `?motion=full`) | no ceremony: ~0.7s static beat, straight in |
+| impatient | auto-enters ~7s after load completes, hard cap 11s |
+
+Markup lives at the top of `<body>` in `index.html`; logic in
+`js/nameloader.js`; styles in `styles.css` → "The first-visit name hook". The
+progress bar counts the same nine frames `js/hero-turntable.js` needs (the
+browser dedupes the requests) plus `document.fonts.ready`.
+
+## Hero floating chips
+
+Four small glass squares — `TS`, `JS`, a code glyph, a cart glyph — drift
+around the hero portrait like the reference site's orbiting tool icons, in the
+site's own palette. They live inside `.hero__bg` (behind everything,
+`pointer-events: none`, `aria-hidden`), pin to measured safe zones so they
+never sit on copy (1 & 3 hover above the portrait; 2 & 4 hold the side
+margins), hide two of themselves under 720px, and freeze under reduced
+motion. Marked positions collide-checked at an 800px viewport.
+
+## Uppercase section titles
+
+`.section__title` renders 900-weight uppercase (`MY STACK`, `ABOUT`, …) —
+the reference site's typographic signature, achieved with the existing Inter
+stack (no new font, no new dependency).
+
 ## AI Recruiter (chatbot)
 
 A recruiter-facing assistant on the homepage: it answers questions about

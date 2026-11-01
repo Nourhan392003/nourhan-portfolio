@@ -1140,9 +1140,10 @@ html.js .hero__scrollcue {
 
 .section__title {
   font-size: clamp(2.1rem, 5.4vw, 3.6rem);
-  font-weight: 700;
-  letter-spacing: -0.035em;
-  line-height: 1.05;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  line-height: 1.02;
   max-width: 22ch;
 }
 
@@ -5730,4 +5731,231 @@ html.js .hero--turntable .hero__scrollcue {
 /* light theme: the chat shadow needs to read on a pale page */
 html[data-theme='light'] .air-chat {
   box-shadow: 0 24px 60px rgba(var(--shadow-rgb), 0.2);
+}
+
+/* ==========================================================================
+   The first-visit name hook (js/nameloader.js)
+   --------------------------------------------------------------------------
+   A dark stage, the name forming letter by letter, a REAL progress bar
+   tracking the hero turntable frames and the webfonts, then an OPEN pill
+   that lifts the stage away.
+
+   Safety architecture, so the hook can never trap a visitor:
+     · no .js (JS blocked)  -> the overlay simply never displays
+     · boot ran but this script failed -> the auto-fade at 9s clears it
+     · reduced motion      -> the script enters after a 0.7s static beat
+     · once per day         -> localStorage day stamp, checked inline
+   ========================================================================== */
+.np-loader {
+  display: none;
+}
+
+html.js .np-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 26px;
+  background:
+    radial-gradient(55% 42% at 50% 30%, rgba(var(--accent-rgb), 0.14), transparent 70%),
+    radial-gradient(70% 60% at 50% 85%, rgba(var(--accent-deep-rgb, 58, 47, 110), 0.35), transparent 72%),
+    var(--bg);
+  transition: opacity 0.75s var(--ease-out-expo), transform 0.75s var(--ease-out-expo), visibility 0.75s;
+}
+
+html.js .np-loader.np-done {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(-3.5rem);
+}
+
+/* absolute opt-out safety: even if progress never completes, the stage
+   lifts itself after 9 seconds (the script's own cap is ~11s) */
+html.js .np-loader.np-armed {
+  animation: np-loader-autoout 9s linear forwards;
+}
+
+@keyframes np-loader-autoout {
+  0%, 94% { opacity: 1; visibility: visible; }
+  100% { opacity: 0; visibility: hidden; pointer-events: none; }
+}
+
+/* the name, forming letter by letter */
+html.js .np-loader .np-loader__name {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0 0.28em;
+  margin: 0;
+  padding: 0 20px;
+  font-family: var(--font-sans, Inter, sans-serif);
+  font-size: clamp(2.6rem, 9vw, 6.4rem);
+  font-weight: 900;
+  line-height: 0.98;
+  letter-spacing: -0.01em;
+  color: var(--text);
+  text-align: center;
+}
+
+html.js .np-loader .np-loader__word {
+  display: inline-flex;
+}
+
+.np-loader.np-armed .np-loader__letter {
+  display: inline-block;
+  opacity: 0;
+  filter: blur(14px);
+  transform: translateY(0.35em) scale(1.06);
+  animation: np-letter-in 0.66s var(--ease-out-expo) forwards;
+  animation-delay: calc(90ms + var(--i, 0) * 52ms);
+}
+
+@keyframes np-letter-in {
+  to { opacity: 1; filter: blur(0); transform: translateY(0) scale(1); }
+}
+
+html.js .np-loader .np-loader__word--accent { color: var(--accent-hover); }
+
+/* the meter — thin, real, accent gradient */
+html.js .np-loader .np-loader__meter {
+  width: min(300px, 62vw);
+  height: 2px;
+  border-radius: 2px;
+  background: rgba(var(--border-rgb), 0.5);
+  overflow: hidden;
+}
+
+html.js .np-loader .np-loader__bar {
+  display: block;
+  height: 100%;
+  width: 100%;
+  transform: scaleX(0);
+  transform-origin: left;
+  background: linear-gradient(90deg, var(--accent-deep), var(--accent), var(--accent-hover));
+  transition: transform 0.4s ease;
+  box-shadow: 0 0 14px rgba(var(--accent-rgb), 0.55);
+}
+
+html.js .np-loader .np-loader__pct {
+  margin: -12px 0 0;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 0.72rem;
+  letter-spacing: 0.22em;
+  color: var(--muted);
+}
+
+/* the pill — appears only when everything is actually loaded */
+html.js .np-loader .np-loader__open {
+  margin-top: 10px;
+  padding: 13px 34px;
+  border: 1px solid rgba(var(--accent-rgb), 0.65);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text);
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.3em;
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(8px);
+  visibility: hidden;
+  transition: opacity 0.45s ease, transform 0.45s var(--ease-out-expo),
+    visibility 0.45s, background 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+}
+
+html.js .np-loader.np-ready .np-loader__open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  animation: np-pill-pulse 2.2s ease-in-out 1s infinite;
+}
+
+html.js .np-loader.np-ready .np-loader__open:hover,
+html.js .np-loader.np-ready .np-loader__open:focus-visible {
+  background: var(--accent);
+  color: var(--on-accent, #1C1A3A);
+  border-color: var(--accent);
+  animation: none;
+}
+
+@keyframes np-pill-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(var(--accent-rgb), 0.5); }
+  60% { box-shadow: 0 0 0 12px rgba(var(--accent-rgb), 0); }
+}
+
+/* reduced motion: the script enters fast; CSS holds letters sharp meanwhile */
+@media (prefers-reduced-motion: reduce) {
+  html:not([data-motion='full']) .np-loader.np-armed .np-loader__letter {
+    animation-duration: 0.01s;
+    animation-delay: 0s;
+  }
+
+  html:not([data-motion='full']) .np-loader.np-armed {
+    animation: none;
+  }
+}
+
+/* ==========================================================================
+   Hero floating chips — the reference site's orbiting "tools of the trade",
+   translated to Nourhan's real stack. Background layer only: no pointer
+   events, no layout, decorative under an aria-hidden parent.
+   ========================================================================== */
+.hero-chips {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.hero-chip {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  border: 1px solid rgba(var(--accent-rgb), 0.38);
+  background: linear-gradient(150deg, rgba(var(--accent-rgb), 0.14), rgba(var(--accent-rgb), 0.04));
+  box-shadow: 0 14px 34px rgba(var(--shadow-rgb), 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.09);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  color: var(--accent-cool);
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  opacity: 0.55;
+}
+
+.hero-chip svg { width: 19px; height: 19px; display: block; }
+
+/* pinned to the safe empty corners of the hero so the chips read as ambient
+   depth and never sit on top of copy, at any width. 1 and 3 hover above the
+   portrait like reference-site tool icons; 2 and 4 hold the side margins. */
+.hero-chip--1 { top: 6%;  left: 47%;  animation: np-chip-float 9s  ease-in-out infinite; }
+.hero-chip--2 { top: 47%; left: 3.2%; animation: np-chip-float 11s ease-in-out infinite reverse; width: 41px; height: 41px; }
+.hero-chip--3 { top: 6%;  right: 34%; animation: np-chip-float 10s ease-in-out 1.2s infinite; }
+.hero-chip--4 { bottom: 8%; right: 30%; animation: np-chip-float 8.5s ease-in-out 0.6s infinite reverse; width: 42px; height: 42px; }
+
+@keyframes np-chip-float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-14px) rotate(5deg); }
+}
+
+@media (max-width: 720px) {
+  .hero-chip--2, .hero-chip--3 { display: none; }
+  .hero-chip { opacity: 0.45; width: 40px; height: 40px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html:not([data-motion='full']) .hero-chip { animation: none; }
+
+  html:not([data-motion='full']) .np-loader.np-armed .np-loader__letter {
+    animation-duration: 0.01s;
+    animation-delay: 0s;
+  }
 }

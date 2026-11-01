@@ -42,13 +42,36 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
   <!-- bump the ?v= when styles or the behaviour script change, so browsers
        (and the local preview) pick the new files up instead of a cached copy -->
-  <link rel="stylesheet" href="styles.css?v=69" />
+  <link rel="stylesheet" href="styles.css?v=71" />
   <!-- Before paint: js class, saved theme, ?motion override. Extracted from
        the head into js/boot.js so the CSP above can keep script-src free of
        'unsafe-inline'. Same parser-blocking position, same timing. -->
   <script src="js/boot.js?v=1"></script>
+  <!-- First-visit name hook (real progress on hero assets; once per day) -->
+  <script src="js/nameloader.js?v=1" defer></script>
 </head>
   <body>
+    <!-- ===================== First-visit name hook =====================
+         A dark stage with the name forming letter by letter, a REAL progress
+         bar (it tracks the actual hero turntable frames + webfonts), and an
+         OPEN pill. Shows at most once a day per browser (localStorage); JS
+         drives it, CSS hides it without .js, and it self-dismisses at 9s if
+         anything ever fails — nobody gets stranded behind it. Driven by
+         js/nameloader.js; see styles.css → "the first-visit hook". -->
+    <div class="np-loader" id="np-loader" aria-hidden="true">
+      <p class="np-loader__name">
+        <span class="np-loader__word">NOURHAN</span>
+        <span class="np-loader__word np-loader__word--accent">ASHRAF</span>
+      </p>
+      <div class="np-loader__meter" aria-hidden="true">
+        <span class="np-loader__bar"></span>
+      </div>
+      <p class="np-loader__pct" aria-hidden="true">0%</p>
+      <button class="np-loader__open" type="button" tabindex="-1">
+        OPEN <span aria-hidden="true">&rarr;</span>
+      </button>
+    </div>
+
     <!-- Navigation -->
     <header class="nav" id="nav">
       <div class="container nav__inner">
@@ -83,6 +106,26 @@
           <div class="hero__bg-glow hero__bg-glow--violet" aria-hidden="true"></div>
           <div class="hero__bg-glow hero__bg-glow--cyan" aria-hidden="true"></div>
           <div class="hero__bg-glow hero__bg-glow--amber" aria-hidden="true"></div>
+
+          <!-- Floating glass chips — the cinematic "tools of the trade" orbit
+               from the reference site, translated to Nourhan's real stack
+               (TypeScript, JavaScript, code, e-commerce). Pure decoration in
+               the background layer: pointer-events none, slow CSS float,
+               hidden on phones where the portrait leads. -->
+          <div class="hero-chips">
+            <span class="hero-chip hero-chip--1">TS</span>
+            <span class="hero-chip hero-chip--2">JS</span>
+            <span class="hero-chip hero-chip--3">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path fill="currentColor" d="M9.4 16.6 4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4Zm5.2 0 4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4Z"/>
+              </svg>
+            </span>
+            <span class="hero-chip hero-chip--4">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path fill="currentColor" d="M7 18a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm10 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4ZM7.2 14h9.9c.9 0 1.7-.6 1.9-1.5l1.9-7A1 1 0 0 0 20 4H6.3l-.5-2H1v2h3.3l2.4 9.6C5.6 13.9 5 14.6 5 15.5c0 1 .8 1.8 1.8 1.8H19v-2H7.2Z"/>
+              </svg>
+            </span>
+          </div>
         </div>
 
         <!-- 5 decorative butterflies — deterministic positions (see .butterfly--1..5)
