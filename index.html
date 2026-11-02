@@ -42,7 +42,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
   <!-- bump the ?v= when styles or the behaviour script change, so browsers
        (and the local preview) pick the new files up instead of a cached copy -->
-  <link rel="stylesheet" href="styles.css?v=76" />
+  <link rel="stylesheet" href="styles.css?v=77" />
   <!-- Before paint: js class, saved theme, ?motion override. Extracted from
        the head into js/boot.js so the CSP above can keep script-src free of
        'unsafe-inline'. Same parser-blocking position, same timing. -->
@@ -1098,13 +1098,6 @@
         <path d="M5.6 11.4 12 5l6.4 6.4" />
       </svg>
     </button>
-    <a class="fab fab--whatsapp" data-whatsapp-fab
-       href="https://wa.me/201011405879"
-       target="_blank" rel="noopener noreferrer"         aria-label="Contact via WhatsApp" title="Contact via WhatsApp">
-      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-        <path fill="currentColor" d="M20.5 3.5A11.8 11.8 0 0 0 12.1 0C5.6 0 .3 5.3.3 11.8c0 2.1.6 4.1 1.6 5.9L.2 24l6.5-1.7c1.8.9 3.7 1.3 5.6 1.3h.1c6.5 0 11.7-5.3 11.7-11.8 0-3.1-1.3-6.1-3.6-8.3Zm-8.4 18.1h-.1c-1.7 0-3.4-.5-4.9-1.3l-.4-.2-3.9 1 1-3.8-.3-.4a9.7 9.7 0 1 1 8.6 4.7Zm5.3-7.3c-.3-.2-1.8-.9-2.1-1-.3-.1-.5-.2-.7.2-.2.3-.8 1-.9 1.2-.2.2-.3.2-.6.1-1.6-.8-2.7-1.4-3.8-3.2-.3-.5.3-.5.8-1.6.1-.2.1-.4 0-.6-.1-.2-.7-1.7-.9-2.3-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.6.1-.9.4-.3.3-1.2 1.2-1.2 2.9 0 1.7 1.2 3.3 1.4 3.5.2.2 2.4 3.7 5.8 5.2 2.2 1 2.2.7 2.6.7.4 0 1.8-.7 2.1-1.4.3-.7.3-1.3.2-1.4-.1-.1-.3-.2-.5-.3Z" />
-      </svg>
-    </a>
     <!-- AI Recruiter launcher — opens the chat in the section, then scrolls
          to it. Carries [data-ai-open] like the section's own button. When
          assets/images/ai-girl.png exists, the chibi girl becomes the button
@@ -1119,7 +1112,14 @@
         <path fill="currentColor" d="M12 2.6 3.2 7v9.8L12 21.4l8.8-4.6V7L12 2.6Zm0 2.3 6.8 3.5v7.2L12 19.1l-6.8-3.5V8.4L12 4.9Zm0 3.1a3.3 3.3 0 0 0-3.3 3.3c0 1.4.9 2.6 2.1 3.1l-.5 1.9h3.4l-.5-1.9a3.3 3.3 0 0 0 2.1-3.1A3.3 3.3 0 0 0 12 8Zm0 2a1.3 1.3 0 1 1 0 2.6 1.3 1.3 0 0 1 0-2.6Z"/>
       </svg>
     </button>
-  </div>
+  <a class="fab fab--whatsapp" data-whatsapp-fab
+       href="https://wa.me/201011405879"
+       target="_blank" rel="noopener noreferrer"         aria-label="Contact via WhatsApp" title="Contact via WhatsApp">
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path fill="currentColor" d="M20.5 3.5A11.8 11.8 0 0 0 12.1 0C5.6 0 .3 5.3.3 11.8c0 2.1.6 4.1 1.6 5.9L.2 24l6.5-1.7c1.8.9 3.7 1.3 5.6 1.3h.1c6.5 0 11.7-5.3 11.7-11.8 0-3.1-1.3-6.1-3.6-8.3Zm-8.4 18.1h-.1c-1.7 0-3.4-.5-4.9-1.3l-.4-.2-3.9 1 1-3.8-.3-.4a9.7 9.7 0 1 1 8.6 4.7Zm5.3-7.3c-.3-.2-1.8-.9-2.1-1-.3-.1-.5-.2-.7.2-.2.3-.8 1-.9 1.2-.2.2-.3.2-.6.1-1.6-.8-2.7-1.4-3.8-3.2-.3-.5.3-.5.8-1.6.1-.2.1-.4 0-.6-.1-.2-.7-1.7-.9-2.3-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.6.1-.9.4-.3.3-1.2 1.2-1.2 2.9 0 1.7 1.2 3.3 1.4 3.5.2.2 2.4 3.7 5.8 5.2 2.2 1 2.2.7 2.6.7.4 0 1.8-.7 2.1-1.4.3-.7.3-1.3.2-1.4-.1-.1-.3-.2-.5-.3Z" />
+      </svg>
+    </a>
+    </div>
 
   <!-- AI Recruiter · fixed chat dock. Hidden until the girl (bottom-right)
        is clicked; the girl herself stays pinned to the corner on every page

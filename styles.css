@@ -4164,8 +4164,8 @@ html.js .contact .contact-row[data-scroll-motion].visible {
   border-radius: 0;
   box-shadow: none;
   align-self: flex-end;
-  margin-top: 2px;
-  margin-bottom: -18px; /* her shoes touch the page edge */
+  margin-top: 0;
+  margin-bottom: 0;
 }
 
 .fab--ai.has-girl:hover,
@@ -4187,6 +4187,10 @@ html.js .contact .contact-row[data-scroll-motion].visible {
   filter: drop-shadow(0 10px 22px rgba(var(--accent-rgb), 0.4));
   animation: fab-girl-bob 3.6s ease-in-out infinite;
 }
+
+/* the jump-pose frame is ONLY visible mid-leap — this kills the blanket
+   .fab__girl display:block above for it, so idle never shows both frames */
+.fab--ai.has-girl .fab__girl--jump { display: none; }
 
 /* the jump-pose art — revealed only while she leaps */
 .fab--ai .fab__girl--jump { display: none; }
