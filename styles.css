@@ -4188,6 +4188,21 @@ html.js .contact .contact-row[data-scroll-motion].visible {
   animation: fab-girl-bob 3.6s ease-in-out infinite;
 }
 
+/* the jump-pose art — revealed only while she leaps */
+.fab--ai .fab__girl--jump { display: none; }
+
+.fab--ai.np-girl-jump .fab__girl { display: none; }
+
+.fab--ai.np-girl-jump .fab__girl--jump {
+  display: block;
+  width: 96px; /* arms-up pose is wider than the standing one */
+  height: auto;
+  filter: drop-shadow(0 14px 28px rgba(var(--accent-rgb), 0.5));
+}
+
+.fab--ai.np-girl-jump.np-no-jump-art .fab__girl--jump { display: none; }
+.fab--ai.np-girl-jump.np-no-jump-art .fab__girl { display: block; }
+
 @keyframes fab-girl-bob {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-5px); }
@@ -4203,12 +4218,12 @@ html.js .contact .contact-row[data-scroll-motion].visible {
 }
 
 @keyframes np-girl-jump {
-  0%   { transform: translateY(0) scale(1, 1); }
-  18%  { transform: translateY(3px) scale(1.08, 0.9); }   /* pre-jump squash */
-  45%  { transform: translateY(-20px) scale(0.96, 1.08); } /* the leap */
-  58%  { transform: translateY(0) scale(1.05, 0.92); }     /* landing squish */
-  78%  { transform: translateY(0) scale(0.96, 1.05); }
-  100% { transform: translateY(0) scale(1, 1); }
+  0%   { transform: translateY(0) rotate(0deg) scale(1, 1); }
+  18%  { transform: translateY(4px) rotate(-2deg) scale(1.08, 0.9); }   /* pre-jump squash */
+  45%  { transform: translateY(-30px) rotate(3deg) scale(0.96, 1.06); } /* the leap */
+  60%  { transform: translateY(0) rotate(0deg) scale(1.06, 0.9); }      /* landing squish */
+  80%  { transform: translateY(0) rotate(0deg) scale(0.96, 1.05); }
+  100% { transform: translateY(0) rotate(0deg) scale(1, 1); }
 }
 
 /* a star pop that accompanies the leap (not clipped: the button no longer
@@ -4355,6 +4370,14 @@ html[data-theme='light'] .air-dock .air-panel {
 
   html:not([data-motion='full']) .fab--ai.np-girl-jump {
     animation: none;
+  }
+
+  html:not([data-motion='full']) .fab--ai.np-girl-jump .fab__girl--jump {
+    display: none;
+  }
+
+  html:not([data-motion='full']) .fab--ai.np-girl-jump .fab__girl {
+    display: block;
   }
 
   html:not([data-motion='full']) .fab--ai.np-girl-jump::before {

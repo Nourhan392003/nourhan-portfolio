@@ -397,6 +397,22 @@
           girl.style.display = 'none';
         });
       }
+
+      /* the jump-pose frame: if it is missing, the standing art simply stays
+         on during the leap instead of a broken-image flash */
+      var jumper = fab.querySelector('.fab__girl--jump');
+      if (jumper) {
+        var jflag = function () {
+          if (!(jumper.naturalWidth > 1)) fab.classList.add('np-no-jump-art');
+        };
+        if (jumper.complete) jflag();
+        else {
+          jumper.addEventListener('error', function () {
+            fab.classList.add('np-no-jump-art');
+          });
+          jumper.addEventListener('load', jflag);
+        }
+      }
     }
   }
 
