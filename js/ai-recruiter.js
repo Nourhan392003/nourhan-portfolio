@@ -307,6 +307,16 @@
 
     var open = false;
 
+    /* Scroll the window to the chat — computed by hand instead of
+       scrollIntoView, whose smooth behaviour browsers can silently cancel
+       when competing focus/scroll work is in flight. */
+    function scrollToChat(smooth) {
+      var rect = chat.getBoundingClientRect();
+      var absTop = rect.top + (window.scrollY || window.pageYOffset || 0);
+      var target = absTop - Math.max(24, (window.innerHeight - rect.height) / 2);
+      window.scrollTo({ top: Math.max(0, target), behavior: smooth ? 'smooth' : 'auto' });
+    }
+
     function setOpen(next, shouldScroll) {
       open = next;
       chat.setAttribute('data-open', open ? 'true' : 'false');
@@ -318,15 +328,14 @@
         }
       );
       if (open) {
-        if (shouldScroll && chat.scrollIntoView) {
-          chat.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-        /* It transitions from visibility:hidden, and an element that is not yet
-           visible cannot take focus — so focus a beat later, once the browser
-           has painted the open state. */
+        if (shouldScroll) scrollToChat(true);
+        /* focus after the open transition paints — preventScroll keeps the
+           focus call from yanking or cancelling any scroll in flight */
         var input = chat.querySelector('[data-air-input]');
         window.setTimeout(function () {
-          if (open && input) input.focus();
+          if (open && input && input.focus) {
+            try { input.focus({ preventScroll: true }); } catch (e) { input.focus(); }
+          }
         }, 80);
       }
     }
@@ -336,9 +345,27 @@
       function (btn) {
         btn.setAttribute('aria-controls', 'ai-chat');
         btn.setAttribute('aria-expanded', 'false');
-        /* The floating launcher is the one that must scroll to the chat. */
+        /* The floating launcher is the one that must scroll to the chat — and
+           it performs first: the girl jumps, squashes and sparkles, THEN the
+           chat slides open (see fab--ai.np-girl-jump in styles.css). */
         var isFab = btn.classList && btn.classList.contains('fab--ai');
         btn.addEventListener('click', function () {
+          if (isFab && btn.classList.contains('has-girl')) {
+            if (btn.classList.contains('np-girl-jump')) return;
+            btn.classList.add('np-girl-jump');
+            /* the window glides WHILE she leaps — scroll lands as she lands */
+            scrollToChat(true);
+            /* safety: if the smooth glide was interrupted, snap the rest */
+            window.setTimeout(function () {
+              var r = chat.getBoundingClientRect();
+              if (r.top < -40 || r.top > window.innerHeight) scrollToChat(false);
+            }, 500);
+            window.setTimeout(function () {
+              btn.classList.remove('np-girl-jump');
+              setOpen(true, false);
+            }, 440);
+            return;
+          }
           setOpen(true, isFab);
         });
       }
@@ -366,6 +393,26 @@
     if (chat) {
       initPanel(chat);
       initChat();
+    }
+
+    /* When the chibi girl image exists, she becomes the floating launcher:
+       flag the button so CSS swaps the fallback hexagon out for her, and the
+       jump-and-pop click performance can run. A 404 or a missing file just
+       leaves the crisp SVG fallback — the control is never broken. */
+    var fab = document.querySelector('.fab--ai');
+    var girl = fab ? fab.querySelector('.fab__girl') : null;
+    if (fab && girl) {
+      var flag = function () {
+        if (girl.naturalWidth > 1) fab.classList.add('has-girl');
+        else girl.style.display = 'none';
+      };
+      if (girl.complete) flag();
+      else {
+        girl.addEventListener('load', flag);
+        girl.addEventListener('error', function () {
+          girl.style.display = 'none';
+        });
+      }
     }
   }
 

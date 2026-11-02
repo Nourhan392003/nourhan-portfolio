@@ -4131,7 +4131,11 @@ html.js .contact .contact-row[data-scroll-motion].visible {
   box-shadow: 0 16px 34px rgba(37, 211, 102, 0.3);
 }
 
-/* the AI Recruiter launcher — accent gradient so it reads as the assistant */
+/* the AI Recruiter launcher — the chibi girl herself.
+   Default state is the inline-SVG fallback (hexagon on accent gradient).
+   Once ai-girl.png is verified loaded, js/ai-recruiter.js adds .has-girl and
+   the girl takes over: full-bleed circular photo, idle bob, and a
+   jump-and-pop on every click before the chat opens (see np-girl-jump). */
 .fab--ai {
   background: linear-gradient(135deg, var(--accent), var(--accent-deep));
   border-color: rgba(var(--accent-rgb), 0.6);
@@ -4143,6 +4147,81 @@ html.js .contact .contact-row[data-scroll-motion].visible {
   border-color: var(--accent-hover);
   color: #fff;
   box-shadow: 0 16px 34px rgba(var(--accent-rgb), 0.42);
+}
+
+.fab--ai .fab__girl {
+  display: none;
+}
+
+.fab--ai.has-girl {
+  width: 60px;
+  height: 60px;
+  padding: 0;
+  background: none;
+  border-color: transparent;
+  box-shadow: 0 12px 30px rgba(var(--shadow-rgb), 0.45);
+}
+
+.fab--ai.has-girl .fab__girl-fallback { display: none; }
+
+.fab--ai.has-girl .fab__girl {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid rgba(var(--accent-rgb), 0.55);
+  animation: fab-girl-bob 3.4s ease-in-out infinite;
+}
+
+.fab--ai.has-girl:hover {
+  transform: translateY(-4px) scale(1.05);
+  background: none;
+  border-color: transparent;
+  box-shadow: 0 18px 40px rgba(var(--accent-rgb), 0.45);
+}
+
+@keyframes fab-girl-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+/* the click: jump, squash, sparkle pop — then the chat slides open */
+.fab--ai.np-girl-jump {
+  animation: np-girl-jump 0.6s var(--ease-out-expo);
+}
+
+.fab--ai.np-girl-jump .fab__girl {
+  animation: none;
+}
+
+@keyframes np-girl-jump {
+  0%   { transform: translateY(0) scale(1, 1); }
+  18%  { transform: translateY(3px) scale(1.08, 0.9); }   /* pre-jump squash */
+  45%  { transform: translateY(-20px) scale(0.96, 1.08); } /* the leap */
+  58%  { transform: translateY(0) scale(1.05, 0.92); }     /* landing squish */
+  78%  { transform: translateY(0) scale(0.96, 1.05); }
+  100% { transform: translateY(0) scale(1, 1); }
+}
+
+/* a star pop that accompanies the leap (not clipped: the button no longer
+   crops with overflow — the girl crops herself via border-radius) */
+.fab--ai.np-girl-jump::before {
+  content: "\2726";
+  position: absolute;
+  top: -12px;
+  right: -6px;
+  font-size: 1.15rem;
+  color: var(--accent-cool);
+  text-shadow: 0 0 12px rgba(var(--accent-cool-rgb, 125, 211, 252), 0.9);
+  animation: np-girl-spark 0.6s ease-out forwards;
+  pointer-events: none;
+}
+
+@keyframes np-girl-spark {
+  0%   { opacity: 0; transform: translateY(6px) scale(0.4) rotate(0deg); }
+  45%  { opacity: 1; transform: translateY(-8px) scale(1.25) rotate(90deg); }
+  100% { opacity: 0; transform: translateY(-16px) scale(0.7) rotate(160deg); }
 }
 
 /* back to top stays hidden (and out of the tab order) until it is needed */
@@ -4188,6 +4267,19 @@ html.js .contact .contact-row[data-scroll-motion].visible {
   html:not([data-motion='full']) .fab:hover {
     transition: none !important;
     transform: none !important;
+  }
+
+  html:not([data-motion='full']) .fab--ai.has-girl .fab__girl {
+    animation: none;
+  }
+
+  html:not([data-motion='full']) .fab--ai.np-girl-jump {
+    animation: none;
+  }
+
+  html:not([data-motion='full']) .fab--ai.np-girl-jump::before {
+    animation: none;
+    opacity: 0;
   }
 }
 

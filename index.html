@@ -42,7 +42,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
   <!-- bump the ?v= when styles or the behaviour script change, so browsers
        (and the local preview) pick the new files up instead of a cached copy -->
-  <link rel="stylesheet" href="styles.css?v=73" />
+  <link rel="stylesheet" href="styles.css?v=74" />
   <!-- Before paint: js class, saved theme, ?motion override. Extracted from
        the head into js/boot.js so the CSP above can keep script-src free of
        'unsafe-inline'. Same parser-blocking position, same timing. -->
@@ -1199,11 +1199,15 @@
       </svg>
     </a>
     <!-- AI Recruiter launcher — opens the chat in the section, then scrolls
-         to it. Carries [data-ai-open] like the section's own button. -->
+         to it. Carries [data-ai-open] like the section's own button. When
+         assets/images/ai-girl.png exists, the chibi girl becomes the button
+         (js/ai-recruiter.js flags .has-girl); until then a crisp inline-SVG
+         fallback shows, so the control is never broken. -->
     <button type="button" class="fab fab--ai" data-ai-open
             aria-controls="ai-chat" aria-expanded="false"
             aria-label="Open the AI Recruiter chat" title="Ask the AI Recruiter">
-      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <img class="fab__girl" src="assets/images/ai-girl.png" alt="" width="58" height="58" decoding="async" />
+      <svg class="fab__girl-fallback" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
         <path fill="currentColor" d="M12 2.6 3.2 7v9.8L12 21.4l8.8-4.6V7L12 2.6Zm0 2.3 6.8 3.5v7.2L12 19.1l-6.8-3.5V8.4L12 4.9Zm0 3.1a3.3 3.3 0 0 0-3.3 3.3c0 1.4.9 2.6 2.1 3.1l-.5 1.9h3.4l-.5-1.9a3.3 3.3 0 0 0 2.1-3.1A3.3 3.3 0 0 0 12 8Zm0 2a1.3 1.3 0 1 1 0 2.6 1.3 1.3 0 0 1 0-2.6Z"/>
       </svg>
     </button>
@@ -1226,7 +1230,7 @@
   <!-- AI Recruiter mascot (inline SVG, CSS-animated) -->
   <script src="js/ai-mascot.js?v=4"></script>
   <!-- AI Recruiter chat panel (public behaviour; calls /api/chat only) -->
-  <script src="js/ai-recruiter.js?v=11"></script>
+  <script src="js/ai-recruiter.js?v=13"></script>
   <!-- js/projects.js self-initialises from the markup (#projects-grid here,
        #projects-index on projects.html), so no inline loader is needed and
        the CSP stays strict. -->
