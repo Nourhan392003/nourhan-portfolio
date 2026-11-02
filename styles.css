@@ -4154,36 +4154,43 @@ html.js .contact .contact-row[data-scroll-motion].visible {
 }
 
 .fab--ai.has-girl {
-  width: 60px;
-  height: 60px;
+  /* the transparent chibi girl, standing free at the stack's foot */
+  width: auto;
+  height: auto;
+  min-height: 0;
   padding: 0;
   background: none;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  align-self: flex-end;
+  margin-top: 2px;
+  margin-bottom: -18px; /* her shoes touch the page edge */
+}
+
+.fab--ai.has-girl:hover,
+.fab--ai.has-girl:focus-visible {
+  transform: translateY(-3px);
+  background: none;
   border-color: transparent;
-  box-shadow: 0 12px 30px rgba(var(--shadow-rgb), 0.45);
+  box-shadow: 0 14px 34px rgba(var(--accent-rgb), 0.35);
 }
 
 .fab--ai.has-girl .fab__girl-fallback { display: none; }
 
 .fab--ai.has-girl .fab__girl {
   display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 50%;
-  border: 2px solid rgba(var(--accent-rgb), 0.55);
-  animation: fab-girl-bob 3.4s ease-in-out infinite;
-}
-
-.fab--ai.has-girl:hover {
-  transform: translateY(-4px) scale(1.05);
-  background: none;
-  border-color: transparent;
-  box-shadow: 0 18px 40px rgba(var(--accent-rgb), 0.45);
+  width: 88px;
+  height: auto;
+  border-radius: 0;
+  border: none;
+  filter: drop-shadow(0 10px 22px rgba(var(--accent-rgb), 0.4));
+  animation: fab-girl-bob 3.6s ease-in-out infinite;
 }
 
 @keyframes fab-girl-bob {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-4px); }
+  50% { transform: translateY(-5px); }
 }
 
 /* the click: jump, squash, sparkle pop — then the chat slides open */
@@ -4222,6 +4229,79 @@ html.js .contact .contact-row[data-scroll-motion].visible {
   0%   { opacity: 0; transform: translateY(6px) scale(0.4) rotate(0deg); }
   45%  { opacity: 1; transform: translateY(-8px) scale(1.25) rotate(90deg); }
   100% { opacity: 0; transform: translateY(-16px) scale(0.7) rotate(160deg); }
+}
+
+/* ==========================================================================
+   AI Recruiter — fixed dock (the chat itself)
+   --------------------------------------------------------------------------
+   The chat lives in a panel that slides up from behind the pinned girl at
+   the bottom-right corner — the htrtcg.com pattern. Hidden until she is
+   tapped; every page carries it (index, projects, project).
+   ========================================================================== */
+.air-dock {
+  position: fixed;
+  right: 14px;
+  bottom: 128px; /* clears the standing girl */
+  z-index: 96;
+  width: min(380px, calc(100vw - 28px));
+  transform: translateY(18px) scale(0.97);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.32s ease, transform 0.32s var(--ease-out-expo), visibility 0.32s;
+}
+
+.air-dock[data-open='true'] {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateY(0) scale(1);
+}
+
+.air-dock .air-panel {
+  max-height: min(64vh, 560px);
+  display: flex;
+  flex-direction: column;
+}
+
+.air-dock .air-panel__body {
+  flex: 1;
+  min-height: 150px;
+  max-height: min(40vh, 340px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.air-dock__mini {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  border: 1px solid var(--border-soft);
+  background:
+    rgba(var(--surface-raised-rgb), 0.7)
+    url('assets/images/ai-girl.png') center 18% / 130% no-repeat;
+  flex-shrink: 0;
+}
+
+@media (max-width: 720px) {
+  .air-dock {
+    right: 10px;
+    left: 10px;
+    width: auto;
+    bottom: 142px;
+  }
+
+  .air-dock .air-panel__body { max-height: 44vh; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html:not([data-motion='full']) .air-dock {
+    transition: none;
+  }
+}
+
+html[data-theme='light'] .air-dock .air-panel {
+  box-shadow: 0 24px 60px rgba(var(--shadow-rgb), 0.18);
 }
 
 /* back to top stays hidden (and out of the tab order) until it is needed */

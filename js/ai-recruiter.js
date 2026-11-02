@@ -307,17 +307,7 @@
 
     var open = false;
 
-    /* Scroll the window to the chat — computed by hand instead of
-       scrollIntoView, whose smooth behaviour browsers can silently cancel
-       when competing focus/scroll work is in flight. */
-    function scrollToChat(smooth) {
-      var rect = chat.getBoundingClientRect();
-      var absTop = rect.top + (window.scrollY || window.pageYOffset || 0);
-      var target = absTop - Math.max(24, (window.innerHeight - rect.height) / 2);
-      window.scrollTo({ top: Math.max(0, target), behavior: smooth ? 'smooth' : 'auto' });
-    }
-
-    function setOpen(next, shouldScroll) {
+    function setOpen(next) {
       open = next;
       chat.setAttribute('data-open', open ? 'true' : 'false');
       chat.setAttribute('aria-hidden', open ? 'false' : 'true');
@@ -328,7 +318,6 @@
         }
       );
       if (open) {
-        if (shouldScroll) scrollToChat(true);
         /* focus after the open transition paints — preventScroll keeps the
            focus call from yanking or cancelling any scroll in flight */
         var input = chat.querySelector('[data-air-input]');
@@ -353,32 +342,27 @@
           if (isFab && btn.classList.contains('has-girl')) {
             if (btn.classList.contains('np-girl-jump')) return;
             btn.classList.add('np-girl-jump');
-            /* the window glides WHILE she leaps — scroll lands as she lands */
-            scrollToChat(true);
-            /* safety: if the smooth glide was interrupted, snap the rest */
-            window.setTimeout(function () {
-              var r = chat.getBoundingClientRect();
-              if (r.top < -40 || r.top > window.innerHeight) scrollToChat(false);
-            }, 500);
+            /* she leaps with a star pop — the dock slides open as she lands
+               (the dock is fixed, so no page scrolling is involved) */
             window.setTimeout(function () {
               btn.classList.remove('np-girl-jump');
-              setOpen(true, false);
+              setOpen(true);
             }, 440);
             return;
           }
-          setOpen(true, isFab);
+          setOpen(true);
         });
       }
     );
 
     document.addEventListener('keydown', function (event) {
-      if (event.key === 'Escape' && open) setOpen(false, false);
+      if (event.key === 'Escape' && open) setOpen(false);
     });
 
     var closer = chat.querySelector('[data-air-close]');
     if (closer) {
       closer.addEventListener('click', function () {
-        setOpen(false, false);
+        setOpen(false);
       });
     }
   }

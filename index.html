@@ -42,7 +42,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
   <!-- bump the ?v= when styles or the behaviour script change, so browsers
        (and the local preview) pick the new files up instead of a cached copy -->
-  <link rel="stylesheet" href="styles.css?v=74" />
+  <link rel="stylesheet" href="styles.css?v=75" />
   <!-- Before paint: js class, saved theme, ?motion override. Extracted from
        the head into js/boot.js so the CSP above can keep script-src free of
        'unsafe-inline'. Same parser-blocking position, same timing. -->
@@ -846,105 +846,12 @@
       </div>
     </section>
 
-    <!-- ===================== AI Recruiter =====================
-         A recruiter-facing assistant grounded in verified portfolio
-         facts. The browser only ever calls /api/chat (same origin);
-         the model key lives server-side. With no backend or no key the
-         section still renders its copy and the real contact fallback —
-         no reply is ever faked. See js/ai-recruiter.js, api/chat.js. -->
-    <section class="section" id="ai-recruiter">
-      <div class="container">
-        <header class="section__head">
-          <div class="section__label reveal-line">
-            <span class="section__num">( 07 )</span>
-            <span class="section__kicker">Ask my portfolio /</span>
-            <span class="section__rule" aria-hidden="true"></span>
-            <span class="section__bracket">( AI Recruiter )</span>
-          </div>
-        </header>
-
-        <div class="air" data-ai-recruiter data-reveal>
-          <!-- LEFT: the copy and the trigger. The button opens the chat that
-               sits directly under the mascot; the mascot on the right is also
-               a button that does the same thing. Both are real <button>s, so
-               the whole section is keyboard-reachable. -->
-          <div class="air__intro">
-            <p class="air__eyebrow reveal-line">
-              <span class="air__eyebrow-dot" aria-hidden="true"></span>
-              Hiring? Start here /
-            </p>
-            <h2 class="air__title reveal-line">
-              Ask the AI Recruiter<br />
-              about my work.
-            </h2>
-            <p class="air__desc reveal-line">
-              A recruiter-facing assistant that answers from verified
-              portfolio facts — skills, projects, experience and how to get
-              in touch. It never invents experience, and it tells you plainly
-              when something is not on record.
-            </p>
-            <ul class="air__meta reveal-line">
-              <li><span aria-hidden="true">&#9670;</span> Grounded in verified facts only</li>
-              <li><span aria-hidden="true">&#9670;</span> Projects, skills &amp; experience</li>
-              <li><span aria-hidden="true">&#9670;</span> No fabricated credentials</li>
-            </ul>
-
-            <button type="button" class="air__cta reveal-line" data-ai-open>
-              <span class="air__cta-dot" aria-hidden="true"></span>
-              <span>Ask My Chatbot Assistant</span>
-              <span class="air__cta-arrow" aria-hidden="true">&rarr;</span>
-            </button>
-          </div>
-
-          <!-- RIGHT: the mascot. It is a <button> — clicking it opens the chat
-               that appears directly beneath it. A small bubble beside it
-               carries the welcome line. -->
-          <div class="air__stage reveal-line">
-            <span class="air__bubble" aria-hidden="true">
-              Hi! I&rsquo;m Nourhan&rsquo;s AI Recruiter. Ask me anything about her work.
-            </span>
-            <button type="button" class="air-mascot air-mascot--btn" data-air-mascot
-                    data-ai-open aria-label="Open the AI Recruiter chat"
-                    title="Chat with the AI Recruiter"></button>
-
-            <!-- The chat opens HERE, directly under the robot, and is hidden
-                 until the visitor asks for it. -->
-            <div class="air-chat" id="ai-chat" data-ai-chat data-open="false" aria-hidden="true">
-              <button class="air-panel__close" data-air-close type="button"
-                      aria-label="Close chat">&times;</button>
-
-              <div class="air-chat__body">
-                <div class="air-log" data-air-log role="log" aria-live="polite" aria-label="Conversation"></div>
-              </div>
-
-              <div class="air-suggestions" data-air-suggestions aria-label="Suggested questions"></div>
-
-              <form class="air-form" data-air-form novalidate>
-                <label class="air-visually-hidden" for="air-input-inline">Your question</label>
-                <input
-                  class="air-form__input"
-                  id="air-input-inline"
-                  data-air-input
-                  type="text"
-                  name="message"
-                  maxlength="1000"
-                  autocomplete="off"
-                  placeholder="Ask about skills, projects or experience…"
-                />
-                <button class="air-form__send" data-air-send type="submit">Send</button>
-              </form>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
     <!-- ===================== 08 · Contact ===================== -->
     <section class="section" id="contact">
       <div class="container">
         <header class="section__head contact__head">
           <div class="section__label reveal-line">
-            <span class="section__num">( 08 )</span>
+            <span class="section__num">( 07 )</span>
             <span class="section__kicker">Let&rsquo;s work together /</span>
             <span class="section__rule" aria-hidden="true"></span>
             <span class="section__bracket">( Contact )</span>
@@ -1213,6 +1120,47 @@
     </button>
   </div>
 
+  <!-- AI Recruiter · fixed chat dock. Hidden until the girl (bottom-right)
+       is clicked; the girl herself stays pinned to the corner on every page
+       and at every scroll position. See js/ai-recruiter.js + styles.css
+       → "AI Recruiter — fixed dock". -->
+  <div class="air-dock" id="ai-dock" data-ai-chat data-open="false" aria-hidden="true">
+    <div class="air-panel" role="region" aria-label="AI Recruiter chat">
+      <div class="air-panel__head">
+        <span class="air-dock__mini" aria-hidden="true"></span>
+        <span class="air-panel__id">
+          <span class="air-panel__name">AI Recruiter</span>
+          <span class="air-panel__status">
+            <span class="air-panel__pulse" aria-hidden="true"></span>
+            Online
+          </span>
+        </span>
+        <button class="air-panel__close" data-air-close type="button" aria-label="Close chat">&times;</button>
+      </div>
+
+      <div class="air-panel__body">
+        <div class="air-log" data-air-log role="log" aria-live="polite" aria-label="Conversation"></div>
+      </div>
+
+      <div class="air-suggestions" data-air-suggestions aria-label="Suggested questions"></div>
+
+      <form class="air-form" data-air-form novalidate>
+        <label class="air-visually-hidden" for="air-input-dock">Your question</label>
+        <input
+          class="air-form__input"
+          id="air-input-dock"
+          data-air-input
+          type="text"
+          name="message"
+          maxlength="1000"
+          autocomplete="off"
+          placeholder="Ask about skills, projects or experience…"
+        />
+        <button class="air-form__send" data-air-send type="submit">Send</button>
+      </form>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
   <script src="script.js?v=30"></script>
   <!-- Hero turntable prototype (hero visual only, vanilla JS, no new libs) -->
@@ -1230,7 +1178,7 @@
   <!-- AI Recruiter mascot (inline SVG, CSS-animated) -->
   <script src="js/ai-mascot.js?v=4"></script>
   <!-- AI Recruiter chat panel (public behaviour; calls /api/chat only) -->
-  <script src="js/ai-recruiter.js?v=13"></script>
+  <script src="js/ai-recruiter.js?v=16"></script>
   <!-- js/projects.js self-initialises from the markup (#projects-grid here,
        #projects-index on projects.html), so no inline loader is needed and
        the CSP stays strict. -->
